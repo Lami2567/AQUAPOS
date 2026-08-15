@@ -1,0 +1,22 @@
+{
+  "name": "water-business-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade, offline-first Water Business Management System",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:packages": "npm run build --workspace=packages/shared-types && npm run build --workspace=packages/calculations && npm run build --workspace=packages/validation",
+    "build": "npm run build --workspace=packages/shared-types && npm run build --workspace=packages/calculations && npm run build --workspace=packages/validation && npm run build --workspace=apps/server && npm run build --workspace=apps/desktop",
+    "test": "npm run test --workspace=packages/calculations",
+    "start:server": "npm run start --workspace=apps/server",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:desktop": "npm run dev --workspace=apps/desktop",
+    "setup:windows": "node scripts/setup-windows-service.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
