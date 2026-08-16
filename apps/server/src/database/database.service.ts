@@ -201,38 +201,56 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
     // Safely migrate existing columns if they were created as UUID
     const migrationStatements = [
-      `ALTER TABLE IF EXISTS branches ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS stores ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS stores ALTER COLUMN branch_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS workers ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS workers ALTER COLUMN branch_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS users ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS users ALTER COLUMN branch_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS users ALTER COLUMN store_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS products ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN branch_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN product_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sales ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sales ALTER COLUMN store_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sales ALTER COLUMN cashier_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN sale_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN product_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN store_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN product_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN branch_id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN id TYPE TEXT;`,
-      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN entity_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS branches ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS branches ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS stores ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS stores ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS stores ALTER COLUMN branch_id SET DATA TYPE TEXT USING branch_id::TEXT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN branch_id SET DATA TYPE TEXT USING branch_id::TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN branch_id SET DATA TYPE TEXT USING branch_id::TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN store_id SET DATA TYPE TEXT USING store_id::TEXT;`,
+      `ALTER TABLE IF EXISTS products ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS products ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN branch_id SET DATA TYPE TEXT USING branch_id::TEXT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN product_id SET DATA TYPE TEXT USING product_id::TEXT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN store_id SET DATA TYPE TEXT USING store_id::TEXT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN cashier_id SET DATA TYPE TEXT USING cashier_id::TEXT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN sale_id SET DATA TYPE TEXT USING sale_id::TEXT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN product_id SET DATA TYPE TEXT USING product_id::TEXT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN store_id SET DATA TYPE TEXT USING store_id::TEXT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN product_id SET DATA TYPE TEXT USING product_id::TEXT;`,
+      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN branch_id SET DATA TYPE TEXT USING branch_id::TEXT;`,
+      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN device_id SET DATA TYPE TEXT USING device_id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN user_id SET DATA TYPE TEXT USING user_id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN branch_id SET DATA TYPE TEXT USING branch_id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN device_id SET DATA TYPE TEXT USING device_id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
+      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
     ];
 
     for (const stmt of migrationStatements) {
       try {
         await this.pgPool.query(stmt);
-      } catch (_) {
-        // Column may already be TEXT or table empty — safe to ignore
+      } catch (e: any) {
+        this.logger.debug('Schema column migration statement notice: ' + e.message);
       }
     }
   }
