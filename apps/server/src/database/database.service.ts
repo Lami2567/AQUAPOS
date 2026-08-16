@@ -80,6 +80,24 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         formatted += ' ON CONFLICT (id) DO NOTHING';
       }
     }
+    // Replace SQLite integer boolean checks with Postgres boolean checks
+    formatted = formatted.replace(/\bis_active\s*=\s*1\b/gi, 'is_active = true');
+    formatted = formatted.replace(/\bis_active\s*=\s*0\b/gi, 'is_active = false');
+    formatted = formatted.replace(/\bis_voided\s*=\s*1\b/gi, 'is_voided = true');
+    formatted = formatted.replace(/\bis_voided\s*=\s*0\b/gi, 'is_voided = false');
+    formatted = formatted.replace(/\bis_system_role\s*=\s*1\b/gi, 'is_system_role = true');
+    formatted = formatted.replace(/\bis_system_role\s*=\s*0\b/gi, 'is_system_role = false');
+    formatted = formatted.replace(/\brequires_reference\s*=\s*1\b/gi, 'requires_reference = true');
+    formatted = formatted.replace(/\brequires_reference\s*=\s*0\b/gi, 'requires_reference = false');
+    formatted = formatted.replace(/\brequires_approval\s*=\s*1\b/gi, 'requires_approval = true');
+    formatted = formatted.replace(/\brequires_approval\s*=\s*0\b/gi, 'requires_approval = false');
+    formatted = formatted.replace(/\bauto_deduct_payroll\s*=\s*1\b/gi, 'auto_deduct_payroll = true');
+    formatted = formatted.replace(/\bauto_deduct_payroll\s*=\s*0\b/gi, 'auto_deduct_payroll = false');
+    formatted = formatted.replace(/\bis_stock_equation_valid\s*=\s*1\b/gi, 'is_stock_equation_valid = true');
+    formatted = formatted.replace(/\bis_stock_equation_valid\s*=\s*0\b/gi, 'is_stock_equation_valid = false');
+    formatted = formatted.replace(/\bis_money_equation_valid\s*=\s*1\b/gi, 'is_money_equation_valid = true');
+    formatted = formatted.replace(/\bis_money_equation_valid\s*=\s*0\b/gi, 'is_money_equation_valid = false');
+
     return formatted;
   }
 

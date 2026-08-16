@@ -17,7 +17,7 @@ export class AdminService {
 
   async saveBranch(data: { id?: string; code: string; name: string; location: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM branches WHERE id = ?', [id]);
 
     if (existing) {
@@ -48,7 +48,7 @@ export class AdminService {
 
   async saveStore(data: { id?: string; branchId: string; code: string; name: string; type: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM stores WHERE id = ?', [id]);
 
     if (existing) {
@@ -74,7 +74,7 @@ export class AdminService {
 
   async saveDepartment(data: { id?: string; code: string; name: string; description?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM departments WHERE id = ?', [id]);
 
     if (existing) {
@@ -105,7 +105,7 @@ export class AdminService {
 
   async saveWorker(data: { id?: string; branchId: string; department: string; fullName: string; phone: string; role: string; basicSalaryUgx: number; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM workers WHERE id = ?', [id]);
 
     if (existing) {
@@ -137,7 +137,7 @@ export class AdminService {
 
   async saveUser(data: { id?: string; username: string; fullName: string; role: string; branchId: string; storeId?: string; passwordHash?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM users WHERE id = ?', [id]);
 
     if (existing) {
@@ -171,7 +171,7 @@ export class AdminService {
 
   async saveRole(data: { id?: string; code: string; displayName: string; description?: string; permissions: string[]; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const permissionsJson = JSON.stringify(data.permissions || []);
     const existing = await this.dbService.queryOne('SELECT * FROM roles WHERE id = ?', [id]);
 
@@ -203,7 +203,7 @@ export class AdminService {
 
   async saveVehicle(data: { id?: string; branchId: string; registrationNumber: string; type: string; model: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM vehicles WHERE id = ?', [id]);
 
     if (existing) {
@@ -229,7 +229,7 @@ export class AdminService {
 
   async saveProduct(data: { id?: string; sku: string; name: string; category: string; variant?: string; packaging?: string; unitOfMeasure: string; capacityMl: number; costPriceUgx: number; sellingPriceUgx: number; minStockAlert?: number; maxStockLevel?: number; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM products WHERE id = ?', [id]);
 
     if (existing) {
@@ -255,7 +255,7 @@ export class AdminService {
 
   async saveCategory(data: { id?: string; code: string; name: string; description?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM categories WHERE id = ?', [id]);
 
     if (existing) {
@@ -313,8 +313,8 @@ export class AdminService {
 
   async savePaymentMethod(data: { id?: string; code: string; name: string; requiresReference?: boolean; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
-    const reqRef = data.requiresReference !== undefined ? (data.requiresReference ? 1 : 0) : 0;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
+    const reqRef = data.requiresReference !== undefined ? Boolean(data.requiresReference) : false;
     const existing = await this.dbService.queryOne('SELECT * FROM payment_methods WHERE id = ?', [id]);
 
     if (existing) {
@@ -340,8 +340,8 @@ export class AdminService {
 
   async saveExpenseType(data: { id?: string; code: string; name: string; requiresApproval?: boolean; description?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
-    const reqApp = data.requiresApproval !== undefined ? (data.requiresApproval ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
+    const reqApp = data.requiresApproval !== undefined ? Boolean(data.requiresApproval) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM expense_types WHERE id = ?', [id]);
 
     if (existing) {
@@ -367,8 +367,8 @@ export class AdminService {
 
   async saveDebtType(data: { id?: string; code: string; name: string; autoDeductPayroll?: boolean; description?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
-    const autoDed = data.autoDeductPayroll !== undefined ? (data.autoDeductPayroll ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
+    const autoDed = data.autoDeductPayroll !== undefined ? Boolean(data.autoDeductPayroll) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM debt_types WHERE id = ?', [id]);
 
     if (existing) {
@@ -394,7 +394,7 @@ export class AdminService {
 
   async saveSalarySetting(data: { id?: string; roleCode: string; departmentCode: string; baseSalaryUgx: number; commissionPerUnitUgx?: number; allowanceUgx?: number; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
-    const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : 1;
+    const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM salary_settings WHERE id = ?', [id]);
 
     if (existing) {
