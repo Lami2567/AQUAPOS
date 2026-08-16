@@ -353,180 +353,173 @@ export const useStore = create<AppState>()(
         set((state) => {
           if (!centralData) return state;
 
-          const mergedBranches = Array.isArray(centralData.branches)
-            ? centralData.branches.map((b: any) => ({
-                id: b.id,
-                code: b.code || '',
-                name: b.name || '',
-                location: b.location || '',
-                isActive: b.isActive !== undefined ? Boolean(b.isActive) : Boolean(b.is_active ?? true),
-                createdAt: b.createdAt || b.created_at || new Date().toISOString(),
-              }))
-            : state.branches;
+          const upsertEntities = <T extends { id?: string }>(
+            localList: T[],
+            remoteList: any[] | undefined,
+            mapFn: (r: any) => T
+          ): T[] => {
+            const map = new Map<string, T>();
+            (localList || []).forEach((item) => {
+              const itemId = item.id || (item as any).productId || (item as any).settingKey;
+              if (itemId) map.set(itemId, item);
+            });
+            if (Array.isArray(remoteList)) {
+              remoteList.forEach((raw) => {
+                const mapped = mapFn(raw);
+                const mappedId = mapped.id || (mapped as any).productId || (mapped as any).settingKey;
+                if (mappedId) {
+                  map.set(mappedId, mapped);
+                }
+              });
+            }
+            return Array.from(map.values());
+          };
 
-          const mergedStores = Array.isArray(centralData.stores)
-            ? centralData.stores.map((s: any) => ({
-                id: s.id,
-                branchId: s.branchId || s.branch_id || '',
-                code: s.code || '',
-                name: s.name || '',
-                type: s.type || 'MAIN_STORE',
-                isActive: s.isActive !== undefined ? Boolean(s.isActive) : Boolean(s.is_active ?? true),
-              }))
-            : state.stores;
+          const mergedBranches = upsertEntities(state.branches, centralData.branches, (b: any) => ({
+            id: b.id,
+            code: b.code || '',
+            name: b.name || '',
+            location: b.location || '',
+            isActive: b.isActive !== undefined ? Boolean(b.isActive) : Boolean(b.is_active ?? true),
+            createdAt: b.createdAt || b.created_at || new Date().toISOString(),
+          }));
 
-          const mergedDepartments = Array.isArray(centralData.departments)
-            ? centralData.departments.map((d: any) => ({
-                id: d.id,
-                code: d.code || '',
-                name: d.name || '',
-                description: d.description || '',
-                isActive: d.isActive !== undefined ? Boolean(d.isActive) : Boolean(d.is_active ?? true),
-                createdAt: d.createdAt || d.created_at || new Date().toISOString(),
-              }))
-            : state.departments;
+          const mergedStores = upsertEntities(state.stores, centralData.stores, (s: any) => ({
+            id: s.id,
+            branchId: s.branchId || s.branch_id || '',
+            code: s.code || '',
+            name: s.name || '',
+            type: s.type || 'MAIN_STORE',
+            isActive: s.isActive !== undefined ? Boolean(s.isActive) : Boolean(s.is_active ?? true),
+          }));
 
-          const mergedWorkers = Array.isArray(centralData.workers)
-            ? centralData.workers.map((w: any) => ({
-                id: w.id,
-                branchId: w.branchId || w.branch_id || '',
-                department: w.department || '',
-                fullName: w.fullName || w.full_name || '',
-                phone: w.phone || '',
-                role: w.role || 'FIELD_SALESPERSON',
-                basicSalaryUgx: Number(w.basicSalaryUgx ?? w.basic_salary_ugx ?? 0),
-                isActive: w.isActive !== undefined ? Boolean(w.isActive) : Boolean(w.is_active ?? true),
-              }))
-            : state.workers;
+          const mergedDepartments = upsertEntities(state.departments, centralData.departments, (d: any) => ({
+            id: d.id,
+            code: d.code || '',
+            name: d.name || '',
+            description: d.description || '',
+            isActive: d.isActive !== undefined ? Boolean(d.isActive) : Boolean(d.is_active ?? true),
+            createdAt: d.createdAt || d.created_at || new Date().toISOString(),
+          }));
 
-          const mergedUsers = Array.isArray(centralData.users)
-            ? centralData.users.map((u: any) => ({
-                id: u.id,
-                username: u.username || '',
-                fullName: u.fullName || u.full_name || '',
-                role: u.role || 'CASHIER',
-                branchId: u.branchId || u.branch_id || '',
-                storeId: u.storeId || u.store_id || '',
-                isActive: u.isActive !== undefined ? Boolean(u.isActive) : Boolean(u.is_active ?? true),
-                createdAt: u.createdAt || u.created_at || new Date().toISOString(),
-                updatedAt: u.updatedAt || u.updated_at || new Date().toISOString(),
-              }))
-            : state.usersList;
+          const mergedWorkers = upsertEntities(state.workers, centralData.workers, (w: any) => ({
+            id: w.id,
+            branchId: w.branchId || w.branch_id || '',
+            department: w.department || '',
+            fullName: w.fullName || w.full_name || '',
+            phone: w.phone || '',
+            role: w.role || 'FIELD_SALESPERSON',
+            basicSalaryUgx: Number(w.basicSalaryUgx ?? w.basic_salary_ugx ?? 0),
+            isActive: w.isActive !== undefined ? Boolean(w.isActive) : Boolean(w.is_active ?? true),
+          }));
 
-          const mergedRoles = Array.isArray(centralData.roles)
-            ? centralData.roles.map((r: any) => ({
-                id: r.id,
-                code: r.code || '',
-                displayName: r.displayName || r.display_name || '',
-                description: r.description || '',
-                permissions: Array.isArray(r.permissions) ? r.permissions : (typeof r.permissions === 'string' ? (() => { try { return JSON.parse(r.permissions); } catch(e) { return []; } })() : []),
-                isActive: r.isActive !== undefined ? Boolean(r.isActive) : Boolean(r.is_active ?? true),
-              }))
-            : state.rolesList;
+          const mergedUsers = upsertEntities(state.usersList, centralData.users, (u: any) => ({
+            id: u.id,
+            username: u.username || '',
+            fullName: u.fullName || u.full_name || '',
+            role: u.role || 'CASHIER',
+            branchId: u.branchId || u.branch_id || '',
+            storeId: u.storeId || u.store_id || '',
+            isActive: u.isActive !== undefined ? Boolean(u.isActive) : Boolean(u.is_active ?? true),
+            createdAt: u.createdAt || u.created_at || new Date().toISOString(),
+            updatedAt: u.updatedAt || u.updated_at || new Date().toISOString(),
+          }));
 
-          const mergedVehicles = Array.isArray(centralData.vehicles)
-            ? centralData.vehicles.map((v: any) => ({
-                id: v.id,
-                branchId: v.branchId || v.branch_id || '',
-                registrationNumber: v.registrationNumber || v.registration_number || '',
-                type: v.type || 'LORRY',
-                model: v.model || '',
-                isActive: v.isActive !== undefined ? Boolean(v.isActive) : Boolean(v.is_active ?? true),
-              }))
-            : state.vehicles;
+          const mergedRoles = upsertEntities(state.rolesList, centralData.roles, (r: any) => ({
+            id: r.id,
+            code: r.code || '',
+            displayName: r.displayName || r.display_name || '',
+            description: r.description || '',
+            permissions: Array.isArray(r.permissions) ? r.permissions : (typeof r.permissions === 'string' ? (() => { try { return JSON.parse(r.permissions); } catch(e) { return []; } })() : []),
+            isActive: r.isActive !== undefined ? Boolean(r.isActive) : Boolean(r.is_active ?? true),
+          }));
 
-          const mergedProducts = Array.isArray(centralData.products)
-            ? centralData.products.map((p: any) => ({
-                id: p.id,
-                sku: p.sku || '',
-                name: p.name || '',
-                category: p.category || '',
-                variant: p.variant || '',
-                packaging: p.packaging || '',
-                unitOfMeasure: p.unitOfMeasure || p.unit_of_measure || 'Piece',
-                capacityMl: Number(p.capacityMl ?? p.capacity_ml ?? 500),
-                costPriceUgx: Number(p.costPriceUgx ?? p.cost_price_ugx ?? 0),
-                sellingPriceUgx: Number(p.sellingPriceUgx ?? p.selling_price_ugx ?? 0),
-                minStockAlert: Number(p.minStockAlert ?? p.min_stock_alert ?? 10),
-                maxStockLevel: Number(p.maxStockLevel ?? p.max_stock_level ?? 5000),
-                isActive: p.isActive !== undefined ? Boolean(p.isActive) : Boolean(p.is_active ?? true),
-              }))
-            : state.products;
+          const mergedVehicles = upsertEntities(state.vehicles, centralData.vehicles, (v: any) => ({
+            id: v.id,
+            branchId: v.branchId || v.branch_id || '',
+            registrationNumber: v.registrationNumber || v.registration_number || '',
+            type: v.type || 'LORRY',
+            model: v.model || '',
+            isActive: v.isActive !== undefined ? Boolean(v.isActive) : Boolean(v.is_active ?? true),
+          }));
 
-          const mergedCategories = Array.isArray(centralData.categories)
-            ? centralData.categories.map((c: any) => ({
-                id: c.id,
-                code: c.code || '',
-                name: c.name || '',
-                description: c.description || '',
-                isActive: c.isActive !== undefined ? Boolean(c.isActive) : Boolean(c.is_active ?? true),
-              }))
-            : state.categories;
+          const mergedProducts = upsertEntities(state.products, centralData.products, (p: any) => ({
+            id: p.id,
+            sku: p.sku || '',
+            name: p.name || '',
+            category: p.category || '',
+            variant: p.variant || '',
+            packaging: p.packaging || '',
+            unitOfMeasure: p.unitOfMeasure || p.unit_of_measure || 'Piece',
+            capacityMl: Number(p.capacityMl ?? p.capacity_ml ?? 500),
+            costPriceUgx: Number(p.costPriceUgx ?? p.cost_price_ugx ?? 0),
+            sellingPriceUgx: Number(p.sellingPriceUgx ?? p.selling_price_ugx ?? 0),
+            minStockAlert: Number(p.minStockAlert ?? p.min_stock_alert ?? 10),
+            maxStockLevel: Number(p.maxStockLevel ?? p.max_stock_level ?? 5000),
+            isActive: p.isActive !== undefined ? Boolean(p.isActive) : Boolean(p.is_active ?? true),
+            createdAt: p.createdAt || p.created_at || new Date().toISOString(),
+          }));
 
-          const mergedBranchPrices = Array.isArray(centralData.branchPrices)
-            ? centralData.branchPrices.map((bp: any) => ({
-                id: bp.id,
-                branchId: bp.branchId || bp.branch_id || '',
-                productId: bp.productId || bp.product_id || '',
-                costPriceUgx: Number(bp.costPriceUgx ?? bp.cost_price_ugx ?? 0),
-                sellingPriceUgx: Number(bp.sellingPriceUgx ?? bp.selling_price_ugx ?? 0),
-              }))
-            : state.branchPrices;
+          const mergedCategories = upsertEntities(state.categories, centralData.categories, (c: any) => ({
+            id: c.id,
+            code: c.code || '',
+            name: c.name || '',
+            description: c.description || '',
+            isActive: c.isActive !== undefined ? Boolean(c.isActive) : Boolean(c.is_active ?? true),
+          }));
 
-          const mergedPaymentMethods = Array.isArray(centralData.paymentMethods)
-            ? centralData.paymentMethods.map((pm: any) => ({
-                id: pm.id,
-                code: pm.code || '',
-                name: pm.name || '',
-                requiresReference: Boolean(pm.requiresReference ?? pm.requires_reference),
-                isActive: pm.isActive !== undefined ? Boolean(pm.isActive) : Boolean(pm.is_active ?? true),
-              }))
-            : state.paymentMethodsList;
+          const mergedBranchPrices = upsertEntities(state.branchPrices, centralData.branchPrices, (bp: any) => ({
+            id: bp.id || '',
+            branchId: bp.branchId || bp.branch_id || '',
+            productId: bp.productId || bp.product_id || '',
+            costPriceUgx: Number(bp.costPriceUgx ?? bp.cost_price_ugx ?? 0),
+            sellingPriceUgx: Number(bp.sellingPriceUgx ?? bp.selling_price_ugx ?? 0),
+          }));
 
-          const mergedExpenseTypes = Array.isArray(centralData.expenseTypes)
-            ? centralData.expenseTypes.map((et: any) => ({
-                id: et.id,
-                code: et.code || '',
-                name: et.name || '',
-                requiresApproval: Boolean(et.requiresApproval ?? et.requires_approval),
-                description: et.description || '',
-                isActive: et.isActive !== undefined ? Boolean(et.isActive) : Boolean(et.is_active ?? true),
-              }))
-            : state.expenseTypes;
+          const mergedPaymentMethods = upsertEntities(state.paymentMethodsList, centralData.paymentMethods, (pm: any) => ({
+            id: pm.id,
+            code: pm.code || '',
+            name: pm.name || '',
+            requiresReference: Boolean(pm.requiresReference ?? pm.requires_reference),
+            isActive: pm.isActive !== undefined ? Boolean(pm.isActive) : Boolean(pm.is_active ?? true),
+          }));
 
-          const mergedDebtTypes = Array.isArray(centralData.debtTypes)
-            ? centralData.debtTypes.map((dt: any) => ({
-                id: dt.id,
-                code: dt.code || '',
-                name: dt.name || '',
-                autoDeductPayroll: Boolean(dt.autoDeductPayroll ?? dt.auto_deduct_payroll),
-                description: dt.description || '',
-                isActive: dt.isActive !== undefined ? Boolean(dt.isActive) : Boolean(dt.is_active ?? true),
-              }))
-            : state.debtTypes;
+          const mergedExpenseTypes = upsertEntities(state.expenseTypes, centralData.expenseTypes, (et: any) => ({
+            id: et.id,
+            code: et.code || '',
+            name: et.name || '',
+            requiresApproval: Boolean(et.requiresApproval ?? et.requires_approval),
+            description: et.description || '',
+            isActive: et.isActive !== undefined ? Boolean(et.isActive) : Boolean(et.is_active ?? true),
+          }));
 
-          const mergedSalarySettings = Array.isArray(centralData.salarySettings)
-            ? centralData.salarySettings.map((ss: any) => ({
-                id: ss.id,
-                roleCode: ss.roleCode || ss.role_code || '',
-                departmentCode: ss.departmentCode || ss.department_code || '',
-                baseSalaryUgx: Number(ss.baseSalaryUgx ?? ss.base_salary_ugx ?? 0),
-                commissionPerUnitUgx: Number(ss.commissionPerUnitUgx ?? ss.commission_per_unit_ugx ?? 0),
-                allowanceUgx: Number(ss.allowanceUgx ?? ss.allowance_ugx ?? 0),
-                isActive: ss.isActive !== undefined ? Boolean(ss.isActive) : Boolean(ss.is_active ?? true),
-              }))
-            : state.salarySettings;
+          const mergedDebtTypes = upsertEntities(state.debtTypes, centralData.debtTypes, (dt: any) => ({
+            id: dt.id,
+            code: dt.code || '',
+            name: dt.name || '',
+            autoDeductPayroll: Boolean(dt.autoDeductPayroll ?? dt.auto_deduct_payroll),
+            description: dt.description || '',
+            isActive: dt.isActive !== undefined ? Boolean(dt.isActive) : Boolean(dt.is_active ?? true),
+          }));
 
-          const mergedSystemSettings = Array.isArray(centralData.systemSettings)
-            ? centralData.systemSettings.map((sys: any) => ({
-                id: sys.id,
-                settingKey: sys.settingKey || sys.setting_key || '',
-                settingValue: sys.settingValue || sys.setting_value || '',
-                category: sys.category || 'GENERAL',
-                description: sys.description || '',
-                updatedAt: sys.updatedAt || sys.updated_at || new Date().toISOString(),
-              }))
-            : state.systemSettings;
+          const mergedSalarySettings = upsertEntities(state.salarySettings, centralData.salarySettings, (ss: any) => ({
+            id: ss.id,
+            roleCode: ss.roleCode || ss.role_code || '',
+            departmentCode: ss.departmentCode || ss.department_code || '',
+            baseSalaryUgx: Number(ss.baseSalaryUgx ?? ss.base_salary_ugx ?? 0),
+            commissionPerUnitUgx: Number(ss.commissionPerUnitUgx ?? ss.commission_per_unit_ugx ?? 0),
+            allowanceUgx: Number(ss.allowanceUgx ?? ss.allowance_ugx ?? 0),
+            isActive: ss.isActive !== undefined ? Boolean(ss.isActive) : Boolean(ss.is_active ?? true),
+          }));
+
+          const mergedSystemSettings = upsertEntities(state.systemSettings, centralData.systemSettings, (sys: any) => ({
+            id: sys.id,
+            settingKey: sys.settingKey || sys.setting_key || '',
+            settingValue: sys.settingValue || sys.setting_value || '',
+            category: sys.category || 'GENERAL',
+            description: sys.description || '',
+            updatedAt: sys.updatedAt || sys.updated_at || new Date().toISOString(),
+          }));
 
           // Merge live central inventory levels
           const mergedStock = { ...state.inventoryStock };
@@ -540,17 +533,12 @@ export const useStore = create<AppState>()(
           }
 
           // ── Apply tombstones (central deletions) to local state ────────────
-          // For each tombstone the server returned, filter out the matching
-          // local record. Last-Write-Wins: if the local record's updatedAt is
-          // NEWER than the tombstone deletedAt, the local edit wins and we
-          // do NOT remove it (the next outbox push will resurrect it on server).
           const tombstones: Array<{ entityType: string; entityId: string; deletedAt: string }> =
             Array.isArray(centralData.deletedRecords) ? centralData.deletedRecords : [];
 
           const isDeletedRemotely = (entityType: string, id: string, localUpdatedAt?: string): boolean => {
             const ts = tombstones.find((t) => t.entityType === entityType && t.entityId === id);
             if (!ts) return false;
-            // If local record has an updatedAt that is NEWER, the edit wins
             if (localUpdatedAt && localUpdatedAt > ts.deletedAt) return false;
             return true;
           };
@@ -602,9 +590,7 @@ export const useStore = create<AppState>()(
             (sys: any) => !isDeletedRemotely('system_settings', sys.id)
           );
 
-
           // Mark any PENDING outbox items that reference a deleted entity as CONFLICT
-          // so the UI can notify the user without silently re-pushing dead data.
           const updatedOutbox = state.outboxQueue.map((item) => {
             if (item.status !== 'PENDING') return item;
             const entityId = item.payload?.id || item.payload?.entityId;
@@ -617,6 +603,17 @@ export const useStore = create<AppState>()(
           });
           const conflictCount = updatedOutbox.filter((i) => i.status === 'CONFLICT').length;
           const remainingPending = updatedOutbox.filter((i) => i.status === 'PENDING').length;
+
+          // Preserve or auto-select active branch and store
+          const activeBranches = finalBranches.filter((b) => b.isActive !== false);
+          const nextBranchId = state.currentBranchId && activeBranches.some((b) => b.id === state.currentBranchId)
+            ? state.currentBranchId
+            : (activeBranches[0]?.id || '');
+
+          const activeStores = finalStores.filter((s) => s.isActive !== false && (!nextBranchId || s.branchId === nextBranchId));
+          const nextStoreId = state.currentStoreId && activeStores.some((s) => s.id === state.currentStoreId)
+            ? state.currentStoreId
+            : (activeStores[0]?.id || '');
 
           return {
             branches: finalBranches,
@@ -637,9 +634,9 @@ export const useStore = create<AppState>()(
             inventoryStock: mergedStock,
             outboxQueue: updatedOutbox,
             pendingSyncCount: remainingPending,
-            // Advance the watermark to the server's clock so the next pull is delta-only
+            currentBranchId: nextBranchId,
+            currentStoreId: nextStoreId,
             lastSyncedAt: centralData.serverTime || centralData.timestamp || state.lastSyncedAt,
-            // Surface conflict count via sync status when > 0
             syncStatus: conflictCount > 0 ? ('FAILED' as const) : state.syncStatus,
           };
         }),
