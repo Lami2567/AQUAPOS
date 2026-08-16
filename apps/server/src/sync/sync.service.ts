@@ -13,8 +13,8 @@ export class SyncService {
    * @param branchId - optional branch filter (not yet used for filtering, kept for future scope)
    * @param since - optional ISO timestamp; when provided returns only tombstones newer than this
    */
-  public pullCentralData(branchId?: string, since?: string) {
-    const rawBranches = this.dbService.query<any>('SELECT * FROM branches WHERE is_active = 1 ORDER BY name ASC');
+  public async pullCentralData(branchId?: string, since?: string) {
+    const rawBranches = await this.dbService.query<any>('SELECT * FROM branches WHERE is_active = 1 ORDER BY name ASC');
     const branches = rawBranches.map((b) => ({
       id: b.id,
       code: b.code,
@@ -24,7 +24,7 @@ export class SyncService {
       createdAt: b.created_at,
     }));
 
-    const rawStores = this.dbService.query<any>('SELECT * FROM stores WHERE is_active = 1 ORDER BY name ASC');
+    const rawStores = await this.dbService.query<any>('SELECT * FROM stores WHERE is_active = 1 ORDER BY name ASC');
     const stores = rawStores.map((s) => ({
       id: s.id,
       branchId: s.branch_id,
@@ -34,7 +34,7 @@ export class SyncService {
       isActive: Boolean(s.is_active),
     }));
 
-    const rawDepartments = this.dbService.query<any>('SELECT * FROM departments WHERE is_active = 1 ORDER BY name ASC');
+    const rawDepartments = await this.dbService.query<any>('SELECT * FROM departments WHERE is_active = 1 ORDER BY name ASC');
     const departments = rawDepartments.map((d) => ({
       id: d.id,
       code: d.code,
@@ -44,7 +44,7 @@ export class SyncService {
       createdAt: d.created_at,
     }));
 
-    const rawWorkers = this.dbService.query<any>('SELECT * FROM workers WHERE is_active = 1 ORDER BY full_name ASC');
+    const rawWorkers = await this.dbService.query<any>('SELECT * FROM workers WHERE is_active = 1 ORDER BY full_name ASC');
     const workers = rawWorkers.map((w) => ({
       id: w.id,
       branchId: w.branch_id,
@@ -56,7 +56,7 @@ export class SyncService {
       isActive: Boolean(w.is_active),
     }));
 
-    const rawUsers = this.dbService.query<any>('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE is_active = 1 ORDER BY username ASC');
+    const rawUsers = await this.dbService.query<any>('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE is_active = 1 ORDER BY username ASC');
     const users = rawUsers.map((u) => ({
       id: u.id,
       username: u.username,
@@ -69,7 +69,7 @@ export class SyncService {
       updatedAt: u.created_at,
     }));
 
-    const rawRoles = this.dbService.query<any>('SELECT * FROM roles WHERE is_active = 1 ORDER BY display_name ASC');
+    const rawRoles = await this.dbService.query<any>('SELECT * FROM roles WHERE is_active = 1 ORDER BY display_name ASC');
     const roles = rawRoles.map((r) => ({
       id: r.id,
       code: r.code,
@@ -79,7 +79,7 @@ export class SyncService {
       isActive: Boolean(r.is_active),
     }));
 
-    const rawVehicles = this.dbService.query<any>('SELECT * FROM vehicles WHERE is_active = 1 ORDER BY registration_number ASC');
+    const rawVehicles = await this.dbService.query<any>('SELECT * FROM vehicles WHERE is_active = 1 ORDER BY registration_number ASC');
     const vehicles = rawVehicles.map((v) => ({
       id: v.id,
       branchId: v.branch_id,
@@ -89,7 +89,7 @@ export class SyncService {
       isActive: Boolean(v.is_active),
     }));
 
-    const rawProducts = this.dbService.query<any>('SELECT * FROM products WHERE is_active = 1 ORDER BY name ASC');
+    const rawProducts = await this.dbService.query<any>('SELECT * FROM products WHERE is_active = 1 ORDER BY name ASC');
     const products = rawProducts.map((p) => ({
       id: p.id,
       sku: p.sku,
@@ -106,7 +106,7 @@ export class SyncService {
       isActive: Boolean(p.is_active),
     }));
 
-    const rawCategories = this.dbService.query<any>('SELECT * FROM categories WHERE is_active = 1 ORDER BY name ASC');
+    const rawCategories = await this.dbService.query<any>('SELECT * FROM categories WHERE is_active = 1 ORDER BY name ASC');
     const categories = rawCategories.map((c) => ({
       id: c.id,
       code: c.code,
@@ -115,7 +115,7 @@ export class SyncService {
       isActive: Boolean(c.is_active),
     }));
 
-    const rawPrices = this.dbService.query<any>('SELECT * FROM branch_product_prices');
+    const rawPrices = await this.dbService.query<any>('SELECT * FROM branch_product_prices');
     const branchPrices = rawPrices.map((bp) => ({
       id: bp.id,
       branchId: bp.branch_id,
@@ -124,7 +124,7 @@ export class SyncService {
       sellingPriceUgx: Number(bp.selling_price_ugx || 0),
     }));
 
-    const rawPM = this.dbService.query<any>('SELECT * FROM payment_methods WHERE is_active = 1');
+    const rawPM = await this.dbService.query<any>('SELECT * FROM payment_methods WHERE is_active = 1');
     const paymentMethods = rawPM.map((pm) => ({
       id: pm.id,
       code: pm.code,
@@ -133,7 +133,7 @@ export class SyncService {
       isActive: Boolean(pm.is_active),
     }));
 
-    const rawET = this.dbService.query<any>('SELECT * FROM expense_types WHERE is_active = 1');
+    const rawET = await this.dbService.query<any>('SELECT * FROM expense_types WHERE is_active = 1');
     const expenseTypes = rawET.map((et) => ({
       id: et.id,
       code: et.code,
@@ -143,7 +143,7 @@ export class SyncService {
       isActive: Boolean(et.is_active),
     }));
 
-    const rawDT = this.dbService.query<any>('SELECT * FROM debt_types WHERE is_active = 1');
+    const rawDT = await this.dbService.query<any>('SELECT * FROM debt_types WHERE is_active = 1');
     const debtTypes = rawDT.map((dt) => ({
       id: dt.id,
       code: dt.code,
@@ -153,7 +153,7 @@ export class SyncService {
       isActive: Boolean(dt.is_active),
     }));
 
-    const rawSS = this.dbService.query<any>('SELECT * FROM salary_settings WHERE is_active = 1');
+    const rawSS = await this.dbService.query<any>('SELECT * FROM salary_settings WHERE is_active = 1');
     const salarySettings = rawSS.map((ss) => ({
       id: ss.id,
       roleCode: ss.role_code,
@@ -164,7 +164,7 @@ export class SyncService {
       isActive: Boolean(ss.is_active),
     }));
 
-    const rawSys = this.dbService.query<any>('SELECT * FROM system_settings');
+    const rawSys = await this.dbService.query<any>('SELECT * FROM system_settings');
     const systemSettings = rawSys.map((sys) => ({
       id: sys.id,
       settingKey: sys.setting_key || sys.settingKey || '',
@@ -175,7 +175,7 @@ export class SyncService {
     }));
 
     // Aggregate real live inventory levels per store & product
-    const ledger = this.dbService.query<any>('SELECT store_id, product_id, SUM(quantity_change) as total_qty FROM stock_ledger GROUP BY store_id, product_id');
+    const ledger = await this.dbService.query<any>('SELECT store_id, product_id, SUM(quantity_change) as total_qty FROM stock_ledger GROUP BY store_id, product_id');
     const inventoryStock: Record<string, Record<string, number>> = {};
     for (const entry of ledger) {
       if (!inventoryStock[entry.store_id]) inventoryStock[entry.store_id] = {};
@@ -183,17 +183,17 @@ export class SyncService {
     }
 
     // Recent sales, expenses, debts, field sessions, transfers
-    const sales = this.dbService.query<any>('SELECT * FROM sales ORDER BY created_at DESC LIMIT 200');
-    const expenses = this.dbService.query<any>('SELECT * FROM expenses ORDER BY created_at DESC LIMIT 200');
-    const debts = this.dbService.query<any>('SELECT * FROM debts ORDER BY created_at DESC LIMIT 200');
+    const sales = await this.dbService.query<any>('SELECT * FROM sales ORDER BY created_at DESC LIMIT 200');
+    const expenses = await this.dbService.query<any>('SELECT * FROM expenses ORDER BY created_at DESC LIMIT 200');
+    const debts = await this.dbService.query<any>('SELECT * FROM debts ORDER BY created_at DESC LIMIT 200');
     let salaryPayments: any[] = [];
     try {
-      salaryPayments = this.dbService.query<any>('SELECT * FROM salaries ORDER BY paid_at DESC LIMIT 200');
+      salaryPayments = await this.dbService.query<any>('SELECT * FROM salaries ORDER BY paid_at DESC LIMIT 200');
     } catch (e) {
       salaryPayments = [];
     }
-    const fieldSessions = this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
-    const stockTransfers = this.dbService.query<any>('SELECT * FROM stock_transfers ORDER BY created_at DESC LIMIT 100');
+    const fieldSessions = await this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
+    const stockTransfers = await this.dbService.query<any>('SELECT * FROM stock_transfers ORDER BY created_at DESC LIMIT 100');
 
     // ── Tombstone list: deletions since last sync ────────────────────────────
     // Offline clients use this to remove locally cached records that were
@@ -202,11 +202,11 @@ export class SyncService {
     let deletedRecords: Array<{ entityType: string; entityId: string; deletedAt: string }> = [];
     try {
       const rawTombstones = since
-        ? this.dbService.query<any>(
+        ? await this.dbService.query<any>(
             `SELECT entity_type, entity_id, deleted_at FROM deleted_records WHERE deleted_at > ? ORDER BY deleted_at ASC`,
             [since]
           )
-        : this.dbService.query<any>(
+        : await this.dbService.query<any>(
             `SELECT entity_type, entity_id, deleted_at FROM deleted_records ORDER BY deleted_at ASC`
           );
       deletedRecords = rawTombstones.map((t: any) => ({
@@ -256,7 +256,7 @@ export class SyncService {
   /**
    * Ingest a batch of offline transactions from a client outbox queue
    */
-  public ingestTransactionBatch(
+  public async ingestTransactionBatch(
     branchId: string,
     deviceId: string,
     transactions: Array<{ id: string; transactionType: string; payload: any; version?: number; createdAt?: string }>
@@ -266,7 +266,7 @@ export class SyncService {
     for (const tx of transactions) {
       try {
         // Idempotency check: Has this transaction UUID already been ingested centrally?
-        const existing = this.dbService.queryOne<any>(`SELECT id FROM sync_inbox WHERE id = ?`, [tx.id]);
+        const existing = await this.dbService.queryOne<any>(`SELECT id FROM sync_inbox WHERE id = ?`, [tx.id]);
         if (existing) {
           results.push({ id: tx.id, status: 'DUPLICATE' });
           continue;
@@ -279,7 +279,7 @@ export class SyncService {
         const payloadEntityId = tx.payload?.id || tx.payload?.entityId;
         if (payloadEntityId && tx.createdAt) {
           try {
-            const tombstone = this.dbService.queryOne<any>(
+            const tombstone = await this.dbService.queryOne<any>(
               `SELECT entity_id, deleted_at FROM deleted_records WHERE entity_id = ?`,
               [payloadEntityId]
             );
@@ -302,9 +302,9 @@ export class SyncService {
           }
         }
 
-        this.dbService.transaction(() => {
+        await this.dbService.transaction(async () => {
           // 1. Log into sync_inbox
-          this.dbService.execute(
+          await this.dbService.execute(
             `INSERT INTO sync_inbox (id, branch_id, device_id, transaction_type, payload, status)
              VALUES (?, ?, ?, ?, ?, 'PROCESSED')`,
             [tx.id, branchId, deviceId, tx.transactionType, JSON.stringify(tx.payload || {})]
@@ -315,7 +315,7 @@ export class SyncService {
 
           if (tx.transactionType === 'SALE' && p.receiptNumber) {
             const saleId = p.id || tx.id;
-            this.dbService.execute(
+            await this.dbService.execute(
               `INSERT OR REPLACE INTO sales (id, receipt_number, store_id, cashier_id, customer_name, customer_phone, total_amount_ugx, discount_amount_ugx, net_amount_ugx, paid_amount_ugx, change_amount_ugx, payment_method, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
@@ -338,7 +338,7 @@ export class SyncService {
             // Deduct stock ledger for items
             if (Array.isArray(p.items)) {
               for (const item of p.items) {
-                this.dbService.execute(
+                await this.dbService.execute(
                   `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
                    VALUES (?, ?, ?, 'SALE', ?, ?, 'SALE', ?, ?, ?, ?)`,
                   [
@@ -356,7 +356,7 @@ export class SyncService {
               }
             }
           } else if (tx.transactionType === 'STOCK_INTAKE' && p.storeId && p.productId) {
-            this.dbService.execute(
+            await this.dbService.execute(
               `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
                VALUES (?, ?, ?, 'RECEIPT', ?, ?, 'STOCK_RECEIPT', ?, ?, ?, ?)`,
               [
@@ -372,7 +372,7 @@ export class SyncService {
               ]
             );
           } else if (tx.transactionType === 'EXPENSE' && p.voucherNumber) {
-            this.dbService.execute(
+            await this.dbService.execute(
               `INSERT OR REPLACE INTO expenses (id, branch_id, store_id, category, amount_ugx, description, approved_by, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
               [
@@ -387,7 +387,7 @@ export class SyncService {
               ]
             );
           } else if (tx.transactionType === 'DEBT' && p.debtorName) {
-            this.dbService.execute(
+            await this.dbService.execute(
               `INSERT OR REPLACE INTO debts (id, debtor_customer_name, source_type, source_id, original_amount_ugx, paid_amount_ugx, balance_amount_ugx, reason, status, approved_by, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
@@ -405,7 +405,7 @@ export class SyncService {
               ]
             );
           } else if (tx.transactionType === 'FIELD_SESSION' && p.sessionNumber) {
-            this.dbService.execute(
+            await this.dbService.execute(
               `INSERT OR REPLACE INTO field_sessions (id, session_number, store_id, vehicle_id, worker_id, status, start_time, end_time, created_by)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
@@ -436,42 +436,42 @@ export class SyncService {
   /**
    * Reset transactional demo data for a fresh customer deployment
    */
-  public resetProductionData(clearDemoMaster = false) {
-    return this.dbService.transaction(() => {
+  public async resetProductionData(clearDemoMaster = false) {
+    return await this.dbService.transaction(async () => {
       // 1. Clear all transactions, queues, logs
-      this.dbService.execute('DELETE FROM sync_outbox');
-      this.dbService.execute('DELETE FROM sync_inbox');
-      this.dbService.execute('DELETE FROM audit_logs');
-      this.dbService.execute('DELETE FROM debt_payments');
-      this.dbService.execute('DELETE FROM debts');
-      try { this.dbService.execute('DELETE FROM salary_payments'); } catch (e) {}
-      try { this.dbService.execute('DELETE FROM salaries'); } catch (e) {}
-      this.dbService.execute('DELETE FROM expenses');
-      this.dbService.execute('DELETE FROM field_reconciliations');
-      this.dbService.execute('DELETE FROM field_session_items');
-      this.dbService.execute('DELETE FROM field_sessions');
-      this.dbService.execute('DELETE FROM sale_items');
-      this.dbService.execute('DELETE FROM sales');
-      this.dbService.execute('DELETE FROM stock_transfer_items');
-      this.dbService.execute('DELETE FROM stock_transfers');
-      this.dbService.execute('DELETE FROM stock_ledger');
+      await this.dbService.execute('DELETE FROM sync_outbox');
+      await this.dbService.execute('DELETE FROM sync_inbox');
+      await this.dbService.execute('DELETE FROM audit_logs');
+      await this.dbService.execute('DELETE FROM debt_payments');
+      await this.dbService.execute('DELETE FROM debts');
+      try { await this.dbService.execute('DELETE FROM salary_payments'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM salaries'); } catch (e) {}
+      await this.dbService.execute('DELETE FROM expenses');
+      await this.dbService.execute('DELETE FROM field_reconciliations');
+      await this.dbService.execute('DELETE FROM field_session_items');
+      await this.dbService.execute('DELETE FROM field_sessions');
+      await this.dbService.execute('DELETE FROM sale_items');
+      await this.dbService.execute('DELETE FROM sales');
+      await this.dbService.execute('DELETE FROM stock_transfer_items');
+      await this.dbService.execute('DELETE FROM stock_transfers');
+      await this.dbService.execute('DELETE FROM stock_ledger');
       // Also clear tombstones so a fresh-start device doesn't inherit stale deletion history
-      try { this.dbService.execute('DELETE FROM deleted_records'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM deleted_records'); } catch (e) {}
 
       if (clearDemoMaster) {
-        this.dbService.execute('DELETE FROM branch_product_prices');
-        this.dbService.execute('DELETE FROM products');
-        this.dbService.execute('DELETE FROM vehicles');
-        this.dbService.execute('DELETE FROM workers');
+        await this.dbService.execute('DELETE FROM branch_product_prices');
+        await this.dbService.execute('DELETE FROM products');
+        await this.dbService.execute('DELETE FROM vehicles');
+        await this.dbService.execute('DELETE FROM workers');
         // Unlink admin user from branches/stores before deleting stores and branches
         try {
-          this.dbService.execute("UPDATE users SET branch_id = NULL, store_id = NULL WHERE username = 'admin'");
+          await this.dbService.execute("UPDATE users SET branch_id = NULL, store_id = NULL WHERE username = 'admin'");
         } catch (e) {
-          this.dbService.execute("UPDATE users SET branch_id = '', store_id = '' WHERE username = 'admin'");
+          await this.dbService.execute("UPDATE users SET branch_id = '', store_id = '' WHERE username = 'admin'");
         }
-        this.dbService.execute("DELETE FROM users WHERE username != 'admin'");
-        this.dbService.execute('DELETE FROM stores');
-        this.dbService.execute('DELETE FROM branches');
+        await this.dbService.execute("DELETE FROM users WHERE username != 'admin'");
+        await this.dbService.execute('DELETE FROM stores');
+        await this.dbService.execute('DELETE FROM branches');
       }
 
       this.logger.log(`Production reset completed. Demo master cleared: ${clearDemoMaster}`);
@@ -484,23 +484,24 @@ export class SyncService {
     });
   }
 
-  public getPendingOutboxItems() {
-    return this.dbService.query<any>(
+  public async getPendingOutboxItems() {
+    return await this.dbService.query<any>(
       `SELECT * FROM sync_outbox WHERE status IN ('PENDING', 'FAILED') ORDER BY created_at ASC LIMIT 50`
     );
   }
 
-  public updateOutboxStatus(id: string, status: SyncStatus, errorMsg?: string) {
+  public async updateOutboxStatus(id: string, status: SyncStatus, errorMsg?: string) {
     if (status === SyncStatus.SYNCED) {
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE sync_outbox SET status = ?, synced_at = CURRENT_TIMESTAMP WHERE id = ?`,
         [status, id]
       );
     } else {
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE sync_outbox SET status = ?, retry_count = retry_count + 1, last_error = ? WHERE id = ?`,
         [status, errorMsg || null, id]
       );
     }
   }
 }
+

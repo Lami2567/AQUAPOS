@@ -73,24 +73,18 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     let paramIndex = 1;
     // Replace ? placeholders with $1, $2, $3...
     let formatted = sql.replace(/\?/g, () => `$${paramIndex++}`);
-    // Replace SQLite "INSERT OR REPLACE INTO" with Postgres ON CONFLICT (id) DO NOTHING if present
+    // Replace SQLite "INSERT OR REPLACE INTO" with Postgres ON CONFLICT DO NOTHING / UPDATE
     if (/INSERT\s+OR\s+REPLACE\s+INTO/i.test(formatted)) {
       formatted = formatted.replace(/INSERT\s+OR\s+REPLACE\s+INTO/gi, 'INSERT INTO');
       if (!/ON\s+CONFLICT/i.test(formatted)) {
-        formatted += ' ON CONFLICT (id) DO UPDATE SET updated_at = CURRENT_TIMESTAMP';
+        formatted += ' ON CONFLICT (id) DO NOTHING';
       }
     }
     return formatted;
   }
 
-  public query<T = any>(sql: string, params: any[] = []): T[] {
-    if (this.isPostgres && this.pgPool) {
-      // Async query wrapper for Postgres
-      throw new Error('Please use asyncQuery or queryAsync for PostgreSQL queries');
-    } else if (this.sqliteDb) {
-      return this.sqliteDb.prepare(sql).all(...params) as T[];
-    }
-    return [];
+  public async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    return this.queryAsync<T>(sql, params);
   }
 
   public async queryAsync<T = any>(sql: string, params: any[] = []): Promise<T[]> {
@@ -104,13 +98,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return [];
   }
 
-  public queryOne<T = any>(sql: string, params: any[] = []): T | undefined {
-    if (this.isPostgres && this.pgPool) {
-      throw new Error('Please use queryOneAsync for PostgreSQL queries');
-    } else if (this.sqliteDb) {
-      return this.sqliteDb.prepare(sql).get(...params) as T | undefined;
-    }
-    return undefined;
+  public async queryOne<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+    return this.queryOneAsync<T>(sql, params);
   }
 
   public async queryOneAsync<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
@@ -124,10 +113,14 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return undefined;
   }
 
-  public execute(sql: string, params: any[] = []): any {
+  public async execute(sql: string, params: any[] = []): Promise<any> {
+    return this.executeAsync(sql, params);
+  }
+
+  public async executeAsync(sql: string, params: any[] = []): Promise<any> {
     if (this.isPostgres && this.pgPool) {
       const formattedSql = this.formatPgSql(sql);
-      return this.pgPool.query(formattedSql, params).catch((err: Error) => {
+      return await this.pgPool.query(formattedSql, params).catch((err: Error) => {
         this.logger.error('PostgreSQL execute error: ' + err.message);
       });
     } else if (this.sqliteDb) {
@@ -135,22 +128,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  public async executeAsync(sql: string, params: any[] = []): Promise<any> {
-    if (this.isPostgres && this.pgPool) {
-      const formattedSql = this.formatPgSql(sql);
-      return await this.pgPool.query(formattedSql, params);
-    } else if (this.sqliteDb) {
-      return this.sqliteDb.prepare(sql).run(...params);
-    }
-  }
-
-  public transaction<T>(fn: () => T): T {
+  public async transaction<T>(fn: () => Promise<T> | T): Promise<T> {
     if (this.isPostgres) {
-      return fn();
+      return await fn();
     } else if (this.sqliteDb) {
-      return this.sqliteDb.transaction(fn)();
+      return (this.sqliteDb.transaction(() => fn()) as any)();
     }
-    return fn();
+    return await fn();
   }
 
   private async initializePostgresSchema() {

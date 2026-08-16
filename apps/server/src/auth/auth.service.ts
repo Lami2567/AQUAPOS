@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<User> {
-    const rawUser = this.dbService.queryOne<any>(
+    const rawUser = await this.dbService.queryOne<any>(
       'SELECT * FROM users WHERE username = ? AND is_active = 1',
       [username]
     );

@@ -12,7 +12,7 @@ export class PosService {
     private stockService: StockService
   ) {}
 
-  public createSale(
+  public async createSale(
     storeId: string,
     cashierId: string,
     deviceId: string,
@@ -30,7 +30,7 @@ export class PosService {
 
     // 1. Verify stock availability for all items
     for (const item of items) {
-      const available = this.stockService.getStockBalance(storeId, item.productId);
+      const available = await this.stockService.getStockBalance(storeId, item.productId);
       if (available < item.quantity) {
         throw new BadRequestException(`Insufficient stock for product. Requested: ${item.quantity}, Available: ${available}`);
       }
@@ -47,12 +47,12 @@ export class PosService {
       throw new BadRequestException(`Insufficient payment amount. Total due: UGX ${summary.netAmountUgx}, Received: UGX ${paidAmountUgx}`);
     }
 
-    return this.dbService.transaction(() => {
+    return await this.dbService.transaction(async () => {
       const saleId = uuidv4();
       const receiptNumber = `REC-${Date.now().toString().slice(-8)}`;
 
       // Insert Sale Record
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO sales (id, receipt_number, store_id, cashier_id, customer_name, customer_phone, total_amount_ugx, discount_amount_ugx, net_amount_ugx, paid_amount_ugx, change_amount_ugx, payment_method, payment_reference, is_voided)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
         [
@@ -77,9 +77,9 @@ export class PosService {
         const item = items[i];
         const itemSummary = summary.itemSummaries[i];
 
-        const product = this.dbService.queryOne<any>(`SELECT name FROM products WHERE id = ?`, [item.productId]);
+        const product = await this.dbService.queryOne<any>(`SELECT name FROM products WHERE id = ?`, [item.productId]);
 
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO sale_items (id, sale_id, product_id, product_name, quantity, unit_price_ugx, discount_ugx, subtotal_ugx)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
@@ -95,7 +95,7 @@ export class PosService {
         );
 
         // Deduct from stock ledger
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
@@ -115,7 +115,7 @@ export class PosService {
       }
 
       // Enqueue Outbox Sync Event
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO sync_outbox (id, branch_id, device_id, user_id, transaction_type, payload, status)
          SELECT ?, store_id, ?, ?, 'CREATE_SALE', ?, 'PENDING' FROM stores WHERE id = ?`,
         [
@@ -136,17 +136,17 @@ export class PosService {
     });
   }
 
-  public voidSale(saleId: string, voidedBy: string, reason: string, deviceId: string) {
-    return this.dbService.transaction(() => {
-      const sale = this.dbService.queryOne<any>(`SELECT * FROM sales WHERE id = ?`, [saleId]);
+  public async voidSale(saleId: string, voidedBy: string, reason: string, deviceId: string) {
+    return await this.dbService.transaction(async () => {
+      const sale = await this.dbService.queryOne<any>(`SELECT * FROM sales WHERE id = ?`, [saleId]);
       if (!sale) throw new NotFoundException('Sale not found.');
       if (sale.is_voided) throw new BadRequestException('Sale is already voided.');
 
-      const items = this.dbService.query<any>(`SELECT * FROM sale_items WHERE sale_id = ?`, [saleId]);
+      const items = await this.dbService.query<any>(`SELECT * FROM sale_items WHERE sale_id = ?`, [saleId]);
 
       // Reverse stock ledger (Return stock back to store)
       for (const item of items) {
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
@@ -165,7 +165,7 @@ export class PosService {
         );
       }
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE sales SET is_voided = 1, voided_by = ?, void_reason = ? WHERE id = ?`,
         [voidedBy, reason, saleId]
       );
@@ -174,3 +174,4 @@ export class PosService {
     });
   }
 }
+

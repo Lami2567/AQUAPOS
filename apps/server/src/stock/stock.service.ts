@@ -8,8 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 export class StockService {
   constructor(private dbService: DatabaseService) {}
 
-  public getStockBalance(storeId: string, productId: string): number {
-    const rawEntries = this.dbService.query<any>(
+  public async getStockBalance(storeId: string, productId: string): Promise<number> {
+    const rawEntries = await this.dbService.query<any>(
       `SELECT * FROM stock_ledger WHERE store_id = ? AND product_id = ?`,
       [storeId, productId]
     );
@@ -31,26 +31,29 @@ export class StockService {
     return calculateStockFromLedger(entries);
   }
 
-  public getStoreInventoryOverview(storeId: string) {
-    const products = this.dbService.query<any>(`SELECT * FROM products WHERE is_active = 1`);
-    return products.map((p) => {
-      const currentStock = this.getStockBalance(storeId, p.id);
-      return {
-        productId: p.id,
-        sku: p.sku,
-        name: p.name,
-        category: p.category,
-        capacityMl: p.capacity_ml,
-        costPriceUgx: Number(p.cost_price_ugx),
-        sellingPriceUgx: Number(p.selling_price_ugx),
-        currentStock,
-        minStockAlert: p.min_stock_alert,
-        isLowStock: currentStock <= p.min_stock_alert,
-      };
-    });
+  public async getStoreInventoryOverview(storeId: string) {
+    const products = await this.dbService.query<any>(`SELECT * FROM products WHERE is_active = 1`);
+    const results = await Promise.all(
+      products.map(async (p) => {
+        const currentStock = await this.getStockBalance(storeId, p.id);
+        return {
+          productId: p.id,
+          sku: p.sku,
+          name: p.name,
+          category: p.category,
+          capacityMl: p.capacity_ml,
+          costPriceUgx: Number(p.cost_price_ugx),
+          sellingPriceUgx: Number(p.selling_price_ugx),
+          currentStock,
+          minStockAlert: p.min_stock_alert,
+          isLowStock: currentStock <= p.min_stock_alert,
+        };
+      })
+    );
+    return results;
   }
 
-  public addStockReceipt(
+  public async addStockReceipt(
     storeId: string,
     productId: string,
     quantity: number,
@@ -61,11 +64,11 @@ export class StockService {
   ) {
     if (quantity <= 0) throw new BadRequestException('Quantity must be greater than zero.');
 
-    return this.dbService.transaction(() => {
+    return await this.dbService.transaction(async () => {
       const ledgerId = uuidv4();
       const receiptId = uuidv4();
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -84,7 +87,7 @@ export class StockService {
       );
 
       // Enqueue to sync outbox
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO sync_outbox (id, branch_id, device_id, user_id, transaction_type, payload, status)
          SELECT ?, store_id, ?, ?, 'ADD_STOCK_RECEIPT', ?, 'PENDING' FROM stores WHERE id = ?`,
         [
@@ -96,12 +99,13 @@ export class StockService {
         ]
       );
 
-      return { success: true, ledgerId, currentBalance: this.getStockBalance(storeId, productId) };
+      const currentBalance = await this.getStockBalance(storeId, productId);
+      return { success: true, ledgerId, currentBalance };
     });
   }
 
   // Stock Transfer Workflow: DRAFT -> APPROVED -> DISPATCHED -> IN_TRANSIT -> RECEIVED -> CONFIRMED
-  public createStockTransfer(
+  public async createStockTransfer(
     sourceStoreId: string,
     destinationStoreId: string,
     vehicleId: string | undefined,
@@ -118,11 +122,11 @@ export class StockService {
       throw new BadRequestException('Transfer must include at least one product.');
     }
 
-    return this.dbService.transaction(() => {
+    return await this.dbService.transaction(async () => {
       const transferId = uuidv4();
       const transferNumber = `TRF-${Date.now().toString().slice(-6)}`;
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO stock_transfers (id, transfer_number, source_store_id, destination_store_id, vehicle_id, driver_worker_id, status, created_by, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -139,7 +143,7 @@ export class StockService {
       );
 
       for (const item of items) {
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO stock_transfer_items (id, transfer_id, product_id, unit_of_measure, quantity_requested, unit_price_ugx)
            VALUES (?, ?, ?, ?, ?, ?)`,
           [uuidv4(), transferId, item.productId, item.unitOfMeasure || 'Carton', item.quantityRequested, item.unitPriceUgx]
@@ -147,7 +151,7 @@ export class StockService {
       }
 
       // Enqueue offline pending transaction if source is offline
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO sync_outbox (id, branch_id, device_id, user_id, transaction_type, payload, status)
          SELECT ?, store_id, ?, ?, 'CREATE_STOCK_TRANSFER', ?, 'PENDING' FROM stores WHERE id = ?`,
         [
@@ -163,16 +167,16 @@ export class StockService {
     });
   }
 
-  public approveStockTransfer(transferId: string, userId: string) {
-    return this.dbService.transaction(() => {
-      const transfer = this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
+  public async approveStockTransfer(transferId: string, userId: string) {
+    return await this.dbService.transaction(async () => {
+      const transfer = await this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
       if (!transfer) throw new NotFoundException('Transfer not found.');
 
       if (transfer.status !== TransferStatus.DRAFT) {
         throw new BadRequestException(`Only DRAFT transfers can be approved. Current status: ${transfer.status}`);
       }
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE stock_transfers SET status = ?, approved_by = ?, approved_at = CURRENT_TIMESTAMP WHERE id = ?`,
         [TransferStatus.APPROVED, userId, transferId]
       );
@@ -181,21 +185,21 @@ export class StockService {
     });
   }
 
-  public dispatchStockTransfer(
+  public async dispatchStockTransfer(
     transferId: string,
     dispatchedItems: Array<{ productId: string; quantityDispatched: number }>,
     userId: string,
     deviceId: string
   ) {
-    return this.dbService.transaction(() => {
-      const transfer = this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
+    return await this.dbService.transaction(async () => {
+      const transfer = await this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
       if (!transfer) throw new NotFoundException('Transfer not found.');
 
       if (transfer.status !== TransferStatus.APPROVED && transfer.status !== TransferStatus.DRAFT) {
         throw new BadRequestException(`Transfer cannot be dispatched from status: ${transfer.status}`);
       }
 
-      const items = this.dbService.query<any>(`SELECT * FROM stock_transfer_items WHERE transfer_id = ?`, [transferId]);
+      const items = await this.dbService.query<any>(`SELECT * FROM stock_transfer_items WHERE transfer_id = ?`, [transferId]);
 
       // Check available stock & create TRANSFER_OUT entries for source store
       for (const item of items) {
@@ -206,19 +210,19 @@ export class StockService {
           throw new BadRequestException(`Dispatched quantity for product ${item.product_id} must be positive.`);
         }
 
-        const currentBalance = this.getStockBalance(transfer.source_store_id, item.product_id);
+        const currentBalance = await this.getStockBalance(transfer.source_store_id, item.product_id);
         const val = validateStockAvailability(currentBalance, qtyToDispatch, StockMovementType.TRANSFER_OUT);
         if (!val.isValid) {
           throw new BadRequestException(`Cannot dispatch: ${val.errorMessage}`);
         }
 
-        this.dbService.execute(
+        await this.dbService.execute(
           `UPDATE stock_transfer_items SET quantity_dispatched = ? WHERE id = ?`,
           [qtyToDispatch, item.id]
         );
 
         // Deduct from Source Store Ledger (TRANSFER_OUT)
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
@@ -237,7 +241,7 @@ export class StockService {
         );
       }
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE stock_transfers SET status = ?, dispatched_by = ?, dispatch_timestamp = CURRENT_TIMESTAMP WHERE id = ?`,
         [TransferStatus.IN_TRANSIT, userId, transferId]
       );
@@ -246,13 +250,13 @@ export class StockService {
     });
   }
 
-  public receiveStockTransfer(
+  public async receiveStockTransfer(
     transferId: string,
     receivedItems: Array<{ productId: string; quantityReceived: number }>,
     userId: string
   ) {
-    return this.dbService.transaction(() => {
-      const transfer = this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
+    return await this.dbService.transaction(async () => {
+      const transfer = await this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
       if (!transfer) throw new NotFoundException('Transfer not found.');
 
       if (transfer.status !== TransferStatus.IN_TRANSIT && transfer.status !== TransferStatus.DISPATCHED) {
@@ -260,20 +264,20 @@ export class StockService {
       }
 
       for (const itemRec of receivedItems) {
-        const itemObj = this.dbService.queryOne<any>(
+        const itemObj = await this.dbService.queryOne<any>(
           `SELECT * FROM stock_transfer_items WHERE transfer_id = ? AND product_id = ?`,
           [transferId, itemRec.productId]
         );
 
         if (!itemObj) continue;
 
-        this.dbService.execute(
+        await this.dbService.execute(
           `UPDATE stock_transfer_items SET quantity_received = ? WHERE id = ?`,
           [itemRec.quantityReceived, itemObj.id]
         );
       }
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE stock_transfers SET status = ?, received_by = ?, receive_timestamp = CURRENT_TIMESTAMP WHERE id = ?`,
         [TransferStatus.RECEIVED, userId, transferId]
       );
@@ -282,13 +286,13 @@ export class StockService {
     });
   }
 
-  public confirmStockTransferReceive(
+  public async confirmStockTransferReceive(
     transferId: string,
     userId: string,
     deviceId: string
   ) {
-    return this.dbService.transaction(() => {
-      const transfer = this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
+    return await this.dbService.transaction(async () => {
+      const transfer = await this.dbService.queryOne<any>(`SELECT * FROM stock_transfers WHERE id = ?`, [transferId]);
       if (!transfer) throw new NotFoundException('Transfer not found.');
 
       if (transfer.status !== TransferStatus.RECEIVED && transfer.status !== TransferStatus.IN_TRANSIT) {
@@ -296,7 +300,7 @@ export class StockService {
       }
 
       // Check if ledger entries were already recorded to prevent double-counting
-      const existingLedger = this.dbService.queryOne<any>(
+      const existingLedger = await this.dbService.queryOne<any>(
         `SELECT id FROM stock_ledger WHERE reference_id = ? AND store_id = ? AND movement_type = ?`,
         [transferId, transfer.destination_store_id, StockMovementType.TRANSFER_IN]
       );
@@ -305,13 +309,13 @@ export class StockService {
         throw new BadRequestException('Transfer stock has already been confirmed and credited to destination store.');
       }
 
-      const items = this.dbService.query<any>(`SELECT * FROM stock_transfer_items WHERE transfer_id = ?`, [transferId]);
+      const items = await this.dbService.query<any>(`SELECT * FROM stock_transfer_items WHERE transfer_id = ?`, [transferId]);
 
       for (const item of items) {
         const finalQty = item.quantity_received > 0 ? item.quantity_received : item.quantity_dispatched;
 
         // Add TRANSFER_IN to destination store ledger ONLY upon final confirmation
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
@@ -330,7 +334,7 @@ export class StockService {
         );
       }
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE stock_transfers SET status = ?, confirmed_by = ?, confirm_timestamp = CURRENT_TIMESTAMP WHERE id = ?`,
         [TransferStatus.CONFIRMED, userId, transferId]
       );
@@ -339,3 +343,4 @@ export class StockService {
     });
   }
 }
+

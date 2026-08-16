@@ -39,7 +39,7 @@ export class AuditService {
     );
   }
 
-  public getAuditLogs(entityName?: string, userId?: string, limit = 100) {
+  public async getAuditLogs(entityName?: string, userId?: string, limit = 100) {
     let sql = `SELECT * FROM audit_logs`;
     const conditions: string[] = [];
     const params: any[] = [];
@@ -61,6 +61,6 @@ export class AuditService {
     sql += ` ORDER BY timestamp DESC LIMIT ?`;
     params.push(limit);
 
-    return this.dbService.query<any>(sql, params);
+    return await this.dbService.query<any>(sql, params);
   }
 }

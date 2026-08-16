@@ -12,7 +12,7 @@ export class FieldSalesService {
     private stockService: StockService
   ) {}
 
-  public startFieldSession(
+  public async startFieldSession(
     storeId: string,
     vehicleId: string,
     workerId: string,
@@ -24,10 +24,10 @@ export class FieldSalesService {
       throw new BadRequestException('Must issue at least one product for a field session.');
     }
 
-    return this.dbService.transaction(() => {
+    return await this.dbService.transaction(async () => {
       // 1. Verify stock availability in store
       for (const item of issuedItems) {
-        const available = this.stockService.getStockBalance(storeId, item.productId);
+        const available = await this.stockService.getStockBalance(storeId, item.productId);
         if (available < item.quantity) {
           throw new BadRequestException(`Insufficient store stock to issue. Product ${item.productId}, Available: ${available}, Requested: ${item.quantity}`);
         }
@@ -36,16 +36,16 @@ export class FieldSalesService {
       const sessionId = uuidv4();
       const sessionNumber = `FS-${Date.now().toString().slice(-6)}`;
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO field_sessions (id, session_number, store_id, vehicle_id, worker_id, status, created_by)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [sessionId, sessionNumber, storeId, vehicleId, workerId, FieldSessionStatus.OPEN, createdBy]
       );
 
       for (const item of issuedItems) {
-        const product = this.dbService.queryOne<any>(`SELECT name FROM products WHERE id = ?`, [item.productId]);
+        const product = await this.dbService.queryOne<any>(`SELECT name FROM products WHERE id = ?`, [item.productId]);
 
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO field_session_items (id, field_session_id, product_id, product_name, issued_qty, sold_qty, returned_qty, damaged_qty, missing_qty, unit_price_ugx)
            VALUES (?, ?, ?, ?, ?, 0, 0, 0, 0, ?)`,
           [
@@ -59,7 +59,7 @@ export class FieldSalesService {
         );
 
         // Deduct from Store stock via FIELD_ISSUE
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
@@ -82,7 +82,7 @@ export class FieldSalesService {
     });
   }
 
-  public closeAndReconcileFieldSession(
+  public async closeAndReconcileFieldSession(
     fieldSessionId: string,
     returnedItems: Array<{ productId: string; soldQty: number; returnedQty: number; damagedQty: number; missingQty?: number }>,
     cashCollectedUgx: number,
@@ -94,15 +94,15 @@ export class FieldSalesService {
     deviceId: string,
     notes?: string
   ) {
-    return this.dbService.transaction(() => {
-      const session = this.dbService.queryOne<any>(`SELECT * FROM field_sessions WHERE id = ?`, [fieldSessionId]);
+    return await this.dbService.transaction(async () => {
+      const session = await this.dbService.queryOne<any>(`SELECT * FROM field_sessions WHERE id = ?`, [fieldSessionId]);
       if (!session) throw new NotFoundException('Field Session not found.');
 
       if (session.status === FieldSessionStatus.RECONCILED) {
         throw new BadRequestException('Field Session is already reconciled.');
       }
 
-      const sessionItems = this.dbService.query<any>(`SELECT * FROM field_session_items WHERE field_session_id = ?`, [fieldSessionId]);
+      const sessionItems = await this.dbService.query<any>(`SELECT * FROM field_session_items WHERE field_session_id = ?`, [fieldSessionId]);
 
       let totalExpectedSalesUgx = 0;
       let totalIssued = 0;
@@ -127,14 +127,14 @@ export class FieldSalesService {
           missingQty: missingQtyInput,
         });
 
-        this.dbService.execute(
+        await this.dbService.execute(
           `UPDATE field_session_items SET sold_qty = ?, returned_qty = ?, damaged_qty = ?, missing_qty = ? WHERE id = ?`,
           [stockRes.soldQty, stockRes.returnedQty, stockRes.damagedQty, stockRes.missingQty, itemObj.id]
         );
 
         // Return unsold stock back to Store Ledger (FIELD_RETURN)
         if (stockRes.returnedQty > 0) {
-          this.dbService.execute(
+          await this.dbService.execute(
             `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
@@ -155,7 +155,7 @@ export class FieldSalesService {
 
         // Record Damaged stock if any
         if (stockRes.damagedQty > 0) {
-          this.dbService.execute(
+          await this.dbService.execute(
             `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
@@ -195,7 +195,7 @@ export class FieldSalesService {
       const reconciliationId = uuidv4();
       const isStockEqValid = totalIssued === (totalSold + totalReturned + totalDamaged + totalMissing);
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `INSERT INTO field_reconciliations (id, field_session_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -225,7 +225,7 @@ export class FieldSalesService {
       // If there is a cash shortage, create a worker debt
       if (moneyRes.moneyVarianceUgx < 0) {
         const shortageAmount = Math.abs(moneyRes.moneyVarianceUgx);
-        this.dbService.execute(
+        await this.dbService.execute(
           `INSERT INTO debts (id, debtor_worker_id, source_type, source_id, original_amount_ugx, paid_amount_ugx, balance_amount_ugx, reason, status, approved_by)
            VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
           [
@@ -242,7 +242,7 @@ export class FieldSalesService {
         );
       }
 
-      this.dbService.execute(
+      await this.dbService.execute(
         `UPDATE field_sessions SET status = ?, end_time = CURRENT_TIMESTAMP WHERE id = ?`,
         [FieldSessionStatus.RECONCILED, fieldSessionId]
       );
@@ -262,3 +262,4 @@ export class FieldSalesService {
     });
   }
 }
+
