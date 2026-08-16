@@ -10,6 +10,7 @@ import { FinanceView } from './components/FinanceView';
 import { SyncAuditView } from './components/SyncAuditView';
 import { AdminConfigView } from './components/AdminConfigView';
 import { LoginView } from './components/LoginView';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export const getDefaultNavForRole = (role?: UserRole): NavSelection => {
   switch (role) {
@@ -51,34 +52,36 @@ export const App: React.FC = () => {
       <Navbar currentNav={currentNav} onSelectNav={setCurrentNav} />
       
       <main className="flex-1">
-        {currentNav.domain === 'dashboard' && <DashboardReportsView />}
-        
-        {currentNav.domain === 'operations' && (
-          <>
-            {currentNav.subView === 'pos' && <PosView />}
-            {currentNav.subView === 'field_sales' && <FieldSalesView />}
-            {currentNav.subView === 'field_sessions' && <FieldSalesView />}
-            {currentNav.subView === 'stock_receipts' && <StockView />}
-            {currentNav.subView === 'stock_transfers' && <StockView />}
-            {currentNav.subView === 'expenses' && <FinanceView />}
-          </>
-        )}
+        <ErrorBoundary>
+          {currentNav.domain === 'dashboard' && <DashboardReportsView />}
+          
+          {currentNav.domain === 'operations' && (
+            <>
+              {currentNav.subView === 'pos' && <PosView />}
+              {currentNav.subView === 'field_sales' && <FieldSalesView />}
+              {currentNav.subView === 'field_sessions' && <FieldSalesView />}
+              {currentNav.subView === 'stock_receipts' && <StockView />}
+              {currentNav.subView === 'stock_transfers' && <StockView />}
+              {currentNav.subView === 'expenses' && <FinanceView />}
+            </>
+          )}
 
-        {currentNav.domain === 'inventory' && <StockView />}
-        {currentNav.domain === 'branches' && <AdminConfigView />}
-        {currentNav.domain === 'people' && <AdminConfigView />}
-        {currentNav.domain === 'finance' && <FinanceView />}
-        {currentNav.domain === 'reports' && <DashboardReportsView />}
-        
-        {currentNav.domain === 'system' && (
-          <>
-            {currentNav.subView === 'sync' && <SyncAuditView />}
-            {currentNav.subView === 'admin_config' && <AdminConfigView />}
-            {currentNav.subView === 'audit_log' && <SyncAuditView />}
-            {currentNav.subView === 'backups' && <SyncAuditView />}
-            {currentNav.subView === 'devices' && <SyncAuditView />}
-          </>
-        )}
+          {currentNav.domain === 'inventory' && <StockView />}
+          {currentNav.domain === 'branches' && <AdminConfigView />}
+          {currentNav.domain === 'people' && <AdminConfigView />}
+          {currentNav.domain === 'finance' && <FinanceView />}
+          {currentNav.domain === 'reports' && <DashboardReportsView />}
+          
+          {currentNav.domain === 'system' && (
+            <>
+              {currentNav.subView === 'sync' && <SyncAuditView />}
+              {currentNav.subView === 'admin_config' && <AdminConfigView />}
+              {currentNav.subView === 'audit_log' && <SyncAuditView />}
+              {currentNav.subView === 'backups' && <SyncAuditView />}
+              {currentNav.subView === 'devices' && <SyncAuditView />}
+            </>
+          )}
+        </ErrorBoundary>
       </main>
 
       <footer className="border-t border-slate-900 bg-slate-950 py-3 text-center text-xs text-slate-500">

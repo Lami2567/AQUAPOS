@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { AdminService } from './admin.service.js';
 import { AuthGuard } from '../auth/auth.guard.js';
 import { Roles } from '../auth/roles.decorator.js';
@@ -173,5 +173,81 @@ export class AdminController {
   @Post('system-settings')
   async saveSystemSetting(@Body() body: any, @Request() req: any) {
     return this.adminService.saveSystemSetting(body, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  // DELETE Endpoints for Master Entities
+  @Delete('branches/:id')
+  async deleteBranch(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteBranch(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('stores/:id')
+  async deleteStore(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteStore(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('departments/:id')
+  async deleteDepartment(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteDepartment(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('workers/:id')
+  async deleteWorker(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteWorker(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('users/:id')
+  async deleteUser(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteUser(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('roles/:id')
+  async deleteRole(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteRole(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('vehicles/:id')
+  async deleteVehicle(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteVehicle(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('products/:id')
+  async deleteProduct(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteProduct(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('categories/:id')
+  async deleteCategory(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteCategory(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('prices/:id')
+  async deletePrice(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteBranchPrice(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('payment-methods/:id')
+  async deletePaymentMethod(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deletePaymentMethod(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('expense-types/:id')
+  async deleteExpenseType(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteExpenseType(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('debt-types/:id')
+  async deleteDebtType(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteDebtType(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('salary-settings/:id')
+  async deleteSalarySetting(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteSalarySetting(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
+  }
+
+  @Delete('system-settings/:id')
+  async deleteSystemSetting(@Param('id') id: string, @Request() req: any) {
+    return this.adminService.deleteSystemSetting(id, req.user?.sub || 'u1111111-1111-1111-1111-111111111111');
   }
 }

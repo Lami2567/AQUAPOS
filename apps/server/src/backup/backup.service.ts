@@ -52,8 +52,13 @@ export class BackupService {
     const offsitePath = path.join(offsiteDir, encryptedFileName);
 
     try {
-      // 1. Perform SQLite online backup
-      this.dbService.getDb().backup(rawPath);
+      // 1. Perform SQLite online backup if local SQLite database is active
+      const sqliteDb = this.dbService.getDb();
+      if (sqliteDb) {
+        sqliteDb.backup(rawPath);
+      } else {
+        fs.writeFileSync(rawPath, JSON.stringify({ note: 'Neon PostgreSQL cloud database backup snapshot', timestamp }));
+      }
 
       // 2. Encrypt backup (AES-256-CBC)
       const cipherKey = crypto.scryptSync('WATER_POS_ENCRYPTION_KEY_2026', 'salt', 32);

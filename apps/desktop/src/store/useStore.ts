@@ -199,20 +199,35 @@ export interface AppState {
 
   // Master Data Mutators
   saveBranchInStore: (branch: Branch) => void;
+  deleteBranchFromStore: (id: string) => void;
   saveStoreInStore: (store: Store) => void;
+  deleteStoreFromStore: (id: string) => void;
   saveDepartmentInStore: (dept: Department) => void;
+  deleteDepartmentFromStore: (id: string) => void;
   saveWorkerInStore: (worker: Worker) => void;
+  deleteWorkerFromStore: (id: string) => void;
   saveUserInStore: (u: User) => void;
+  deleteUserFromStore: (id: string) => void;
   saveRoleInStore: (role: RoleDefinition) => void;
+  deleteRoleFromStore: (id: string) => void;
   saveVehicleInStore: (v: Vehicle) => void;
+  deleteVehicleFromStore: (id: string) => void;
   saveProductInStore: (p: Product) => void;
+  deleteProductFromStore: (id: string) => void;
   saveCategoryInStore: (cat: ProductCategory) => void;
+  deleteCategoryFromStore: (id: string) => void;
   saveBranchPriceInStore: (price: BranchPrice) => void;
+  deleteBranchPriceFromStore: (id: string) => void;
   savePaymentMethodInStore: (pm: PaymentMethodConfig) => void;
+  deletePaymentMethodFromStore: (id: string) => void;
   saveExpenseTypeInStore: (et: ExpenseType) => void;
+  deleteExpenseTypeFromStore: (id: string) => void;
   saveDebtTypeInStore: (dt: DebtType) => void;
+  deleteDebtTypeFromStore: (id: string) => void;
   saveSalarySettingInStore: (ss: SalarySetting) => void;
+  deleteSalarySettingFromStore: (id: string) => void;
   saveSystemSettingInStore: (sys: SystemSetting) => void;
+  deleteSystemSettingFromStore: (id: string) => void;
 
   // Operational Mutators
   addSaleRecord: (sale: SaleRecord) => void;
@@ -242,45 +257,24 @@ export const useStore = create<AppState>()(
     (set) => ({
       user: null,
       token: null,
-      currentBranchId: 'b1111111-1111-1111-1111-111111111111',
-      currentStoreId: 's1111111-1111-1111-1111-111111111111',
+      currentBranchId: '',
+      currentStoreId: '',
       isOnline: true,
       syncStatus: 'SYNCED',
       pendingSyncCount: 0,
 
-      // Initial Master Data Seeds for Offline & Desktop UI
-      branches: [
-        { id: 'b1111111-1111-1111-1111-111111111111', code: 'LWG-01', name: 'Lwengo Branch', location: 'Lwengo Town Centre', isActive: true, createdAt: '2026-01-01' },
-        { id: 'b2222222-2222-2222-2222-222222222222', code: 'ISG-01', name: 'Isingiro Branch', location: 'Isingiro Main Street', isActive: true, createdAt: '2026-01-01' },
-      ],
-      stores: [
-        { id: 's1111111-1111-1111-1111-111111111111', branchId: 'b1111111-1111-1111-1111-111111111111', code: 'STORE-LWG-MAIN', name: 'Lwengo Main Store', type: 'MAIN_STORE', isActive: true },
-        { id: 's2222222-2222-2222-2222-222222222222', branchId: 'b2222222-2222-2222-2222-222222222222', code: 'STORE-ISG-MAIN', name: 'Isingiro Main Store', type: 'MAIN_STORE', isActive: true },
-        { id: 's3333333-3333-3333-3333-333333333333', branchId: 'b2222222-2222-2222-2222-222222222222', code: 'STORE-ISG-SALES', name: 'Isingiro Retail Sales Store', type: 'SALES_STORE', isActive: true },
-      ],
+      // Clean Master Data without handcoded demo data
+      branches: [],
+      stores: [],
       departments: [
         { id: 'd1111111-1111-1111-1111-111111111111', code: 'FIELD_SALES', name: 'Field Sales & Distribution', description: 'Route truck sales and van delivery teams', isActive: true },
         { id: 'd2222222-2222-2222-2222-222222222222', code: 'STOCKING', name: 'Store & Inventory Management', description: 'Warehouse stockkeepers and loading clerks', isActive: true },
         { id: 'd3333333-3333-3333-3333-333333333333', code: 'FINANCE', name: 'Finance & Accounting', description: 'Audit, cash handling, and payroll management', isActive: true },
         { id: 'd4444444-4444-4444-4444-444444444444', code: 'ADMIN', name: 'Executive Administration', description: 'General management and system governance', isActive: true },
       ],
-      workers: [
-        { id: 'w1111111-1111-1111-1111-111111111111', branchId: 'b1111111-1111-1111-1111-111111111111', department: 'FIELD_SALES', fullName: 'Lwengo Sales Worker A', phone: '+256700111001', role: UserRole.FIELD_SALESPERSON, basicSalaryUgx: 450000, isActive: true },
-        { id: 'w2222222-2222-2222-2222-222222222222', branchId: 'b1111111-1111-1111-1111-111111111111', department: 'FIELD_SALES', fullName: 'Lwengo Sales Worker B', phone: '+256700111002', role: UserRole.FIELD_SALESPERSON, basicSalaryUgx: 450000, isActive: true },
-        { id: 'w3333333-3333-3333-3333-333333333333', branchId: 'b1111111-1111-1111-1111-111111111111', department: 'STOCKING', fullName: 'Lwengo Stocking Worker C', phone: '+256700111003', role: UserRole.STOREKEEPER, basicSalaryUgx: 500000, isActive: true },
-        { id: 'w4444444-4444-4444-4444-444444444444', branchId: 'b1111111-1111-1111-1111-111111111111', department: 'STOCKING', fullName: 'Lwengo Stocking Worker D', phone: '+256700111004', role: UserRole.STOREKEEPER, basicSalaryUgx: 500000, isActive: true },
-        { id: 'w5555555-5555-5555-5555-555555555555', branchId: 'b2222222-2222-2222-2222-222222222222', department: 'STOCKING', fullName: 'Isingiro Worker A', phone: '+256700222001', role: UserRole.STOREKEEPER, basicSalaryUgx: 520000, isActive: true },
-        { id: 'w6666666-6666-6666-6666-666666666666', branchId: 'b2222222-2222-2222-2222-222222222222', department: 'FIELD_SALES', fullName: 'Isingiro Worker B', phone: '+256700222002', role: UserRole.CASHIER, basicSalaryUgx: 480000, isActive: true },
-      ],
+      workers: [],
       usersList: [
-        { id: 'u1111111-1111-1111-1111-111111111111', username: 'admin', fullName: 'System Super Administrator', role: UserRole.SUPER_ADMIN, branchId: 'b1111111-1111-1111-1111-111111111111', storeId: 's1111111-1111-1111-1111-111111111111', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u2222222-2222-2222-2222-222222222222', username: 'mgr_lwengo', fullName: 'Lwengo Branch Manager', role: UserRole.BRANCH_MANAGER, branchId: 'b1111111-1111-1111-1111-111111111111', storeId: 's1111111-1111-1111-1111-111111111111', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u3333333-3333-3333-3333-333333333333', username: 'mgr_isingiro', fullName: 'Isingiro Branch Manager', role: UserRole.BRANCH_MANAGER, branchId: 'b2222222-2222-2222-2222-222222222222', storeId: 's2222222-2222-2222-2222-222222222222', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u4444444-4444-4444-4444-444444444444', username: 'storekeeper_a', fullName: 'Lwengo Storekeeper C', role: UserRole.STOREKEEPER, branchId: 'b1111111-1111-1111-1111-111111111111', storeId: 's1111111-1111-1111-1111-111111111111', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u5555555-5555-5555-5555-555555555555', username: 'cashier_isingiro', fullName: 'Isingiro Cashier B', role: UserRole.CASHIER, branchId: 'b2222222-2222-2222-2222-222222222222', storeId: 's3333333-3333-3333-3333-333333333333', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u6666666-6666-6666-6666-666666666666', username: 'sales_worker_a', fullName: 'Lwengo Field Representative A', role: UserRole.FIELD_SALESPERSON, branchId: 'b1111111-1111-1111-1111-111111111111', storeId: 's1111111-1111-1111-1111-111111111111', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u7777777-7777-7777-7777-777777777777', username: 'accountant_01', fullName: 'Lead Finance Accountant', role: UserRole.ACCOUNTANT, branchId: 'b1111111-1111-1111-1111-111111111111', storeId: 's1111111-1111-1111-1111-111111111111', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
-        { id: 'u8888888-8888-8888-8888-888888888888', username: 'auditor_01', fullName: 'Internal Auditor', role: UserRole.AUDITOR, branchId: 'b1111111-1111-1111-1111-111111111111', storeId: 's1111111-1111-1111-1111-111111111111', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
+        { id: 'u1111111-1111-1111-1111-111111111111', username: 'admin', fullName: 'System Super Administrator', role: UserRole.SUPER_ADMIN, branchId: '', storeId: '', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
       ],
       rolesList: [
         { id: 'r1111111-1111-1111-1111-111111111111', code: 'SUPER_ADMIN', displayName: 'Super Administrator', description: 'Full system access and global configuration', permissions: ['*'], isActive: true },
@@ -290,28 +284,14 @@ export const useStore = create<AppState>()(
         { id: 'r5555555-5555-5555-5555-555555555555', code: 'FIELD_SALESPERSON', displayName: 'Field Sales Representative', description: 'Route sales sessions and customer deliveries', permissions: ['field_sales'], isActive: true },
         { id: 'r6666666-6666-6666-6666-666666666666', code: 'ACCOUNTANT', displayName: 'Accountant / Auditor', description: 'Expense approvals, debt payments, salary processing', permissions: ['manage_finance', 'reconcile_sessions'], isActive: true },
       ],
-      vehicles: [
-        { id: 'v1111111-1111-1111-1111-111111111111', branchId: 'b1111111-1111-1111-1111-111111111111', registrationNumber: 'UBB 450L', type: 'LORRY', model: 'Isuzu Elf Lorry', isActive: true },
-        { id: 'v2222222-2222-2222-2222-222222222222', branchId: 'b1111111-1111-1111-1111-111111111111', registrationNumber: 'UFX 101T', type: 'TRICYCLE', model: 'Tuk-Tuk Cargo Tricycle 01', isActive: true },
-        { id: 'v3333333-3333-3333-3333-333333333333', branchId: 'b1111111-1111-1111-1111-111111111111', registrationNumber: 'UFX 102T', type: 'TRICYCLE', model: 'Tuk-Tuk Cargo Tricycle 02', isActive: true },
-        { id: 'v4444444-4444-4444-4444-444444444444', branchId: 'b2222222-2222-2222-2222-222222222222', registrationNumber: 'UBC 880L', type: 'LORRY', model: 'Mitsubishi Fuso Lorry', isActive: true },
-        { id: 'v5555555-5555-5555-5555-555555555555', branchId: 'b2222222-2222-2222-2222-222222222222', registrationNumber: 'UFX 201T', type: 'TRICYCLE', model: 'Tuk-Tuk Cargo Tricycle 03', isActive: true },
-      ],
-      products: [
-        { id: 'p1111111-1111-1111-1111-111111111111', sku: 'WTR-500ML', name: 'Pure Mineral Water 500ml', category: 'BOTTLED_WATER', unitOfMeasure: 'Carton (24)', capacityMl: 500, costPriceUgx: 500, sellingPriceUgx: 1000, minStockAlert: 50, maxStockLevel: 5000, isActive: true, createdAt: '2026-01-01' },
-        { id: 'p2222222-2222-2222-2222-222222222222', sku: 'WTR-1.5L', name: 'Pure Mineral Water 1.5L', category: 'BOTTLED_WATER', unitOfMeasure: 'Carton (12)', capacityMl: 1500, costPriceUgx: 1200, sellingPriceUgx: 2000, minStockAlert: 30, maxStockLevel: 3000, isActive: true, createdAt: '2026-01-01' },
-        { id: 'p3333333-3333-3333-3333-333333333333', sku: 'WTR-5L', name: 'Pure Water Bottle 5L', category: 'BOTTLED_WATER', unitOfMeasure: 'Piece', capacityMl: 5000, costPriceUgx: 3500, sellingPriceUgx: 6000, minStockAlert: 20, maxStockLevel: 1000, isActive: true, createdAt: '2026-01-01' },
-        { id: 'p4444444-4444-4444-4444-444444444444', sku: 'WTR-20L', name: 'Refillable Water Jerrican 20L', category: 'REFILL_JERRICAN', unitOfMeasure: 'Piece', capacityMl: 20000, costPriceUgx: 6000, sellingPriceUgx: 10000, minStockAlert: 10, maxStockLevel: 500, isActive: true, createdAt: '2026-01-01' },
-      ],
+      vehicles: [],
+      products: [],
       categories: [
         { id: 'c1111111-1111-1111-1111-111111111111', code: 'BOTTLED_WATER', name: 'Bottled Mineral Water', description: 'Standard PET bottled drinking water', isActive: true },
         { id: 'c2222222-2222-2222-2222-222222222222', code: 'REFILL_JERRICAN', name: 'Refillable Jerricans', description: 'Large capacity 20L reusable water containers', isActive: true },
         { id: 'c3333333-3333-3333-3333-333333333333', code: 'DISPENSER_ACCESSORIES', name: 'Dispenser & Accessories', description: 'Water pumps, dispensers, and accessories', isActive: true },
       ],
-      branchPrices: [
-        { id: 'bp-1', branchId: 'b1111111-1111-1111-1111-111111111111', productId: 'p1111111-1111-1111-1111-111111111111', costPriceUgx: 500, sellingPriceUgx: 1000 },
-        { id: 'bp-2', branchId: 'b2222222-2222-2222-2222-222222222222', productId: 'p1111111-1111-1111-1111-111111111111', costPriceUgx: 550, sellingPriceUgx: 1100 },
-      ],
+      branchPrices: [],
       paymentMethodsList: [
         { id: 'pm111111-1111-1111-1111-111111111111', code: 'CASH', name: 'Physical Cash (UGX)', requiresReference: false, isActive: true },
         { id: 'pm222222-2222-2222-2222-222222222222', code: 'MOBILE_MONEY', name: 'Mobile Money (MTN / Airtel)', requiresReference: true, isActive: true },
@@ -329,38 +309,16 @@ export const useStore = create<AppState>()(
         { id: 'dt222222-2222-2222-2222-222222222222', code: 'SALARY_ADVANCE', name: 'Staff Emergency Salary Advance', autoDeductPayroll: true, description: 'Emergency cash advances', isActive: true },
         { id: 'dt333333-3333-3333-3333-333333333333', code: 'CUSTOMER_CREDIT', name: 'Wholesale Customer Credit Ledger', autoDeductPayroll: false, description: 'Client credit accounts', isActive: true },
       ],
-      salarySettings: [
-        { id: 'ss111111-1111-1111-1111-111111111111', roleCode: 'FIELD_SALESPERSON', departmentCode: 'FIELD_SALES', baseSalaryUgx: 450000, commissionPerUnitUgx: 50, allowanceUgx: 20000, isActive: true },
-        { id: 'ss222222-2222-2222-2222-222222222222', roleCode: 'STOREKEEPER', departmentCode: 'STOCKING', baseSalaryUgx: 500000, commissionPerUnitUgx: 0, allowanceUgx: 10000, isActive: true },
-      ],
+      salarySettings: [],
       systemSettings: [
-        { id: 'sys11111-1111-1111-1111-111111111111', settingKey: 'COMPANY_NAME', settingValue: 'AquaPOS Pure Mineral Water Ltd', category: 'GENERAL', description: 'Registered company name', isActive: true },
+        { id: 'sys11111-1111-1111-1111-111111111111', settingKey: 'COMPANY_NAME', settingValue: 'AquaPOS Mineral Water Ltd', category: 'GENERAL', description: 'Registered company name', isActive: true },
         { id: 'sys22222-2222-2222-2222-222222222222', settingKey: 'DEFAULT_CURRENCY', settingValue: 'UGX', category: 'FINANCE', description: 'Default transaction currency', isActive: true },
         { id: 'sys33333-3333-3333-3333-333333333333', settingKey: 'ALLOW_OFFLINE_SALES', settingValue: 'TRUE', category: 'OPERATIONS', description: 'Allow offline POS sales queueing', isActive: true },
         { id: 'sys44444-4444-4444-4444-444444444444', settingKey: 'MAX_DISCOUNT_PERCENT', settingValue: '10', category: 'SALES', description: 'Maximum cashier discount allowed without PIN', isActive: true },
       ],
 
-      // Initial Inventory balances: [storeId][productId] = Qty
-      inventoryStock: {
-        's1111111-1111-1111-1111-111111111111': {
-          'p1111111-1111-1111-1111-111111111111': 4500,
-          'p2222222-2222-2222-2222-222222222222': 2800,
-          'p3333333-3333-3333-3333-333333333333': 600,
-          'p4444444-4444-4444-4444-444444444444': 400,
-        },
-        's2222222-2222-2222-2222-222222222222': {
-          'p1111111-1111-1111-1111-111111111111': 3800,
-          'p2222222-2222-2222-2222-222222222222': 1500,
-          'p3333333-3333-3333-3333-333333333333': 300,
-          'p4444444-4444-4444-4444-444444444444': 280,
-        },
-        's3333333-3333-3333-3333-333333333333': {
-          'p1111111-1111-1111-1111-111111111111': 950,
-          'p2222222-2222-2222-2222-222222222222': 420,
-          'p3333333-3333-3333-3333-333333333333': 120,
-          'p4444444-4444-4444-4444-444444444444': 60,
-        },
-      },
+      // Initial clean inventory balance
+      inventoryStock: {},
 
       salesHistory: [],
       expensesList: [],
@@ -389,9 +347,180 @@ export const useStore = create<AppState>()(
         set((state) => {
           if (!centralData) return state;
 
-          const mergedBranches = Array.isArray(centralData.branches) && centralData.branches.length > 0 ? centralData.branches : state.branches;
-          const mergedStores = Array.isArray(centralData.stores) && centralData.stores.length > 0 ? centralData.stores : state.stores;
-          const mergedProducts = Array.isArray(centralData.products) && centralData.products.length > 0 ? centralData.products : state.products;
+          const mergedBranches = Array.isArray(centralData.branches)
+            ? centralData.branches.map((b: any) => ({
+                id: b.id,
+                code: b.code || '',
+                name: b.name || '',
+                location: b.location || '',
+                isActive: b.isActive !== undefined ? Boolean(b.isActive) : Boolean(b.is_active ?? true),
+                createdAt: b.createdAt || b.created_at || new Date().toISOString(),
+              }))
+            : state.branches;
+
+          const mergedStores = Array.isArray(centralData.stores)
+            ? centralData.stores.map((s: any) => ({
+                id: s.id,
+                branchId: s.branchId || s.branch_id || '',
+                code: s.code || '',
+                name: s.name || '',
+                type: s.type || 'MAIN_STORE',
+                isActive: s.isActive !== undefined ? Boolean(s.isActive) : Boolean(s.is_active ?? true),
+              }))
+            : state.stores;
+
+          const mergedDepartments = Array.isArray(centralData.departments)
+            ? centralData.departments.map((d: any) => ({
+                id: d.id,
+                code: d.code || '',
+                name: d.name || '',
+                description: d.description || '',
+                isActive: d.isActive !== undefined ? Boolean(d.isActive) : Boolean(d.is_active ?? true),
+                createdAt: d.createdAt || d.created_at || new Date().toISOString(),
+              }))
+            : state.departments;
+
+          const mergedWorkers = Array.isArray(centralData.workers)
+            ? centralData.workers.map((w: any) => ({
+                id: w.id,
+                branchId: w.branchId || w.branch_id || '',
+                department: w.department || '',
+                fullName: w.fullName || w.full_name || '',
+                phone: w.phone || '',
+                role: w.role || 'FIELD_SALESPERSON',
+                basicSalaryUgx: Number(w.basicSalaryUgx ?? w.basic_salary_ugx ?? 0),
+                isActive: w.isActive !== undefined ? Boolean(w.isActive) : Boolean(w.is_active ?? true),
+              }))
+            : state.workers;
+
+          const mergedUsers = Array.isArray(centralData.users)
+            ? centralData.users.map((u: any) => ({
+                id: u.id,
+                username: u.username || '',
+                fullName: u.fullName || u.full_name || '',
+                role: u.role || 'CASHIER',
+                branchId: u.branchId || u.branch_id || '',
+                storeId: u.storeId || u.store_id || '',
+                isActive: u.isActive !== undefined ? Boolean(u.isActive) : Boolean(u.is_active ?? true),
+                createdAt: u.createdAt || u.created_at || new Date().toISOString(),
+                updatedAt: u.updatedAt || u.updated_at || new Date().toISOString(),
+              }))
+            : state.usersList;
+
+          const mergedRoles = Array.isArray(centralData.roles)
+            ? centralData.roles.map((r: any) => ({
+                id: r.id,
+                code: r.code || '',
+                displayName: r.displayName || r.display_name || '',
+                description: r.description || '',
+                permissions: Array.isArray(r.permissions) ? r.permissions : (typeof r.permissions === 'string' ? (() => { try { return JSON.parse(r.permissions); } catch(e) { return []; } })() : []),
+                isActive: r.isActive !== undefined ? Boolean(r.isActive) : Boolean(r.is_active ?? true),
+              }))
+            : state.rolesList;
+
+          const mergedVehicles = Array.isArray(centralData.vehicles)
+            ? centralData.vehicles.map((v: any) => ({
+                id: v.id,
+                branchId: v.branchId || v.branch_id || '',
+                registrationNumber: v.registrationNumber || v.registration_number || '',
+                type: v.type || 'LORRY',
+                model: v.model || '',
+                isActive: v.isActive !== undefined ? Boolean(v.isActive) : Boolean(v.is_active ?? true),
+              }))
+            : state.vehicles;
+
+          const mergedProducts = Array.isArray(centralData.products)
+            ? centralData.products.map((p: any) => ({
+                id: p.id,
+                sku: p.sku || '',
+                name: p.name || '',
+                category: p.category || '',
+                variant: p.variant || '',
+                packaging: p.packaging || '',
+                unitOfMeasure: p.unitOfMeasure || p.unit_of_measure || 'Piece',
+                capacityMl: Number(p.capacityMl ?? p.capacity_ml ?? 500),
+                costPriceUgx: Number(p.costPriceUgx ?? p.cost_price_ugx ?? 0),
+                sellingPriceUgx: Number(p.sellingPriceUgx ?? p.selling_price_ugx ?? 0),
+                minStockAlert: Number(p.minStockAlert ?? p.min_stock_alert ?? 10),
+                maxStockLevel: Number(p.maxStockLevel ?? p.max_stock_level ?? 5000),
+                isActive: p.isActive !== undefined ? Boolean(p.isActive) : Boolean(p.is_active ?? true),
+              }))
+            : state.products;
+
+          const mergedCategories = Array.isArray(centralData.categories)
+            ? centralData.categories.map((c: any) => ({
+                id: c.id,
+                code: c.code || '',
+                name: c.name || '',
+                description: c.description || '',
+                isActive: c.isActive !== undefined ? Boolean(c.isActive) : Boolean(c.is_active ?? true),
+              }))
+            : state.categories;
+
+          const mergedBranchPrices = Array.isArray(centralData.branchPrices)
+            ? centralData.branchPrices.map((bp: any) => ({
+                id: bp.id,
+                branchId: bp.branchId || bp.branch_id || '',
+                productId: bp.productId || bp.product_id || '',
+                costPriceUgx: Number(bp.costPriceUgx ?? bp.cost_price_ugx ?? 0),
+                sellingPriceUgx: Number(bp.sellingPriceUgx ?? bp.selling_price_ugx ?? 0),
+              }))
+            : state.branchPrices;
+
+          const mergedPaymentMethods = Array.isArray(centralData.paymentMethods)
+            ? centralData.paymentMethods.map((pm: any) => ({
+                id: pm.id,
+                code: pm.code || '',
+                name: pm.name || '',
+                requiresReference: Boolean(pm.requiresReference ?? pm.requires_reference),
+                isActive: pm.isActive !== undefined ? Boolean(pm.isActive) : Boolean(pm.is_active ?? true),
+              }))
+            : state.paymentMethodsList;
+
+          const mergedExpenseTypes = Array.isArray(centralData.expenseTypes)
+            ? centralData.expenseTypes.map((et: any) => ({
+                id: et.id,
+                code: et.code || '',
+                name: et.name || '',
+                requiresApproval: Boolean(et.requiresApproval ?? et.requires_approval),
+                description: et.description || '',
+                isActive: et.isActive !== undefined ? Boolean(et.isActive) : Boolean(et.is_active ?? true),
+              }))
+            : state.expenseTypes;
+
+          const mergedDebtTypes = Array.isArray(centralData.debtTypes)
+            ? centralData.debtTypes.map((dt: any) => ({
+                id: dt.id,
+                code: dt.code || '',
+                name: dt.name || '',
+                autoDeductPayroll: Boolean(dt.autoDeductPayroll ?? dt.auto_deduct_payroll),
+                description: dt.description || '',
+                isActive: dt.isActive !== undefined ? Boolean(dt.isActive) : Boolean(dt.is_active ?? true),
+              }))
+            : state.debtTypes;
+
+          const mergedSalarySettings = Array.isArray(centralData.salarySettings)
+            ? centralData.salarySettings.map((ss: any) => ({
+                id: ss.id,
+                roleCode: ss.roleCode || ss.role_code || '',
+                departmentCode: ss.departmentCode || ss.department_code || '',
+                baseSalaryUgx: Number(ss.baseSalaryUgx ?? ss.base_salary_ugx ?? 0),
+                commissionPerUnitUgx: Number(ss.commissionPerUnitUgx ?? ss.commission_per_unit_ugx ?? 0),
+                allowanceUgx: Number(ss.allowanceUgx ?? ss.allowance_ugx ?? 0),
+                isActive: ss.isActive !== undefined ? Boolean(ss.isActive) : Boolean(ss.is_active ?? true),
+              }))
+            : state.salarySettings;
+
+          const mergedSystemSettings = Array.isArray(centralData.systemSettings)
+            ? centralData.systemSettings.map((sys: any) => ({
+                id: sys.id,
+                settingKey: sys.settingKey || sys.setting_key || '',
+                settingValue: sys.settingValue || sys.setting_value || '',
+                category: sys.category || 'GENERAL',
+                description: sys.description || '',
+                updatedAt: sys.updatedAt || sys.updated_at || new Date().toISOString(),
+              }))
+            : state.systemSettings;
 
           // Merge live central inventory levels
           const mergedStock = { ...state.inventoryStock };
@@ -407,19 +536,19 @@ export const useStore = create<AppState>()(
           return {
             branches: mergedBranches,
             stores: mergedStores,
-            departments: Array.isArray(centralData.departments) && centralData.departments.length > 0 ? centralData.departments : state.departments,
-            workers: Array.isArray(centralData.workers) && centralData.workers.length > 0 ? centralData.workers : state.workers,
-            usersList: Array.isArray(centralData.users) && centralData.users.length > 0 ? centralData.users : state.usersList,
-            rolesList: Array.isArray(centralData.roles) && centralData.roles.length > 0 ? centralData.roles : state.rolesList,
-            vehicles: Array.isArray(centralData.vehicles) && centralData.vehicles.length > 0 ? centralData.vehicles : state.vehicles,
+            departments: mergedDepartments,
+            workers: mergedWorkers,
+            usersList: mergedUsers,
+            rolesList: mergedRoles,
+            vehicles: mergedVehicles,
             products: mergedProducts,
-            categories: Array.isArray(centralData.categories) && centralData.categories.length > 0 ? centralData.categories : state.categories,
-            branchPrices: Array.isArray(centralData.branchPrices) ? centralData.branchPrices : state.branchPrices,
-            paymentMethodsList: Array.isArray(centralData.paymentMethods) && centralData.paymentMethods.length > 0 ? centralData.paymentMethods : state.paymentMethodsList,
-            expenseTypes: Array.isArray(centralData.expenseTypes) && centralData.expenseTypes.length > 0 ? centralData.expenseTypes : state.expenseTypes,
-            debtTypes: Array.isArray(centralData.debtTypes) && centralData.debtTypes.length > 0 ? centralData.debtTypes : state.debtTypes,
-            salarySettings: Array.isArray(centralData.salarySettings) && centralData.salarySettings.length > 0 ? centralData.salarySettings : state.salarySettings,
-            systemSettings: Array.isArray(centralData.systemSettings) && centralData.systemSettings.length > 0 ? centralData.systemSettings : state.systemSettings,
+            categories: mergedCategories,
+            branchPrices: mergedBranchPrices,
+            paymentMethodsList: mergedPaymentMethods,
+            expenseTypes: mergedExpenseTypes,
+            debtTypes: mergedDebtTypes,
+            salarySettings: mergedSalarySettings,
+            systemSettings: mergedSystemSettings,
             inventoryStock: mergedStock,
           };
         }),
@@ -456,6 +585,12 @@ export const useStore = create<AppState>()(
           };
         }),
 
+      deleteBranchFromStore: (id) =>
+        set((state) => ({
+          branches: state.branches.filter((b) => b.id !== id),
+          currentBranchId: state.currentBranchId === id ? '' : state.currentBranchId,
+        })),
+
       saveStoreInStore: (st) =>
         set((state) => {
           const newStores = state.stores.some((s) => s.id === st.id)
@@ -475,11 +610,22 @@ export const useStore = create<AppState>()(
           };
         }),
 
+      deleteStoreFromStore: (id) =>
+        set((state) => ({
+          stores: state.stores.filter((s) => s.id !== id),
+          currentStoreId: state.currentStoreId === id ? '' : state.currentStoreId,
+        })),
+
       saveDepartmentInStore: (dept) =>
         set((state) => ({
           departments: state.departments.some((d) => d.id === dept.id)
             ? state.departments.map((d) => (d.id === dept.id ? dept : d))
             : [...state.departments, dept],
+        })),
+
+      deleteDepartmentFromStore: (id) =>
+        set((state) => ({
+          departments: state.departments.filter((d) => d.id !== id),
         })),
 
       saveWorkerInStore: (worker) =>
@@ -489,11 +635,21 @@ export const useStore = create<AppState>()(
             : [...state.workers, worker],
         })),
 
+      deleteWorkerFromStore: (id) =>
+        set((state) => ({
+          workers: state.workers.filter((w) => w.id !== id),
+        })),
+
       saveUserInStore: (u) =>
         set((state) => ({
           usersList: state.usersList.some((usr) => usr.id === u.id)
             ? state.usersList.map((usr) => (usr.id === u.id ? u : usr))
             : [...state.usersList, u],
+        })),
+
+      deleteUserFromStore: (id) =>
+        set((state) => ({
+          usersList: state.usersList.filter((usr) => usr.id !== id && usr.username !== 'admin'),
         })),
 
       saveRoleInStore: (role) =>
@@ -503,11 +659,21 @@ export const useStore = create<AppState>()(
             : [...state.rolesList, role],
         })),
 
+      deleteRoleFromStore: (id) =>
+        set((state) => ({
+          rolesList: state.rolesList.filter((r) => r.id !== id),
+        })),
+
       saveVehicleInStore: (v) =>
         set((state) => ({
           vehicles: state.vehicles.some((veh) => veh.id === v.id)
             ? state.vehicles.map((veh) => (veh.id === v.id ? v : veh))
             : [...state.vehicles, v],
+        })),
+
+      deleteVehicleFromStore: (id) =>
+        set((state) => ({
+          vehicles: state.vehicles.filter((v) => v.id !== id),
         })),
 
       saveProductInStore: (p) =>
@@ -517,11 +683,21 @@ export const useStore = create<AppState>()(
             : [...state.products, p],
         })),
 
+      deleteProductFromStore: (id) =>
+        set((state) => ({
+          products: state.products.filter((p) => p.id !== id),
+        })),
+
       saveCategoryInStore: (cat) =>
         set((state) => ({
           categories: state.categories.some((c) => c.id === cat.id)
             ? state.categories.map((c) => (c.id === cat.id ? cat : c))
             : [...state.categories, cat],
+        })),
+
+      deleteCategoryFromStore: (id) =>
+        set((state) => ({
+          categories: state.categories.filter((c) => c.id !== id),
         })),
 
       saveBranchPriceInStore: (price) =>
@@ -531,11 +707,21 @@ export const useStore = create<AppState>()(
             : [...state.branchPrices, price],
         })),
 
+      deleteBranchPriceFromStore: (id) =>
+        set((state) => ({
+          branchPrices: state.branchPrices.filter((bp) => bp.id !== id),
+        })),
+
       savePaymentMethodInStore: (pm) =>
         set((state) => ({
           paymentMethodsList: state.paymentMethodsList.some((p) => p.id === pm.id)
             ? state.paymentMethodsList.map((p) => (p.id === pm.id ? pm : p))
             : [...state.paymentMethodsList, pm],
+        })),
+
+      deletePaymentMethodFromStore: (id) =>
+        set((state) => ({
+          paymentMethodsList: state.paymentMethodsList.filter((pm) => pm.id !== id),
         })),
 
       saveExpenseTypeInStore: (et) =>
@@ -545,11 +731,21 @@ export const useStore = create<AppState>()(
             : [...state.expenseTypes, et],
         })),
 
+      deleteExpenseTypeFromStore: (id) =>
+        set((state) => ({
+          expenseTypes: state.expenseTypes.filter((e) => e.id !== id),
+        })),
+
       saveDebtTypeInStore: (dt) =>
         set((state) => ({
           debtTypes: state.debtTypes.some((d) => d.id === dt.id)
             ? state.debtTypes.map((d) => (d.id === dt.id ? dt : d))
             : [...state.debtTypes, dt],
+        })),
+
+      deleteDebtTypeFromStore: (id) =>
+        set((state) => ({
+          debtTypes: state.debtTypes.filter((d) => d.id !== id),
         })),
 
       saveSalarySettingInStore: (ss) =>
@@ -559,11 +755,21 @@ export const useStore = create<AppState>()(
             : [...state.salarySettings, ss],
         })),
 
+      deleteSalarySettingFromStore: (id) =>
+        set((state) => ({
+          salarySettings: state.salarySettings.filter((s) => s.id !== id),
+        })),
+
       saveSystemSettingInStore: (sys) =>
         set((state) => ({
           systemSettings: state.systemSettings.some((s) => s.id === sys.id)
             ? state.systemSettings.map((s) => (s.id === sys.id ? sys : s))
             : [...state.systemSettings, sys],
+        })),
+
+      deleteSystemSettingFromStore: (id) =>
+        set((state) => ({
+          systemSettings: state.systemSettings.filter((sys) => sys.id !== id),
         })),
 
       // Operational Mutators

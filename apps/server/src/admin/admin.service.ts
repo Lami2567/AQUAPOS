@@ -438,4 +438,95 @@ export class AdminService {
       return this.dbService.queryOne('SELECT * FROM system_settings WHERE id = ?', [id]);
     }
   }
+
+  // Deletion methods for all entities
+  deleteBranch(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM branches WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Branch', id);
+    return { success: true, id };
+  }
+
+  deleteStore(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM stores WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Store', id);
+    return { success: true, id };
+  }
+
+  deleteDepartment(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM departments WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Department', id);
+    return { success: true, id };
+  }
+
+  deleteWorker(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM workers WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Worker', id);
+    return { success: true, id };
+  }
+
+  deleteUser(id: string, userId: string) {
+    this.dbService.execute("DELETE FROM users WHERE id = ? AND username != 'admin'", [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'User', id);
+    return { success: true, id };
+  }
+
+  deleteRole(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM roles WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Role', id);
+    return { success: true, id };
+  }
+
+  deleteVehicle(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM vehicles WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Vehicle', id);
+    return { success: true, id };
+  }
+
+  deleteProduct(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM products WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Product', id);
+    return { success: true, id };
+  }
+
+  deleteCategory(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM categories WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Category', id);
+    return { success: true, id };
+  }
+
+  deleteBranchPrice(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM branch_product_prices WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'BranchPrice', id);
+    return { success: true, id };
+  }
+
+  deletePaymentMethod(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM payment_methods WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'PaymentMethod', id);
+    return { success: true, id };
+  }
+
+  deleteExpenseType(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM expense_types WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'ExpenseType', id);
+    return { success: true, id };
+  }
+
+  deleteDebtType(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM debt_types WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'DebtType', id);
+    return { success: true, id };
+  }
+
+  deleteSalarySetting(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM salary_settings WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'SalarySetting', id);
+    return { success: true, id };
+  }
+
+  deleteSystemSetting(id: string, userId: string) {
+    this.dbService.execute('DELETE FROM system_settings WHERE id = ?', [id]);
+    this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'SystemSetting', id);
+    return { success: true, id };
+  }
 }

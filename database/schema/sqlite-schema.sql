@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS users (
   full_name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL,
-  branch_id TEXT NOT NULL,
+  branch_id TEXT,
   store_id TEXT,
   is_active INTEGER DEFAULT 1,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP

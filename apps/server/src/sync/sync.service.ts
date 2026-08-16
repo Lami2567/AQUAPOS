@@ -12,21 +12,165 @@ export class SyncService {
    * Pull all central data for an online dashboard or offline branch client
    */
   public pullCentralData(branchId?: string) {
-    const branches = this.dbService.query<any>('SELECT * FROM branches WHERE is_active = 1 ORDER BY name ASC');
-    const stores = this.dbService.query<any>('SELECT * FROM stores WHERE is_active = 1 ORDER BY name ASC');
-    const departments = this.dbService.query<any>('SELECT * FROM departments WHERE is_active = 1 ORDER BY name ASC');
-    const workers = this.dbService.query<any>('SELECT * FROM workers WHERE is_active = 1 ORDER BY full_name ASC');
-    const users = this.dbService.query<any>('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE is_active = 1 ORDER BY username ASC');
-    const roles = this.dbService.query<any>('SELECT * FROM roles WHERE is_active = 1 ORDER BY display_name ASC');
-    const vehicles = this.dbService.query<any>('SELECT * FROM vehicles WHERE is_active = 1 ORDER BY registration_number ASC');
-    const products = this.dbService.query<any>('SELECT * FROM products WHERE is_active = 1 ORDER BY name ASC');
-    const categories = this.dbService.query<any>('SELECT * FROM categories WHERE is_active = 1 ORDER BY name ASC');
-    const branchPrices = this.dbService.query<any>('SELECT * FROM branch_product_prices');
-    const paymentMethods = this.dbService.query<any>('SELECT * FROM payment_methods WHERE is_active = 1');
-    const expenseTypes = this.dbService.query<any>('SELECT * FROM expense_types WHERE is_active = 1');
-    const debtTypes = this.dbService.query<any>('SELECT * FROM debt_types WHERE is_active = 1');
-    const salarySettings = this.dbService.query<any>('SELECT * FROM salary_settings WHERE is_active = 1');
-    const systemSettings = this.dbService.query<any>('SELECT * FROM system_settings');
+    const rawBranches = this.dbService.query<any>('SELECT * FROM branches WHERE is_active = 1 ORDER BY name ASC');
+    const branches = rawBranches.map((b) => ({
+      id: b.id,
+      code: b.code,
+      name: b.name,
+      location: b.location || '',
+      isActive: Boolean(b.is_active),
+      createdAt: b.created_at,
+    }));
+
+    const rawStores = this.dbService.query<any>('SELECT * FROM stores WHERE is_active = 1 ORDER BY name ASC');
+    const stores = rawStores.map((s) => ({
+      id: s.id,
+      branchId: s.branch_id,
+      code: s.code,
+      name: s.name,
+      type: s.type,
+      isActive: Boolean(s.is_active),
+    }));
+
+    const rawDepartments = this.dbService.query<any>('SELECT * FROM departments WHERE is_active = 1 ORDER BY name ASC');
+    const departments = rawDepartments.map((d) => ({
+      id: d.id,
+      code: d.code,
+      name: d.name,
+      description: d.description || '',
+      isActive: Boolean(d.is_active),
+      createdAt: d.created_at,
+    }));
+
+    const rawWorkers = this.dbService.query<any>('SELECT * FROM workers WHERE is_active = 1 ORDER BY full_name ASC');
+    const workers = rawWorkers.map((w) => ({
+      id: w.id,
+      branchId: w.branch_id,
+      department: w.department,
+      fullName: w.full_name,
+      phone: w.phone || '',
+      role: w.role,
+      basicSalaryUgx: Number(w.basic_salary_ugx || 0),
+      isActive: Boolean(w.is_active),
+    }));
+
+    const rawUsers = this.dbService.query<any>('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE is_active = 1 ORDER BY username ASC');
+    const users = rawUsers.map((u) => ({
+      id: u.id,
+      username: u.username,
+      fullName: u.full_name,
+      role: u.role,
+      branchId: u.branch_id,
+      storeId: u.store_id || '',
+      isActive: Boolean(u.is_active),
+      createdAt: u.created_at,
+      updatedAt: u.created_at,
+    }));
+
+    const rawRoles = this.dbService.query<any>('SELECT * FROM roles WHERE is_active = 1 ORDER BY display_name ASC');
+    const roles = rawRoles.map((r) => ({
+      id: r.id,
+      code: r.code,
+      displayName: r.display_name,
+      description: r.description || '',
+      permissions: typeof r.permissions === 'string' ? (() => { try { return JSON.parse(r.permissions); } catch(e) { return []; } })() : (r.permissions || []),
+      isActive: Boolean(r.is_active),
+    }));
+
+    const rawVehicles = this.dbService.query<any>('SELECT * FROM vehicles WHERE is_active = 1 ORDER BY registration_number ASC');
+    const vehicles = rawVehicles.map((v) => ({
+      id: v.id,
+      branchId: v.branch_id,
+      registrationNumber: v.registration_number,
+      type: v.type,
+      model: v.model,
+      isActive: Boolean(v.is_active),
+    }));
+
+    const rawProducts = this.dbService.query<any>('SELECT * FROM products WHERE is_active = 1 ORDER BY name ASC');
+    const products = rawProducts.map((p) => ({
+      id: p.id,
+      sku: p.sku,
+      name: p.name,
+      category: p.category,
+      variant: p.variant || '',
+      packaging: p.packaging || '',
+      unitOfMeasure: p.unit_of_measure,
+      capacityMl: Number(p.capacity_ml || 500),
+      costPriceUgx: Number(p.cost_price_ugx || 0),
+      sellingPriceUgx: Number(p.selling_price_ugx || 0),
+      minStockAlert: Number(p.min_stock_alert || 10),
+      maxStockLevel: Number(p.max_stock_level || 5000),
+      isActive: Boolean(p.is_active),
+    }));
+
+    const rawCategories = this.dbService.query<any>('SELECT * FROM categories WHERE is_active = 1 ORDER BY name ASC');
+    const categories = rawCategories.map((c) => ({
+      id: c.id,
+      code: c.code,
+      name: c.name,
+      description: c.description || '',
+      isActive: Boolean(c.is_active),
+    }));
+
+    const rawPrices = this.dbService.query<any>('SELECT * FROM branch_product_prices');
+    const branchPrices = rawPrices.map((bp) => ({
+      id: bp.id,
+      branchId: bp.branch_id,
+      productId: bp.product_id,
+      costPriceUgx: Number(bp.cost_price_ugx || 0),
+      sellingPriceUgx: Number(bp.selling_price_ugx || 0),
+    }));
+
+    const rawPM = this.dbService.query<any>('SELECT * FROM payment_methods WHERE is_active = 1');
+    const paymentMethods = rawPM.map((pm) => ({
+      id: pm.id,
+      code: pm.code,
+      name: pm.name,
+      requiresReference: Boolean(pm.requires_reference),
+      isActive: Boolean(pm.is_active),
+    }));
+
+    const rawET = this.dbService.query<any>('SELECT * FROM expense_types WHERE is_active = 1');
+    const expenseTypes = rawET.map((et) => ({
+      id: et.id,
+      code: et.code,
+      name: et.name,
+      requiresApproval: Boolean(et.requires_approval),
+      description: et.description || '',
+      isActive: Boolean(et.is_active),
+    }));
+
+    const rawDT = this.dbService.query<any>('SELECT * FROM debt_types WHERE is_active = 1');
+    const debtTypes = rawDT.map((dt) => ({
+      id: dt.id,
+      code: dt.code,
+      name: dt.name,
+      autoDeductPayroll: Boolean(dt.auto_deduct_payroll),
+      description: dt.description || '',
+      isActive: Boolean(dt.is_active),
+    }));
+
+    const rawSS = this.dbService.query<any>('SELECT * FROM salary_settings WHERE is_active = 1');
+    const salarySettings = rawSS.map((ss) => ({
+      id: ss.id,
+      roleCode: ss.role_code,
+      departmentCode: ss.department_code,
+      baseSalaryUgx: Number(ss.base_salary_ugx || 0),
+      commissionPerUnitUgx: Number(ss.commission_per_unit_ugx || 0),
+      allowanceUgx: Number(ss.allowance_ugx || 0),
+      isActive: Boolean(ss.is_active),
+    }));
+
+    const rawSys = this.dbService.query<any>('SELECT * FROM system_settings');
+    const systemSettings = rawSys.map((sys) => ({
+      id: sys.id,
+      settingKey: sys.setting_key || sys.settingKey || '',
+      settingValue: sys.setting_value || sys.settingValue || '',
+      category: sys.category || 'GENERAL',
+      description: sys.description || '',
+      updatedAt: sys.updated_at || new Date().toISOString(),
+    }));
 
     // Aggregate real live inventory levels per store & product
     const ledger = this.dbService.query<any>('SELECT store_id, product_id, SUM(quantity_change) as total_qty FROM stock_ledger GROUP BY store_id, product_id');
@@ -240,8 +384,8 @@ export class SyncService {
       this.dbService.execute('DELETE FROM audit_logs');
       this.dbService.execute('DELETE FROM debt_payments');
       this.dbService.execute('DELETE FROM debts');
-      this.dbService.execute('DELETE FROM salary_payments');
-      this.dbService.execute('DELETE FROM salaries');
+      try { this.dbService.execute('DELETE FROM salary_payments'); } catch (e) {}
+      try { this.dbService.execute('DELETE FROM salaries'); } catch (e) {}
       this.dbService.execute('DELETE FROM expenses');
       this.dbService.execute('DELETE FROM field_reconciliations');
       this.dbService.execute('DELETE FROM field_session_items');
@@ -257,9 +401,15 @@ export class SyncService {
         this.dbService.execute('DELETE FROM products');
         this.dbService.execute('DELETE FROM vehicles');
         this.dbService.execute('DELETE FROM workers');
+        // Unlink admin user from branches/stores before deleting stores and branches
+        try {
+          this.dbService.execute("UPDATE users SET branch_id = NULL, store_id = NULL WHERE username = 'admin'");
+        } catch (e) {
+          this.dbService.execute("UPDATE users SET branch_id = '', store_id = '' WHERE username = 'admin'");
+        }
+        this.dbService.execute("DELETE FROM users WHERE username != 'admin'");
         this.dbService.execute('DELETE FROM stores');
         this.dbService.execute('DELETE FROM branches');
-        this.dbService.execute("DELETE FROM users WHERE username != 'admin'");
       }
 
       this.logger.log(`Production reset completed. Demo master cleared: ${clearDemoMaster}`);

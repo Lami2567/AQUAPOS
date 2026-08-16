@@ -65,20 +65,35 @@ export const AdminConfigView: React.FC = () => {
     salarySettings,
     systemSettings,
     saveBranchInStore,
+    deleteBranchFromStore,
     saveStoreInStore,
+    deleteStoreFromStore,
     saveDepartmentInStore,
+    deleteDepartmentFromStore,
     saveWorkerInStore,
+    deleteWorkerFromStore,
     saveUserInStore,
+    deleteUserFromStore,
     saveRoleInStore,
+    deleteRoleFromStore,
     saveVehicleInStore,
+    deleteVehicleFromStore,
     saveProductInStore,
+    deleteProductFromStore,
     saveCategoryInStore,
+    deleteCategoryFromStore,
     saveBranchPriceInStore,
+    deleteBranchPriceFromStore,
     savePaymentMethodInStore,
+    deletePaymentMethodFromStore,
     saveExpenseTypeInStore,
+    deleteExpenseTypeFromStore,
     saveDebtTypeInStore,
+    deleteDebtTypeFromStore,
     saveSalarySettingInStore,
+    deleteSalarySettingFromStore,
     saveSystemSettingInStore,
+    deleteSystemSettingFromStore,
     resetProductionData,
   } = useStore();
 
@@ -95,6 +110,57 @@ export const AdminConfigView: React.FC = () => {
   const notify = (msg: string) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleDelete = async (tab: AdminTab, id: string, name?: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete this ${tab.slice(0, -1).replace('_', ' ')} (${name || id})? This will be removed from local storage and the central database.`)) {
+      return;
+    }
+
+    try {
+      if (tab === 'branches') deleteBranchFromStore(id);
+      else if (tab === 'stores') deleteStoreFromStore(id);
+      else if (tab === 'departments') deleteDepartmentFromStore(id);
+      else if (tab === 'workers') deleteWorkerFromStore(id);
+      else if (tab === 'users') deleteUserFromStore(id);
+      else if (tab === 'roles') deleteRoleFromStore(id);
+      else if (tab === 'vehicles') deleteVehicleFromStore(id);
+      else if (tab === 'products') deleteProductFromStore(id);
+      else if (tab === 'categories') deleteCategoryFromStore(id);
+      else if (tab === 'prices') deleteBranchPriceFromStore(id);
+      else if (tab === 'payment_methods') deletePaymentMethodFromStore(id);
+      else if (tab === 'expense_types') deleteExpenseTypeFromStore(id);
+      else if (tab === 'debt_types') deleteDebtTypeFromStore(id);
+      else if (tab === 'salary_settings') deleteSalarySettingFromStore(id);
+      else if (tab === 'system_settings') deleteSystemSettingFromStore(id);
+
+      const apiEndpoints: Record<string, string> = {
+        branches: 'branches',
+        stores: 'stores',
+        departments: 'departments',
+        workers: 'workers',
+        users: 'users',
+        roles: 'roles',
+        vehicles: 'vehicles',
+        products: 'products',
+        categories: 'categories',
+        prices: 'prices',
+        payment_methods: 'payment-methods',
+        expense_types: 'expense-types',
+        debt_types: 'debt-types',
+        salary_settings: 'salary-settings',
+        system_settings: 'system-settings',
+      };
+
+      const endpoint = apiEndpoints[tab];
+      if (endpoint) {
+        await apiClient.delete(`/api/v1/admin/${endpoint}/${id}`).catch(() => {});
+      }
+
+      notify(`Deleted item successfully from local state and central cloud database.`);
+    } catch (e: any) {
+      notify(`Error deleting item: ${e.message}`);
+    }
   };
 
   const tabs: { key: AdminTab; label: string; icon: React.ReactNode; count: number }[] = [
@@ -342,7 +408,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {branches
-                    .filter((b) => b.name.toLowerCase().includes(searchQuery.toLowerCase()) || b.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((b) => {
+                      const name = (b?.name || '').toLowerCase();
+                      const code = (b?.code || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return name.includes(q) || code.includes(q);
+                    })
                     .map((b) => (
                       <tr key={b.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{b.code}</td>
@@ -353,9 +424,12 @@ export const AdminConfigView: React.FC = () => {
                             {b.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(b)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(b)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('branches', b.id, b.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Branch">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -378,7 +452,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {stores
-                    .filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((s) => {
+                      const name = (s?.name || '').toLowerCase();
+                      const code = (s?.code || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return name.includes(q) || code.includes(q);
+                    })
                     .map((s) => (
                       <tr key={s.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{s.code}</td>
@@ -390,9 +469,12 @@ export const AdminConfigView: React.FC = () => {
                             {s.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(s)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(s)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('stores', s.id, s.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Store">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -414,7 +496,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {departments
-                    .filter((d) => d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((d) => {
+                      const name = (d?.name || '').toLowerCase();
+                      const code = (d?.code || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return name.includes(q) || code.includes(q);
+                    })
                     .map((d) => (
                       <tr key={d.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{d.code}</td>
@@ -425,9 +512,12 @@ export const AdminConfigView: React.FC = () => {
                             {d.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(d)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(d)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('departments', d.id, d.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Department">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -451,7 +541,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {workers
-                    .filter((w) => w.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || w.phone.includes(searchQuery))
+                    .filter((w) => {
+                      const name = (w?.fullName || (w as any)?.full_name || '').toLowerCase();
+                      const phone = (w?.phone || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return name.includes(q) || phone.includes(q);
+                    })
                     .map((w) => (
                       <tr key={w.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-semibold text-slate-100">{w.fullName}</td>
@@ -464,9 +559,12 @@ export const AdminConfigView: React.FC = () => {
                             {w.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(w)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(w)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('workers', w.id, w.fullName)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Worker">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -489,7 +587,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {usersList
-                    .filter((u) => u.username.toLowerCase().includes(searchQuery.toLowerCase()) || u.fullName.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((u) => {
+                      const uname = (u?.username || '').toLowerCase();
+                      const fname = (u?.fullName || (u as any)?.full_name || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return uname.includes(q) || fname.includes(q);
+                    })
                     .map((u) => (
                       <tr key={u.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{u.username}</td>
@@ -501,10 +604,15 @@ export const AdminConfigView: React.FC = () => {
                             {u.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(u)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(u)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
+                          {u.username !== 'admin' && (
+                            <button onClick={() => handleDelete('users', u.id, u.username)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete User">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -526,7 +634,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {rolesList
-                    .filter((r) => r.displayName.toLowerCase().includes(searchQuery.toLowerCase()) || r.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((r) => {
+                      const dname = (r?.displayName || (r as any)?.display_name || '').toLowerCase();
+                      const code = (r?.code || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return dname.includes(q) || code.includes(q);
+                    })
                     .map((r) => (
                       <tr key={r.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{r.code}</td>
@@ -542,9 +655,12 @@ export const AdminConfigView: React.FC = () => {
                             {r.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(r)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(r)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('roles', r.id, r.displayName)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Role">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -567,7 +683,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {vehicles
-                    .filter((v) => v.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase()) || v.model.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((v) => {
+                      const reg = (v?.registrationNumber || (v as any)?.registration_number || '').toLowerCase();
+                      const model = (v?.model || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return reg.includes(q) || model.includes(q);
+                    })
                     .map((v) => (
                       <tr key={v.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-amber-400">{v.registrationNumber}</td>
@@ -579,9 +700,12 @@ export const AdminConfigView: React.FC = () => {
                             {v.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(v)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(v)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('vehicles', v.id, v.registrationNumber)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Vehicle">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -607,7 +731,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {products
-                    .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((p) => {
+                      const name = (p?.name || '').toLowerCase();
+                      const sku = (p?.sku || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return name.includes(q) || sku.includes(q);
+                    })
                     .map((p) => (
                       <tr key={p.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{p.sku}</td>
@@ -622,9 +751,12 @@ export const AdminConfigView: React.FC = () => {
                             {p.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(p)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(p)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('products', p.id, p.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Product">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -646,7 +778,12 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {categories
-                    .filter((c) => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.code.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((c) => {
+                      const name = (c?.name || '').toLowerCase();
+                      const code = (c?.code || '').toLowerCase();
+                      const q = (searchQuery || '').toLowerCase();
+                      return name.includes(q) || code.includes(q);
+                    })
                     .map((c) => (
                       <tr key={c.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{c.code}</td>
@@ -657,9 +794,12 @@ export const AdminConfigView: React.FC = () => {
                             {c.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(c)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(c)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('categories', c.id, c.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Category">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -684,9 +824,12 @@ export const AdminConfigView: React.FC = () => {
                       <td className="p-3 font-mono text-cyan-400">{bp.branchId}</td>
                       <td className="p-3 font-mono text-slate-400">{bp.costPriceUgx ? `UGX ${bp.costPriceUgx.toLocaleString()}` : 'Default'}</td>
                       <td className="p-3 font-mono font-bold text-emerald-400">UGX {bp.sellingPriceUgx.toLocaleString()}</td>
-                      <td className="p-3 text-right">
-                        <button onClick={() => openEditModal(bp)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                      <td className="p-3 text-right flex items-center justify-end gap-1">
+                        <button onClick={() => openEditModal(bp)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                           <Edit className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete('prices', bp.id || `${bp.branchId}-${bp.productId}`)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Price Rule">
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>
@@ -708,7 +851,7 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {paymentMethodsList
-                    .filter((pm) => pm.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((pm) => (pm?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()))
                     .map((pm) => (
                       <tr key={pm.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{pm.code}</td>
@@ -723,9 +866,12 @@ export const AdminConfigView: React.FC = () => {
                             {pm.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(pm)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(pm)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('payment_methods', pm.id, pm.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Payment Method">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -748,7 +894,7 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {expenseTypes
-                    .filter((et) => et.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((et) => (et?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()))
                     .map((et) => (
                       <tr key={et.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{et.code}</td>
@@ -764,9 +910,12 @@ export const AdminConfigView: React.FC = () => {
                             {et.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(et)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(et)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('expense_types', et.id, et.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Expense Type">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -789,7 +938,7 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {debtTypes
-                    .filter((dt) => dt.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter((dt) => (dt?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()))
                     .map((dt) => (
                       <tr key={dt.id} className="hover:bg-slate-800/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{dt.code}</td>
@@ -805,9 +954,12 @@ export const AdminConfigView: React.FC = () => {
                             {dt.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
-                        <td className="p-3 text-right">
-                          <button onClick={() => openEditModal(dt)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                        <td className="p-3 text-right flex items-center justify-end gap-1">
+                          <button onClick={() => openEditModal(dt)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete('debt_types', dt.id, dt.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Debt Type">
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
                       </tr>
@@ -842,9 +994,12 @@ export const AdminConfigView: React.FC = () => {
                           {ss.isActive ? 'ACTIVE' : 'INACTIVE'}
                         </span>
                       </td>
-                      <td className="p-3 text-right">
-                        <button onClick={() => openEditModal(ss)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
+                      <td className="p-3 text-right flex items-center justify-end gap-1">
+                        <button onClick={() => openEditModal(ss)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
                           <Edit className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete('salary_settings', ss.id, ss.roleCode)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Salary Setting">
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>
@@ -956,20 +1111,34 @@ export const AdminConfigView: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {systemSettings
-                      .filter((sys) => sys.settingKey.toLowerCase().includes(searchQuery.toLowerCase()) || sys.settingValue.toLowerCase().includes(searchQuery.toLowerCase()))
-                      .map((sys) => (
-                        <tr key={sys.id} className="hover:bg-slate-800/40">
-                          <td className="p-3 font-mono font-bold text-cyan-400">{sys.settingKey}</td>
-                          <td className="p-3 font-mono text-slate-100 font-semibold">{sys.settingValue}</td>
-                          <td className="p-3"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono">{sys.category}</span></td>
-                          <td className="p-3 text-slate-400">{sys.description || '-'}</td>
-                          <td className="p-3 text-right">
-                            <button onClick={() => openEditModal(sys)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400">
-                              <Edit className="w-4 h-4" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                      .filter((sys: any) => {
+                        const k = (sys?.settingKey || sys?.setting_key || '').toString().toLowerCase();
+                        const v = (sys?.settingValue || sys?.setting_value || '').toString().toLowerCase();
+                        const q = (searchQuery || '').toLowerCase();
+                        return k.includes(q) || v.includes(q);
+                      })
+                      .map((sys: any) => {
+                        const key = sys?.settingKey || sys?.setting_key || '';
+                        const val = sys?.settingValue || sys?.setting_value || '';
+                        const cat = sys?.category || 'GENERAL';
+                        const desc = sys?.description || '-';
+                        return (
+                          <tr key={sys.id || key} className="hover:bg-slate-800/40">
+                            <td className="p-3 font-mono font-bold text-cyan-400">{key}</td>
+                            <td className="p-3 font-mono text-slate-100 font-semibold">{val}</td>
+                            <td className="p-3"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono">{cat}</span></td>
+                            <td className="p-3 text-slate-400">{desc}</td>
+                            <td className="p-3 text-right flex items-center justify-end gap-1">
+                              <button onClick={() => openEditModal(sys)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleDelete('system_settings', sys.id || key, key)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete System Setting">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
