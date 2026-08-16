@@ -120,9 +120,12 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   public async executeAsync(sql: string, params: any[] = []): Promise<any> {
     if (this.isPostgres && this.pgPool) {
       const formattedSql = this.formatPgSql(sql);
-      return await this.pgPool.query(formattedSql, params).catch((err: Error) => {
+      try {
+        return await this.pgPool.query(formattedSql, params);
+      } catch (err: any) {
         this.logger.error('PostgreSQL execute error: ' + err.message);
-      });
+        throw err;
+      }
     } else if (this.sqliteDb) {
       return this.sqliteDb.prepare(sql).run(...params);
     }
@@ -137,6 +140,30 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return await fn();
   }
 
+  public async getHealthStatus() {
+    let dbConnected = false;
+    let branchCount = 0;
+    let error: string | null = null;
+    try {
+      const res = await this.queryOne<{ count: string | number }>('SELECT count(*) as count FROM branches');
+      branchCount = res ? Number(res.count) : 0;
+      dbConnected = true;
+    } catch (e: any) {
+      error = e.message;
+      dbConnected = false;
+    }
+
+    return {
+      status: dbConnected ? 'HEALTHY' : 'DEGRADED',
+      databaseEngine: this.isPostgres ? 'Neon Cloud PostgreSQL' : 'Local SQLite',
+      databaseConnected: dbConnected,
+      databaseUrlConfigured: Boolean(process.env.DATABASE_URL),
+      branchCount,
+      serverTime: new Date().toISOString(),
+      error,
+    };
+  }
+
   private async initializePostgresSchema() {
     if (!this.pgPool) return;
 
@@ -149,7 +176,46 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     const schemaPath = candidateSchemaPaths.find((p) => fs.existsSync(p));
     if (schemaPath) {
       const sql = fs.readFileSync(schemaPath, 'utf-8');
-      await this.pgPool.query(sql);
+      await this.pgPool.query(sql).catch((e: Error) => {
+        this.logger.warn('Neon Postgres schema initialization notice: ' + e.message);
+      });
+    }
+
+    // Safely migrate existing columns if they were created as UUID
+    const migrationStatements = [
+      `ALTER TABLE IF EXISTS branches ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS stores ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS stores ALTER COLUMN branch_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN branch_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN branch_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN store_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS products ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN branch_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS branch_product_prices ALTER COLUMN product_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN store_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sales ALTER COLUMN cashier_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN sale_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sale_items ALTER COLUMN product_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN store_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS stock_ledger ALTER COLUMN product_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS sync_inbox ALTER COLUMN branch_id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN id TYPE TEXT;`,
+      `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN entity_id TYPE TEXT;`,
+    ];
+
+    for (const stmt of migrationStatements) {
+      try {
+        await this.pgPool.query(stmt);
+      } catch (_) {
+        // Column may already be TEXT or table empty — safe to ignore
+      }
     }
   }
 

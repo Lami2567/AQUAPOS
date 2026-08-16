@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Param, Query, UseGuards, Request, SetMetadata } from '@nestjs/common';
+import { DatabaseService } from './database/database.service.js';
 import { AuthService } from './auth/auth.service.js';
 import { StockService } from './stock/stock.service.js';
 import { PosService } from './pos/pos.service.js';
@@ -18,6 +19,7 @@ export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 @UseGuards(AuthGuard)
 export class AppController {
   constructor(
+    private dbService: DatabaseService,
     private authService: AuthService,
     private stockService: StockService,
     private posService: PosService,
@@ -27,6 +29,18 @@ export class AppController {
     private backupService: BackupService,
     private auditService: AuditService
   ) {}
+
+  @Public()
+  @Get('health')
+  async health() {
+    return this.dbService.getHealthStatus();
+  }
+
+  @Public()
+  @Get('status')
+  async status() {
+    return this.dbService.getHealthStatus();
+  }
 
   @Public()
   @Post('auth/login')

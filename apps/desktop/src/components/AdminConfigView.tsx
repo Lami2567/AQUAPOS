@@ -296,6 +296,31 @@ export const AdminConfigView: React.FC = () => {
         break;
     }
 
+    const apiEndpoints: Record<string, string> = {
+      branches: 'branches',
+      stores: 'stores',
+      departments: 'departments',
+      workers: 'workers',
+      users: 'users',
+      roles: 'roles',
+      vehicles: 'vehicles',
+      products: 'products',
+      categories: 'categories',
+      prices: 'prices',
+      payment_methods: 'payment-methods',
+      expense_types: 'expense-types',
+      debt_types: 'debt-types',
+      salary_settings: 'salary-settings',
+      system_settings: 'system-settings',
+    };
+
+    const endpoint = apiEndpoints[activeTab];
+    if (endpoint && navigator.onLine) {
+      apiClient.post(`/api/v1/admin/${endpoint}`, editingItem).catch((err) => {
+        console.warn(`Direct online save notice for ${endpoint}:`, err?.message || err);
+      });
+    }
+
     if (navigator.onLine) {
       syncManager.triggerSync().catch(() => {});
     }
