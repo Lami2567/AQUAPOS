@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
     "paths": {
       "@water-business/shared-types": ["../shared-types/dist/index.d.ts"]
     }
