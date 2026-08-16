@@ -15,9 +15,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@water-business/shared-types": ["../../packages/shared-types/dist/index.d.ts"],
       "@water-business/calculations": ["../../packages/calculations/dist/index.d.ts"],
       "@water-business/validation": ["../../packages/validation/dist/index.d.ts"]

@@ -14,7 +14,6 @@
     "skipLibCheck": true,
     "strict": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
     "paths": {
       "@water-business/shared-types": ["../../packages/shared-types/dist/index.d.ts"],
       "@water-business/calculations": ["../../packages/calculations/dist/index.d.ts"],

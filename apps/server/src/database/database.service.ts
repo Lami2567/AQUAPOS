@@ -48,8 +48,14 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   private initializeSchema() {
-    const schemaPath = path.join(process.cwd(), '..', '..', 'database', 'schema', 'sqlite-schema.sql');
-    if (fs.existsSync(schemaPath)) {
+    const candidateSchemaPaths = [
+      path.join(process.cwd(), 'database', 'schema', 'sqlite-schema.sql'),
+      path.join(process.cwd(), '..', '..', 'database', 'schema', 'sqlite-schema.sql'),
+      path.join(process.cwd(), '..', 'database', 'schema', 'sqlite-schema.sql'),
+      path.join(__dirname, '..', '..', '..', 'database', 'schema', 'sqlite-schema.sql'),
+    ];
+    const schemaPath = candidateSchemaPaths.find((p) => fs.existsSync(p));
+    if (schemaPath) {
       const sql = fs.readFileSync(schemaPath, 'utf-8');
       this.db.exec(sql);
     }
@@ -57,8 +63,14 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     // Seed if empty
     const userCount = this.queryOne<{ count: number }>('SELECT COUNT(*) as count FROM users');
     if (userCount && userCount.count === 0) {
-      const seedPath = path.join(process.cwd(), '..', '..', 'database', 'seeds', 'seed-data.sql');
-      if (fs.existsSync(seedPath)) {
+      const candidateSeedPaths = [
+        path.join(process.cwd(), 'database', 'seeds', 'seed-data.sql'),
+        path.join(process.cwd(), '..', '..', 'database', 'seeds', 'seed-data.sql'),
+        path.join(process.cwd(), '..', 'database', 'seeds', 'seed-data.sql'),
+        path.join(__dirname, '..', '..', '..', 'database', 'seeds', 'seed-data.sql'),
+      ];
+      const seedPath = candidateSeedPaths.find((p) => fs.existsSync(p));
+      if (seedPath) {
         const seedSql = fs.readFileSync(seedPath, 'utf-8');
         this.db.exec(seedSql);
       }

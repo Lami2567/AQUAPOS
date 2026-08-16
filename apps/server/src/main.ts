@@ -25,14 +25,14 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['http://localhost:1420', 'http://localhost:3000', 'tauri://localhost'],
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true,
     methods: 'GET,HEAD,PUT,PATCH,POST,OPTIONS',
     credentials: true,
   });
 
   const port = process.env.PORT || 3001;
-  await app.listen(port);
-  logger.log(`Water Business POS Local Server running on http://localhost:${port}/api/v1`);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`Water Business POS Local Server running on http://0.0.0.0:${port}/api/v1`);
 }
 
 bootstrap();
