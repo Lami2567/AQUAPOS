@@ -132,9 +132,12 @@ export interface OutboxRecord {
   id: string;
   type: string;
   receiptNumber?: string;
-  status: 'PENDING' | 'SYNCED';
+  /** PENDING = not yet pushed; SYNCED = server ACK'd; CONFLICT = server rejected (e.g. deleted remotely); FAILED = push error */
+  status: 'PENDING' | 'SYNCED' | 'CONFLICT' | 'FAILED';
   createdAt: string;
   payload?: any;
+  /** Reason provided by server when status is CONFLICT */
+  conflictReason?: string;
 }
 
 export interface AuditRecord {
@@ -154,6 +157,8 @@ export interface AppState {
   isOnline: boolean;
   syncStatus: 'ONLINE' | 'OFFLINE' | 'SYNCING' | 'SYNCED' | 'FAILED';
   pendingSyncCount: number;
+  /** ISO timestamp of the last successful sync pull (server clock). Used as `since` watermark on next pull. */
+  lastSyncedAt: string | null;
 
   // Configuration Master Data Arrays
   branches: Branch[];
@@ -195,7 +200,7 @@ export interface AppState {
   setOnlineStatus: (isOnline: boolean) => void;
   setSyncStatus: (status: AppState['syncStatus'], pendingCount?: number) => void;
   mergeCentralData: (data: any) => void;
-  markOutboxSynced: (ackedIds: string[]) => void;
+  markOutboxSynced: (ackedIds: string[], conflictItems?: Array<{ id: string; reason?: string }>) => void;
 
   // Master Data Mutators
   saveBranchInStore: (branch: Branch) => void;
@@ -262,6 +267,7 @@ export const useStore = create<AppState>()(
       isOnline: true,
       syncStatus: 'SYNCED',
       pendingSyncCount: 0,
+      lastSyncedAt: null,
 
       // Clean Master Data without handcoded demo data
       branches: [],
@@ -533,31 +539,120 @@ export const useStore = create<AppState>()(
             });
           }
 
+          // ── Apply tombstones (central deletions) to local state ────────────
+          // For each tombstone the server returned, filter out the matching
+          // local record. Last-Write-Wins: if the local record's updatedAt is
+          // NEWER than the tombstone deletedAt, the local edit wins and we
+          // do NOT remove it (the next outbox push will resurrect it on server).
+          const tombstones: Array<{ entityType: string; entityId: string; deletedAt: string }> =
+            Array.isArray(centralData.deletedRecords) ? centralData.deletedRecords : [];
+
+          const isDeletedRemotely = (entityType: string, id: string, localUpdatedAt?: string): boolean => {
+            const ts = tombstones.find((t) => t.entityType === entityType && t.entityId === id);
+            if (!ts) return false;
+            // If local record has an updatedAt that is NEWER, the edit wins
+            if (localUpdatedAt && localUpdatedAt > ts.deletedAt) return false;
+            return true;
+          };
+
+          // Filter tombstoned records out of each merged list
+          const finalBranches = mergedBranches.filter(
+            (b: any) => !isDeletedRemotely('branches', b.id, b.updatedAt || b.createdAt)
+          );
+          const finalStores = mergedStores.filter(
+            (s: any) => !isDeletedRemotely('stores', s.id)
+          );
+          const finalDepartments = mergedDepartments.filter(
+            (d: any) => !isDeletedRemotely('departments', d.id, d.updatedAt || d.createdAt)
+          );
+          const finalWorkers = mergedWorkers.filter(
+            (w: any) => !isDeletedRemotely('workers', w.id)
+          );
+          const finalUsers = mergedUsers.filter(
+            (u: any) => u.username === 'admin' || !isDeletedRemotely('users', u.id, u.updatedAt)
+          );
+          const finalRoles = mergedRoles.filter(
+            (r: any) => !isDeletedRemotely('roles', r.id)
+          );
+          const finalVehicles = mergedVehicles.filter(
+            (v: any) => !isDeletedRemotely('vehicles', v.id)
+          );
+          const finalProducts = mergedProducts.filter(
+            (p: any) => !isDeletedRemotely('products', p.id)
+          );
+          const finalCategories = mergedCategories.filter(
+            (c: any) => !isDeletedRemotely('categories', c.id)
+          );
+          const finalBranchPrices = mergedBranchPrices.filter(
+            (bp: any) => !isDeletedRemotely('branch_product_prices', bp.id)
+          );
+          const finalPaymentMethods = mergedPaymentMethods.filter(
+            (pm: any) => !isDeletedRemotely('payment_methods', pm.id)
+          );
+          const finalExpenseTypes = mergedExpenseTypes.filter(
+            (et: any) => !isDeletedRemotely('expense_types', et.id)
+          );
+          const finalDebtTypes = mergedDebtTypes.filter(
+            (dt: any) => !isDeletedRemotely('debt_types', dt.id)
+          );
+          const finalSalarySettings = mergedSalarySettings.filter(
+            (ss: any) => !isDeletedRemotely('salary_settings', ss.id)
+          );
+          const finalSystemSettings = mergedSystemSettings.filter(
+            (sys: any) => !isDeletedRemotely('system_settings', sys.id)
+          );
+
+
+          // Mark any PENDING outbox items that reference a deleted entity as CONFLICT
+          // so the UI can notify the user without silently re-pushing dead data.
+          const updatedOutbox = state.outboxQueue.map((item) => {
+            if (item.status !== 'PENDING') return item;
+            const entityId = item.payload?.id || item.payload?.entityId;
+            if (!entityId) return item;
+            const ts = tombstones.find((t) => t.entityId === entityId && t.deletedAt > item.createdAt);
+            if (ts) {
+              return { ...item, status: 'CONFLICT' as const, conflictReason: 'DELETED_REMOTELY' };
+            }
+            return item;
+          });
+          const conflictCount = updatedOutbox.filter((i) => i.status === 'CONFLICT').length;
+          const remainingPending = updatedOutbox.filter((i) => i.status === 'PENDING').length;
+
           return {
-            branches: mergedBranches,
-            stores: mergedStores,
-            departments: mergedDepartments,
-            workers: mergedWorkers,
-            usersList: mergedUsers,
-            rolesList: mergedRoles,
-            vehicles: mergedVehicles,
-            products: mergedProducts,
-            categories: mergedCategories,
-            branchPrices: mergedBranchPrices,
-            paymentMethodsList: mergedPaymentMethods,
-            expenseTypes: mergedExpenseTypes,
-            debtTypes: mergedDebtTypes,
-            salarySettings: mergedSalarySettings,
-            systemSettings: mergedSystemSettings,
+            branches: finalBranches,
+            stores: finalStores,
+            departments: finalDepartments,
+            workers: finalWorkers,
+            usersList: finalUsers,
+            rolesList: finalRoles,
+            vehicles: finalVehicles,
+            products: finalProducts,
+            categories: finalCategories,
+            branchPrices: finalBranchPrices,
+            paymentMethodsList: finalPaymentMethods,
+            expenseTypes: finalExpenseTypes,
+            debtTypes: finalDebtTypes,
+            salarySettings: finalSalarySettings,
+            systemSettings: finalSystemSettings,
             inventoryStock: mergedStock,
+            outboxQueue: updatedOutbox,
+            pendingSyncCount: remainingPending,
+            // Advance the watermark to the server's clock so the next pull is delta-only
+            lastSyncedAt: centralData.serverTime || centralData.timestamp || state.lastSyncedAt,
+            // Surface conflict count via sync status when > 0
+            syncStatus: conflictCount > 0 ? ('FAILED' as const) : state.syncStatus,
           };
         }),
 
-      markOutboxSynced: (ackedIds: string[]) =>
+      markOutboxSynced: (ackedIds: string[], conflictItems?: Array<{ id: string; reason?: string }>) =>
         set((state) => {
-          const updatedOutbox = state.outboxQueue.map((item) =>
-            ackedIds.includes(item.id) ? { ...item, status: 'SYNCED' as const } : item
-          );
+          const conflictSet = new Map((conflictItems || []).map((c) => [c.id, c.reason || 'SERVER_CONFLICT']));
+          const updatedOutbox = state.outboxQueue.map((item) => {
+            if (ackedIds.includes(item.id)) return { ...item, status: 'SYNCED' as const };
+            if (conflictSet.has(item.id))
+              return { ...item, status: 'CONFLICT' as const, conflictReason: conflictSet.get(item.id) };
+            return item;
+          });
           const remainingPending = updatedOutbox.filter((i) => i.status === 'PENDING').length;
           return {
             outboxQueue: updatedOutbox,

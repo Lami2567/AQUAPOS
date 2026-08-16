@@ -9,9 +9,11 @@ export class SyncService {
   constructor(private dbService: DatabaseService) {}
 
   /**
-   * Pull all central data for an online dashboard or offline branch client
+   * Pull central data for an online dashboard or offline branch client.
+   * @param branchId - optional branch filter (not yet used for filtering, kept for future scope)
+   * @param since - optional ISO timestamp; when provided returns only tombstones newer than this
    */
-  public pullCentralData(branchId?: string) {
+  public pullCentralData(branchId?: string, since?: string) {
     const rawBranches = this.dbService.query<any>('SELECT * FROM branches WHERE is_active = 1 ORDER BY name ASC');
     const branches = rawBranches.map((b) => ({
       id: b.id,
@@ -193,9 +195,36 @@ export class SyncService {
     const fieldSessions = this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
     const stockTransfers = this.dbService.query<any>('SELECT * FROM stock_transfers ORDER BY created_at DESC LIMIT 100');
 
+    // ── Tombstone list: deletions since last sync ────────────────────────────
+    // Offline clients use this to remove locally cached records that were
+    // deleted centrally.  When no `since` is provided we return ALL tombstones
+    // (full sync / first sync scenario).
+    let deletedRecords: Array<{ entityType: string; entityId: string; deletedAt: string }> = [];
+    try {
+      const rawTombstones = since
+        ? this.dbService.query<any>(
+            `SELECT entity_type, entity_id, deleted_at FROM deleted_records WHERE deleted_at > ? ORDER BY deleted_at ASC`,
+            [since]
+          )
+        : this.dbService.query<any>(
+            `SELECT entity_type, entity_id, deleted_at FROM deleted_records ORDER BY deleted_at ASC`
+          );
+      deletedRecords = rawTombstones.map((t: any) => ({
+        entityType: t.entity_type,
+        entityId: t.entity_id,
+        deletedAt: t.deleted_at,
+      }));
+    } catch (_) {
+      // Table may not exist yet on older databases — safe to ignore
+      deletedRecords = [];
+    }
+
+    const serverTime = new Date().toISOString();
+
     return {
       success: true,
-      timestamp: new Date().toISOString(),
+      serverTime,
+      timestamp: serverTime,
       data: {
         branches,
         stores,
@@ -219,6 +248,7 @@ export class SyncService {
         salaryPayments,
         fieldSessions,
         stockTransfers,
+        deletedRecords,
       },
     };
   }
@@ -231,7 +261,7 @@ export class SyncService {
     deviceId: string,
     transactions: Array<{ id: string; transactionType: string; payload: any; version?: number; createdAt?: string }>
   ) {
-    const results: Array<{ id: string; status: 'ACK' | 'CONFLICT' | 'DUPLICATE'; error?: string }> = [];
+    const results: Array<{ id: string; status: 'ACK' | 'CONFLICT' | 'DUPLICATE'; error?: string; reason?: string }> = [];
 
     for (const tx of transactions) {
       try {
@@ -240,6 +270,36 @@ export class SyncService {
         if (existing) {
           results.push({ id: tx.id, status: 'DUPLICATE' });
           continue;
+        }
+
+        // ── Tombstone conflict check (Last-Write-Wins) ────────────────────────
+        // If the payload references an entity ID (e.g. a branch being saved)
+        // and a tombstone exists for it with a deleted_at NEWER than when the
+        // local client created this outbox item, the deletion wins.
+        const payloadEntityId = tx.payload?.id || tx.payload?.entityId;
+        if (payloadEntityId && tx.createdAt) {
+          try {
+            const tombstone = this.dbService.queryOne<any>(
+              `SELECT entity_id, deleted_at FROM deleted_records WHERE entity_id = ?`,
+              [payloadEntityId]
+            );
+            if (tombstone && tombstone.deleted_at > tx.createdAt) {
+              this.logger.warn(
+                `CONFLICT: outbox ${tx.id} references entity ${payloadEntityId} ` +
+                `deleted at ${tombstone.deleted_at} (newer than tx.createdAt=${tx.createdAt}). ` +
+                `Rejection by Last-Write-Wins.`
+              );
+              results.push({
+                id: tx.id,
+                status: 'CONFLICT',
+                reason: 'DELETED_REMOTELY',
+                error: `Entity ${payloadEntityId} was deleted on ${tombstone.deleted_at}`,
+              });
+              continue;
+            }
+          } catch (_) {
+            // deleted_records table may not exist on older server — skip conflict check
+          }
         }
 
         this.dbService.transaction(() => {
@@ -395,6 +455,8 @@ export class SyncService {
       this.dbService.execute('DELETE FROM stock_transfer_items');
       this.dbService.execute('DELETE FROM stock_transfers');
       this.dbService.execute('DELETE FROM stock_ledger');
+      // Also clear tombstones so a fresh-start device doesn't inherit stale deletion history
+      try { this.dbService.execute('DELETE FROM deleted_records'); } catch (e) {}
 
       if (clearDemoMaster) {
         this.dbService.execute('DELETE FROM branch_product_prices');

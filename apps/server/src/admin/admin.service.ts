@@ -439,93 +439,138 @@ export class AdminService {
     }
   }
 
-  // Deletion methods for all entities
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  /** Write a tombstone so offline clients can apply this deletion on next pull */
+  private writeTombstone(entityType: string, entityId: string, userId: string) {
+    const now = new Date().toISOString();
+    // INSERT OR REPLACE keeps the record idempotent; ON CONFLICT (entity_type, entity_id) DO UPDATE for Postgres
+    try {
+      this.dbService.execute(
+        `INSERT INTO deleted_records (id, entity_type, entity_id, deleted_at, deleted_by)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT (entity_type, entity_id) DO UPDATE
+           SET deleted_at = excluded.deleted_at, deleted_by = excluded.deleted_by`,
+        [uuidv4(), entityType, entityId, now, userId]
+      );
+    } catch {
+      // SQLite fallback (doesn't support ON CONFLICT in INSERT for older drivers)
+      try {
+        this.dbService.execute(
+          `INSERT OR REPLACE INTO deleted_records (id, entity_type, entity_id, deleted_at, deleted_by)
+           VALUES (?, ?, ?, ?, ?)`,
+          [uuidv4(), entityType, entityId, now, userId]
+        );
+      } catch (err2: any) {
+        // Non-fatal — tombstone write failure must not block the deletion itself
+        console.warn(`[AdminService] Tombstone write failed for ${entityType}/${entityId}: ${err2?.message}`);
+      }
+    }
+  }
+
+  // ─── Deletion methods for all entities ──────────────────────────────────────
+
   deleteBranch(id: string, userId: string) {
     this.dbService.execute('DELETE FROM branches WHERE id = ?', [id]);
+    this.writeTombstone('branches', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Branch', id);
     return { success: true, id };
   }
 
   deleteStore(id: string, userId: string) {
     this.dbService.execute('DELETE FROM stores WHERE id = ?', [id]);
+    this.writeTombstone('stores', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Store', id);
     return { success: true, id };
   }
 
   deleteDepartment(id: string, userId: string) {
     this.dbService.execute('DELETE FROM departments WHERE id = ?', [id]);
+    this.writeTombstone('departments', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Department', id);
     return { success: true, id };
   }
 
   deleteWorker(id: string, userId: string) {
     this.dbService.execute('DELETE FROM workers WHERE id = ?', [id]);
+    this.writeTombstone('workers', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Worker', id);
     return { success: true, id };
   }
 
   deleteUser(id: string, userId: string) {
     this.dbService.execute("DELETE FROM users WHERE id = ? AND username != 'admin'", [id]);
+    this.writeTombstone('users', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'User', id);
     return { success: true, id };
   }
 
   deleteRole(id: string, userId: string) {
     this.dbService.execute('DELETE FROM roles WHERE id = ?', [id]);
+    this.writeTombstone('roles', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Role', id);
     return { success: true, id };
   }
 
   deleteVehicle(id: string, userId: string) {
     this.dbService.execute('DELETE FROM vehicles WHERE id = ?', [id]);
+    this.writeTombstone('vehicles', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Vehicle', id);
     return { success: true, id };
   }
 
   deleteProduct(id: string, userId: string) {
     this.dbService.execute('DELETE FROM products WHERE id = ?', [id]);
+    this.writeTombstone('products', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Product', id);
     return { success: true, id };
   }
 
   deleteCategory(id: string, userId: string) {
     this.dbService.execute('DELETE FROM categories WHERE id = ?', [id]);
+    this.writeTombstone('categories', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'Category', id);
     return { success: true, id };
   }
 
   deleteBranchPrice(id: string, userId: string) {
     this.dbService.execute('DELETE FROM branch_product_prices WHERE id = ?', [id]);
+    this.writeTombstone('branch_product_prices', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'BranchPrice', id);
     return { success: true, id };
   }
 
   deletePaymentMethod(id: string, userId: string) {
     this.dbService.execute('DELETE FROM payment_methods WHERE id = ?', [id]);
+    this.writeTombstone('payment_methods', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'PaymentMethod', id);
     return { success: true, id };
   }
 
   deleteExpenseType(id: string, userId: string) {
     this.dbService.execute('DELETE FROM expense_types WHERE id = ?', [id]);
+    this.writeTombstone('expense_types', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'ExpenseType', id);
     return { success: true, id };
   }
 
   deleteDebtType(id: string, userId: string) {
     this.dbService.execute('DELETE FROM debt_types WHERE id = ?', [id]);
+    this.writeTombstone('debt_types', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'DebtType', id);
     return { success: true, id };
   }
 
   deleteSalarySetting(id: string, userId: string) {
     this.dbService.execute('DELETE FROM salary_settings WHERE id = ?', [id]);
+    this.writeTombstone('salary_settings', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'SalarySetting', id);
     return { success: true, id };
   }
 
   deleteSystemSetting(id: string, userId: string) {
     this.dbService.execute('DELETE FROM system_settings WHERE id = ?', [id]);
+    this.writeTombstone('system_settings', id, userId);
     this.auditService.logAction(userId, 'System Admin', 'GLOBAL', 'SERVER-01', 'DELETE', 'SystemSetting', id);
     return { success: true, id };
   }

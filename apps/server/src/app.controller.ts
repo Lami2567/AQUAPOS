@@ -205,8 +205,8 @@ export class AppController {
   // Offline Sync Ingestion & Pull
   @Public()
   @Get('sync/pull')
-  async pullSync(@Query('branchId') branchId?: string) {
-    return this.syncService.pullCentralData(branchId);
+  async pullSync(@Query('branchId') branchId?: string, @Query('since') since?: string) {
+    return this.syncService.pullCentralData(branchId, since);
   }
 
   @Public()

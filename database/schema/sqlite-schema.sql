@@ -386,4 +386,17 @@ CREATE TABLE IF NOT EXISTS sync_inbox (
   received_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tombstone Deletion Log (for conflict-free sync propagation)
+-- A row is written here whenever any entity is deleted on the central server.
+-- Offline clients check this table on next pull to apply deletions locally.
+-- Rows are NEVER removed so long-offline devices can always catch up.
+CREATE TABLE IF NOT EXISTS deleted_records (
+  id TEXT PRIMARY KEY,           -- UUID for this tombstone row
+  entity_type TEXT NOT NULL,     -- e.g. 'branches', 'products', 'workers'
+  entity_id TEXT NOT NULL,       -- The PK of the deleted entity
+  deleted_at TEXT NOT NULL,      -- ISO 8601 server timestamp of deletion
+  deleted_by TEXT NOT NULL        -- User ID who performed the deletion
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_deleted_records_entity
+  ON deleted_records (entity_type, entity_id);
 
