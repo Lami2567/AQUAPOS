@@ -127,7 +127,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   public execute(sql: string, params: any[] = []): any {
     if (this.isPostgres && this.pgPool) {
       const formattedSql = this.formatPgSql(sql);
-      return this.pgPool.query(formattedSql, params).catch((err) => {
+      return this.pgPool.query(formattedSql, params).catch((err: Error) => {
         this.logger.error('PostgreSQL execute error: ' + err.message);
       });
     } else if (this.sqliteDb) {
