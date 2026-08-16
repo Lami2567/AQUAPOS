@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { syncManager } from '../services/syncService';
 import { BRAND_ASSETS, APP_ICONS } from '../config/assets.config';
 import { UserRole, User } from '@water-business/shared-types';
 import { canAccessDomain } from '../utils/rbac';
 import {
+  Building2,
+  Store,
   ChevronDown,
   Wifi,
   WifiOff,
@@ -37,7 +40,20 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
-  const { user, isOnline, syncStatus, pendingSyncCount, currentStoreId, setStore, setOnlineStatus, setUser, usersList } = useStore();
+  const {
+    user,
+    branches,
+    stores,
+    currentBranchId,
+    currentStoreId,
+    isOnline,
+    syncStatus,
+    pendingSyncCount,
+    setStore,
+    setOnlineStatus,
+    setUser,
+    usersList,
+  } = useStore();
   const [openDropdown, setOpenDropdown] = useState<NavDomain | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -194,30 +210,58 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
 
           <div className="h-5 w-px bg-slate-800 hidden sm:block" />
 
-          {/* Store Picker */}
+          {/* Dynamic Branch Picker */}
           <div className="flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
+            <Building2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-slate-400 font-medium">Branch:</span>
+            <select
+              value={currentBranchId}
+              onChange={(e) => {
+                const newBranchId = e.target.value;
+                const branchStores = stores.filter((s) => s.branchId === newBranchId);
+                const firstStoreId = branchStores[0]?.id || '';
+                setStore(newBranchId, firstStoreId);
+              }}
+              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px]"
+            >
+              {branches.map((b) => (
+                <option key={b.id} value={b.id} className="bg-slate-900 text-slate-200">
+                  {b.name} ({b.code})
+                </option>
+              ))}
+              {branches.length === 0 && (
+                <option value="" className="bg-slate-900 text-slate-400">
+                  No Branches Configured
+                </option>
+              )}
+            </select>
+          </div>
+
+          {/* Dynamic Store Picker */}
+          <div className="flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
+            <Store className="w-3.5 h-3.5 text-emerald-400" />
             <span className="text-slate-400 font-medium">Store:</span>
             <select
               value={currentStoreId}
               onChange={(e) => {
-                const val = e.target.value;
-                if (val === 's1111111-1111-1111-1111-111111111111') {
-                  setStore('b1111111-1111-1111-1111-111111111111', val);
-                } else {
-                  setStore('b2222222-2222-2222-2222-222222222222', val);
-                }
+                const newStoreId = e.target.value;
+                const selectedStore = stores.find((s) => s.id === newStoreId);
+                setStore(selectedStore?.branchId || currentBranchId, newStoreId);
               }}
               className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px]"
             >
-              <option value="s1111111-1111-1111-1111-111111111111" className="bg-slate-900">
-                Lwengo Main Store
-              </option>
-              <option value="s2222222-2222-2222-2222-222222222222" className="bg-slate-900">
-                Isingiro Main Store
-              </option>
-              <option value="s3333333-3333-3333-3333-333333333333" className="bg-slate-900">
-                Isingiro Retail Sales Store
-              </option>
+              {stores
+                .filter((s) => !currentBranchId || s.branchId === currentBranchId)
+                .map((st) => (
+                  <option key={st.id} value={st.id} className="bg-slate-900 text-slate-200">
+                    {st.name} ({st.type})
+                  </option>
+                ))}
+              {stores.filter((s) => !currentBranchId || s.branchId === currentBranchId).length === 0 && (
+                <option value="" className="bg-slate-900 text-slate-400">
+                  No Stores in Branch
+                </option>
+              )}
             </select>
           </div>
         </div>
@@ -300,14 +344,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
         {/* Network & User Status + Logout Switcher */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => {
-              if (syncStatus === 'FAILED' || pendingSyncCount > 0) {
-                onSelectNav({ domain: 'system', subView: 'sync' });
-              } else {
-                setOnlineStatus(!isOnline);
+            onClick={async () => {
+              if (!isOnline) {
+                setOnlineStatus(true);
               }
+              await syncManager.triggerSync();
             }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all border ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer border ${
               !isOnline
                 ? 'bg-amber-950/80 border-amber-500/40 text-amber-400'
                 : syncStatus === 'SYNCING'
@@ -316,7 +359,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 ? 'bg-rose-950/80 border-rose-500/50 text-rose-300 shadow-md shadow-rose-900/30'
                 : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400'
             }`}
-            title={syncStatus === 'FAILED' ? 'Click to inspect sync errors' : 'Click to toggle network simulation'}
+            title="Click to trigger cloud synchronization"
           >
             {!isOnline ? (
               <>

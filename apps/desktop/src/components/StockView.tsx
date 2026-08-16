@@ -21,7 +21,10 @@ import { v4 as uuidv4 } from 'uuid';
 export const StockView: React.FC = () => {
   const {
     user,
+    branches,
     stores,
+    currentBranchId,
+    currentStoreId,
     products,
     vehicles,
     inventoryStock,
@@ -32,13 +35,17 @@ export const StockView: React.FC = () => {
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'inventory' | 'transfers'>('inventory');
+  const [storeFilterMode, setStoreFilterMode] = useState<'BRANCH' | 'ALL'>('BRANCH');
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
+  const branchStores = stores.filter((s) => !currentBranchId || s.branchId === currentBranchId);
+  const visibleStores = storeFilterMode === 'BRANCH' ? branchStores : stores;
+
   // Goods Intake Form State
-  const [intakeStoreId, setIntakeStoreId] = useState(stores[0]?.id || '');
+  const [intakeStoreId, setIntakeStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [intakeProductId, setIntakeProductId] = useState(products[0]?.id || '');
   const [intakeQty, setIntakeQty] = useState(500);
   const [intakeUnitCost, setIntakeUnitCost] = useState(500);
@@ -46,7 +53,7 @@ export const StockView: React.FC = () => {
   const [intakeNotes, setIntakeNotes] = useState('Bottling Plant Production Intake');
 
   // Draft Transfer Form State
-  const [transferSourceStoreId, setTransferSourceStoreId] = useState(stores[0]?.id || '');
+  const [transferSourceStoreId, setTransferSourceStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [transferDestStoreId, setTransferDestStoreId] = useState(stores[1]?.id || stores[0]?.id || '');
   const [transferProductId, setTransferProductId] = useState(products[0]?.id || '');
   const [transferQty, setTransferQty] = useState(200);
@@ -207,8 +214,29 @@ export const StockView: React.FC = () => {
       )}
 
       {activeTab === 'inventory' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {stores.map((store) => (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
+            <span className="text-slate-400">
+              Showing: <strong className="text-slate-200">{storeFilterMode === 'BRANCH' ? 'Selected Branch Stores' : 'All Company Warehouses'}</strong> ({visibleStores.length} Stores)
+            </span>
+            <div className="flex gap-1">
+              <button
+                onClick={() => setStoreFilterMode('BRANCH')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold ${storeFilterMode === 'BRANCH' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                Current Branch Only
+              </button>
+              <button
+                onClick={() => setStoreFilterMode('ALL')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold ${storeFilterMode === 'ALL' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                All Branches
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleStores.map((store) => (
             <div key={store.id} className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-3">
               <div className="flex justify-between items-center border-b border-slate-800/80 pb-2.5">
                 <div>
@@ -248,6 +276,7 @@ export const StockView: React.FC = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
       ) : (
         <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">

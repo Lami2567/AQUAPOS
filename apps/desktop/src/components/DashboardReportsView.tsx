@@ -30,6 +30,7 @@ export const DashboardReportsView: React.FC = () => {
     debtsList,
     salaryPaymentsList,
     auditLogs,
+    currentBranchId,
     isOnline,
     syncStatus,
     pendingSyncCount,
@@ -38,45 +39,67 @@ export const DashboardReportsView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'reports'>('dashboard');
 
   // Filters state
-  const [startDate, setStartDate] = useState('2026-08-01');
-  const [endDate, setEndDate] = useState('2026-08-15');
-  const [selectedBranch, setSelectedBranch] = useState('ALL');
+  const [startDate, setStartDate] = useState(
+    new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0]
+  );
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedBranch, setSelectedBranch] = useState(currentBranchId || 'ALL');
   const [selectedReportType, setSelectedReportType] = useState('DAILY_SALES');
 
-  // Dynamically compute real metrics from live store state
-  const totalSalesUgx = salesHistory.reduce((sum, s) => sum + s.totalAmountUgx, 0);
+  // Determine active branch scope: if specific branch selected, filter stores
+  const activeBranchFilter = selectedBranch === 'ALL' ? currentBranchId : selectedBranch;
+  const activeBranchStores = stores.filter((s) => !activeBranchFilter || s.branchId === activeBranchFilter);
+  const activeStoreIdSet = new Set(activeBranchStores.map((s) => s.id));
+
+  // Branch-filtered datasets
+  const filteredSales = salesHistory.filter(
+    (s) => activeStoreIdSet.size === 0 || activeStoreIdSet.has(s.storeId)
+  );
+  const filteredExpenses = expensesList.filter(
+    (e) => !activeBranchFilter || e.branchId === activeBranchFilter || (e.storeId && activeStoreIdSet.has(e.storeId))
+  );
+  const filteredSessions = fieldSessionsList.filter(
+    (fs) => activeStoreIdSet.size === 0 || activeStoreIdSet.has(fs.storeId)
+  );
+
+  // Dynamically compute real metrics from live branch store state
+  const totalSalesUgx = filteredSales.reduce((sum, s) => sum + s.totalAmountUgx, 0);
   const todaysDate = new Date().toISOString().split('T')[0];
-  const todaysSalesUgx = salesHistory
+  const todaysSalesUgx = filteredSales
     .filter((s) => s.date === todaysDate)
     .reduce((sum, s) => sum + s.totalAmountUgx, 0);
 
   let currentStockCartons = 0;
   let lowStockCount = 0;
   Object.entries(inventoryStock).forEach(([storeId, prodMap]) => {
-    Object.entries(prodMap).forEach(([prodId, qty]) => {
-      currentStockCartons += qty;
-      const prod = products.find((p) => p.id === prodId);
-      if (prod && qty > 0 && qty <= prod.minStockAlert) {
-        lowStockCount += 1;
-      }
-    });
+    if (activeStoreIdSet.size === 0 || activeStoreIdSet.has(storeId)) {
+      Object.entries(prodMap).forEach(([prodId, qty]) => {
+        currentStockCartons += qty;
+        const prod = products.find((p) => p.id === prodId);
+        if (prod && qty > 0 && qty <= prod.minStockAlert) {
+          lowStockCount += 1;
+        }
+      });
+    }
   });
 
   const outstandingDebtsUgx = debtsList
     .filter((d) => d.status !== 'CLEARED')
     .reduce((sum, d) => sum + d.balanceAmountUgx, 0);
 
-  const expensesUgx = expensesList.reduce((sum, e) => sum + e.amountUgx, 0);
+  const expensesUgx = filteredExpenses.reduce((sum, e) => sum + e.amountUgx, 0);
 
-  const bankedMoneyUgx = salesHistory
+  const bankedMoneyUgx = filteredSales
     .filter((s) => s.paymentMethod === 'BANK_TRANSFER')
     .reduce((sum, s) => sum + s.totalAmountUgx, 0);
 
-  const mobileMoneyUgx = salesHistory
+  const mobileMoneyUgx = filteredSales
     .filter((s) => s.paymentMethod === 'MOBILE_MONEY')
     .reduce((sum, s) => sum + s.totalAmountUgx, 0);
 
-  const stockVariancesCount = fieldSessionsList.filter((s) => s.status === 'OPEN').length;
+  const stockVariancesCount = filteredSessions.filter((s) => s.status === 'OPEN').length;
+
+  const currentBranchName = branches.find((b) => b.id === activeBranchFilter)?.name || 'All Branches';
 
   const adminMetrics = {
     totalSalesUgx,

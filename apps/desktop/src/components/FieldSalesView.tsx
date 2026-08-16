@@ -22,7 +22,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const FieldSalesView: React.FC = () => {
   const {
+    currentBranchId,
     currentStoreId,
+    branches,
     vehicles,
     workers,
     stores,
@@ -37,10 +39,18 @@ export const FieldSalesView: React.FC = () => {
   const [activeReconcileSession, setActiveReconcileSession] = useState<FieldSessionRecord | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
+  const branchVehicles = vehicles.filter((v) => !currentBranchId || v.branchId === currentBranchId);
+  const branchWorkers = workers.filter((w) => !currentBranchId || w.branchId === currentBranchId);
+  const branchStores = stores.filter((s) => !currentBranchId || s.branchId === currentBranchId);
+  const branchStoreIdSet = new Set(branchStores.map((s) => s.id));
+  const visibleSessions = fieldSessionsList.filter(
+    (fs) => branchStoreIdSet.size === 0 || branchStoreIdSet.has(fs.storeId)
+  );
+
   // New Session Form State
-  const [selectedVehicleId, setSelectedVehicleId] = useState(vehicles[0]?.id || '');
-  const [selectedWorkerId, setSelectedWorkerId] = useState(workers[0]?.id || '');
-  const [selectedStoreId, setSelectedStoreId] = useState(currentStoreId || stores[0]?.id || '');
+  const [selectedVehicleId, setSelectedVehicleId] = useState(branchVehicles[0]?.id || vehicles[0]?.id || '');
+  const [selectedWorkerId, setSelectedWorkerId] = useState(branchWorkers[0]?.id || workers[0]?.id || '');
+  const [selectedStoreId, setSelectedStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [issuedQuantities, setIssuedQuantities] = useState<Record<string, number>>({});
 
   // Reconcile Form State
@@ -218,13 +228,13 @@ export const FieldSalesView: React.FC = () => {
       {/* Active Field Sessions Table */}
       <div className="glass-panel rounded-2xl p-5 border border-slate-800">
         <h3 className="font-bold text-slate-200 text-sm mb-4">
-          Active & Recent Field Sessions ({fieldSessionsList.length})
+          Active & Recent Field Sessions ({visibleSessions.length})
         </h3>
         
-        {fieldSessionsList.length === 0 ? (
+        {visibleSessions.length === 0 ? (
           <div className="text-center py-12 text-slate-500 text-xs space-y-2">
             <Truck className="w-8 h-8 mx-auto text-slate-600" />
-            <p>No active field sessions. Click "Start New Field Session" to dispatch a delivery vehicle.</p>
+            <p>No field sessions found for current branch. Click "Start New Field Session" to dispatch a delivery vehicle.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -241,7 +251,7 @@ export const FieldSalesView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {fieldSessionsList.map((session) => (
+                {visibleSessions.map((session) => (
                   <tr key={session.id} className="hover:bg-slate-900/50">
                     <td className="p-3 font-bold text-cyan-400">{session.sessionNumber}</td>
                     <td className="p-3 font-semibold text-slate-200">{session.vehicleName}</td>

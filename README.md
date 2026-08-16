@@ -21,10 +21,12 @@ The system features **dual database architecture**:
    - [2.7 Stock Intakes, Branch Transfers & Damages](#27-stock-intakes-branch-transfers--damages)
    - [2.8 Operating Expenses, Debts & Payroll Salaries](#28-operating-expenses-debts--payroll-salaries)
    - [2.9 Offline Outbox Sync & Data Backups](#29-offline-outbox-sync--data-backups)
-3. [Cloud Database Hosting Guide (Neon + Render / Vercel)](#3-cloud-database-hosting-guide-neon--render--vercel)
+3. [Cloud Database Hosting Guide (Neon + Render + Vercel)](#3-cloud-database-hosting-guide-neon--render--vercel)
    - [3.1 Setting Up Central PostgreSQL on Neon](#31-setting-up-central-postgresql-on-neon)
-   - [3.2 Deploying Central Backend Server on Render / Vercel](#32-deploying-central-backend-server-on-render--vercel)
-   - [3.3 Connecting Branch Desktop Apps to Cloud Server](#33-connecting-branch-desktop-apps-to-cloud-server)
+   - [3.2 Deploying Backend API Server on Render](#32-deploying-backend-api-server-on-render)
+   - [3.3 Deploying Frontend on Vercel & Connecting to Render](#33-deploying-frontend-on-vercel--connecting-to-render)
+   - [3.4 Configuring Cross-Origin Communication (CORS) & Troubleshooting](#34-configuring-cross-origin-communication-cors--troubleshooting)
+   - [3.5 Connecting Branch Desktop Apps to Cloud Server](#35-connecting-branch-desktop-apps-to-cloud-server)
 4. [Clearing Demo Data & Preparing Real Production Data](#4-clearing-demo-data--preparing-real-production-data)
 5. [Monorepo Project Structure](#5-monorepo-project-structure)
 6. [Verification & Build Commands](#6-verification--build-commands)
@@ -213,16 +215,19 @@ Follow these steps to host your central cloud database on **Neon Serverless Post
 
 ---
 
-### 3.2 Deploying Central Backend Server on Render / Vercel
+### 3.2 Deploying Backend API Server on Render
 
-#### Deploying on Render (Recommended)
 1. Log in to [Render.com](https://render.com) and click **New ➔ Web Service**.
-2. Connect your Git repository (`WATER SYSTEM`).
-3. Set the build and start commands:
-   - **Root Directory**: `.`
+2. Connect your GitHub repository (`Lami2567/AQUAPOS`).
+3. Set the Web Service Settings:
+   - **Name**: `aquapos-server` (or your preferred name)
+   - **Region**: Select the region closest to your users / Neon database (e.g. Frankfurt or Ohio)
+   - **Branch**: `main`
+   - **Root Directory**: `.` (leave as root)
+   - **Runtime**: `Node`
    - **Build Command**: `npm run build`
-   - **Start Command**: `npm run start:server` (or `node apps/server/dist/main.js`)
-4. Configure Environment Variables in Render:
+   - **Start Command**: `npm run start:server` (or `npm start`)
+4. Configure **Environment Variables** in Render:
    ```env
    NODE_ENV=production
    PORT=3000
@@ -231,22 +236,117 @@ Follow these steps to host your central cloud database on **Neon Serverless Post
    JWT_SECRET=your_ultra_secure_jwt_secret_key_2026
    CORS_ORIGIN=*
    ```
-5. Click **"Create Web Service"**. Render will compile the project and give you a public API URL:
-   `https://aquapos-server.onrender.com`
+   > [!TIP]
+   > For production security, once your Vercel frontend is deployed, you can restrict `CORS_ORIGIN` to your exact Vercel URL, e.g.:
+   > `CORS_ORIGIN=https://aquapos-frontend.vercel.app,http://localhost:3000,http://localhost:1420,tauri://localhost`
 
-#### Deploying Admin Web Dashboard on Vercel
-1. Log in to [Vercel.com](https://vercel.com) and click **"Add New Project"**.
-2. Select your repository and choose `apps/desktop` or `apps/admin-web`.
-3. Set build command: `npm run build --workspace=apps/desktop`
-4. Set Output Directory: `apps/desktop/dist`
-5. Click **Deploy**. Your central administrator web portal is now live!
+5. Click **"Deploy Web Service"**.
+6. Once deployed, copy your public Render URL:
+   `https://aquapos-server.onrender.com`
 
 ---
 
-### 3.3 Connecting Branch Desktop Apps to Cloud Server
-On branch desktop computers:
-1. Open the `.env` configuration file located in `apps/desktop/.env`:
+### 3.3 Deploying Frontend on Vercel & Connecting to Render
+
+Follow these exact steps to host the web application on **Vercel** and connect it to your **Render** backend.
+
+```
++------------------------------------+                  +------------------------------------+
+|         Vercel (Frontend)          |   HTTPS Requests |          Render (Backend)          |
+|   https://aquapos.vercel.app       | ---------------> |   https://aquapos-server.onrender  |
+|                                    | <--------------- |                                    |
+|   VITE_API_URL = [Render URL]      |   JSON / CORS OK |   CORS_ORIGIN = [Vercel URL]       |
++------------------------------------+                  +------------------------------------+
+```
+
+#### Step 1: Import Repository on Vercel
+1. Log in to [Vercel.com](https://vercel.com) and click **"Add New..." ➔ "Project"**.
+2. Import your GitHub repository (`Lami2567/AQUAPOS`).
+
+#### Step 2: Configure Project Settings on Vercel
+In the **Configure Project** screen:
+- **Framework Preset**: Select **Vite** (or **Other**).
+- **Root Directory**: Leave as `./` (the repository root).
+- **Build & Development Settings**:
+  - Check **Override** for **Build Command**:
+    ```bash
+    npm run build:packages && npm run build --workspace=apps/desktop
+    ```
+  - Check **Override** for **Output Directory**:
+    ```bash
+    apps/desktop/dist
+    ```
+  - Check **Override** for **Install Command**:
+    ```bash
+    npm install
+    ```
+
+#### Step 3: Add Environment Variables on Vercel
+Expand the **Environment Variables** section in Vercel and add:
+
+| Key | Value | Description |
+|---|---|---|
+| `VITE_API_URL` | `https://aquapos-server.onrender.com` | Public HTTPS URL of your Render backend API |
+| `VITE_CLOUD_API_URL` | `https://aquapos-server.onrender.com` | Central cloud sync endpoint |
+| `VITE_BRANCH_ID` | `b1111111-1111-1111-1111-111111111111` | Default branch UUID (or configured branch) |
+| `VITE_DEVICE_ID` | `web-admin-portal-01` | Identifier for web portal sessions |
+
+> [!IMPORTANT]
+> Replace `https://aquapos-server.onrender.com` with your actual Render service URL (do NOT include a trailing slash).
+
+#### Step 4: Deploy & Verify
+1. Click **Deploy**. Vercel will build the workspace packages and deploy the static frontend.
+2. Once the build completes, Vercel will assign you a domain like `https://aquapos-xyz.vercel.app`.
+3. Open your Vercel URL and log in with your admin credentials (`admin` / `admin123`).
+
+---
+
+### 3.4 Configuring Cross-Origin Communication (CORS) & Troubleshooting
+
+To ensure seamless communication between your Vercel frontend and Render backend:
+
+#### 1. Configure CORS in Render
+In Render Dashboard ➔ Your Web Service ➔ **Environment**:
+- Add or update the variable:
+  ```env
+  CORS_ORIGIN=https://aquapos-xyz.vercel.app
+  ```
+  *(Or use `CORS_ORIGIN=*` during initial setup to allow all origins).*
+- Click **Save Changes**. Render will automatically restart your server with the new CORS policy.
+
+#### 2. Vercel SPA Routing (`vercel.json`)
+The repository includes a root [`vercel.json`](file:///c:/Users/USER/Desktop/WATER%20SYSTEM/vercel.json) that automatically handles client-side React routing:
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build:packages && npm run build --workspace=apps/desktop",
+  "outputDirectory": "apps/desktop/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+#### 3. Common Troubleshooting Checklist
+
+| Issue | Cause | Solution |
+|---|---|---|
+| **CORS policy error in browser console** | `CORS_ORIGIN` on Render doesn't match your Vercel domain | Set `CORS_ORIGIN=*` or add your exact Vercel URL (e.g. `https://your-app.vercel.app`) in Render Environment Variables. |
+| **Initial request takes 50+ seconds** | Free-tier Render services spin down after 15 minutes of inactivity | This is normal for Render free instances ("cold start"). Paid instances stay active 24/7. |
+| **Network Error / Failed to fetch** | `VITE_API_URL` missing or misspelled in Vercel | Verify `VITE_API_URL` in Vercel Project Settings ➔ Environment Variables, then trigger a Redeploy. |
+| **404 on page refresh in Vercel** | Missing SPA rewrite rule | Ensure [`vercel.json`](file:///c:/Users/USER/Desktop/WATER%20SYSTEM/vercel.json) exists in the repository root with the `"source": "/(.*)", "destination": "/index.html"` rewrite rule. |
+
+---
+
+### 3.5 Connecting Branch Desktop Apps to Cloud Server
+On physical computers in branch offices (Lwengo, Isingiro, etc.):
+1. Create or edit `apps/desktop/.env`:
    ```env
+   VITE_API_URL=https://aquapos-server.onrender.com
    VITE_CLOUD_API_URL=https://aquapos-server.onrender.com
    VITE_BRANCH_ID=b1111111-1111-1111-1111-111111111111
    VITE_DEVICE_ID=dev-desktop-lwengo-01

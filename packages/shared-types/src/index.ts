@@ -82,7 +82,9 @@ export interface Worker {
 
 // Product Management
 export interface BranchPrice {
+  id?: string;
   branchId: string;
+  productId?: string;
   costPriceUgx?: number;
   sellingPriceUgx: number;
 }

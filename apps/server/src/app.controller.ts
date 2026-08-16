@@ -202,11 +202,23 @@ export class AppController {
     );
   }
 
-  // Offline Sync Ingestion
+  // Offline Sync Ingestion & Pull
+  @Public()
+  @Get('sync/pull')
+  async pullSync(@Query('branchId') branchId?: string) {
+    return this.syncService.pullCentralData(branchId);
+  }
+
   @Public()
   @Post('sync/ingest')
   async ingestSync(@Body() body: any) {
     return this.syncService.ingestTransactionBatch(body.branchId, body.deviceId, body.transactions);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @Post('admin/reset-production')
+  async resetProduction(@Body() body: { clearDemoMaster?: boolean }) {
+    return this.syncService.resetProductionData(body?.clearDemoMaster || false);
   }
 
   // Backups & Auditing

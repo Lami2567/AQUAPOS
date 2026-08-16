@@ -19,9 +19,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const PosView: React.FC = () => {
   const {
+    branches,
+    currentBranchId,
     currentStoreId,
     stores,
     products,
+    branchPrices,
     inventoryStock,
     cart,
     addToCart,
@@ -35,6 +38,16 @@ export const PosView: React.FC = () => {
     clearCart,
     addSaleRecord,
   } = useStore();
+
+  const currentStore = stores.find((s) => s.id === currentStoreId);
+  const currentBranch = branches.find((b) => b.id === currentBranchId || b.id === currentStore?.branchId);
+
+  const getEffectivePrice = (prod: any) => {
+    const bp = branchPrices.find(
+      (p) => p.branchId === (currentBranch?.id || currentBranchId) && p.productId === prod.id
+    );
+    return bp?.sellingPriceUgx || prod.sellingPriceUgx;
+  };
 
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('ALL');
@@ -175,11 +188,20 @@ export const PosView: React.FC = () => {
           {filteredProducts.map((product) => {
             const stock = inventoryStock[currentStoreId]?.[product.id] || 0;
             const isOutOfStock = stock <= 0;
+            const unitPrice = getEffectivePrice(product);
 
             return (
               <div
                 key={product.id}
-                onClick={() => !isOutOfStock && addToCart(product)}
+                onClick={() =>
+                  !isOutOfStock &&
+                  addToCart({
+                    id: product.id,
+                    sku: product.sku,
+                    name: product.name,
+                    sellingPriceUgx: unitPrice,
+                  })
+                }
                 className={`glass-card rounded-2xl p-4 transition-all duration-200 flex flex-col justify-between group border border-slate-800 ${
                   isOutOfStock
                     ? 'opacity-60 cursor-not-allowed bg-slate-950/60'
@@ -214,7 +236,7 @@ export const PosView: React.FC = () => {
                   <div>
                     <div className="text-[10px] text-slate-400">Unit Price</div>
                     <div className="text-lg font-extrabold text-cyan-400 font-mono">
-                      UGX {product.sellingPriceUgx.toLocaleString()}
+                      UGX {unitPrice.toLocaleString()}
                     </div>
                   </div>
 

@@ -22,8 +22,11 @@ import { v4 as uuidv4 } from 'uuid';
 export const FinanceView: React.FC = () => {
   const {
     user,
+    branches,
     stores,
     workers,
+    currentBranchId,
+    currentStoreId,
     expenseTypes,
     paymentMethodsList,
     expensesList,
@@ -38,12 +41,18 @@ export const FinanceView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'expenses' | 'salaries' | 'debts'>('expenses');
   const [notification, setNotification] = useState<string | null>(null);
 
+  const branchStores = stores.filter((s) => !currentBranchId || s.branchId === currentBranchId);
+  const branchWorkers = workers.filter((w) => !currentBranchId || w.branchId === currentBranchId);
+  const filteredExpenses = expensesList.filter(
+    (e) => !currentBranchId || e.branchId === currentBranchId
+  );
+
   // New Expense Modal State
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [expenseCategory, setExpenseCategory] = useState(expenseTypes[0]?.code || 'FUEL');
   const [expenseAmount, setExpenseAmount] = useState(50000);
   const [expenseDesc, setExpenseDesc] = useState('');
-  const [expenseStoreId, setExpenseStoreId] = useState(stores[0]?.id || '');
+  const [expenseStoreId, setExpenseStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [expensePaymentMethod, setExpensePaymentMethod] = useState('CASH');
 
   // Salary Payslip Modal State

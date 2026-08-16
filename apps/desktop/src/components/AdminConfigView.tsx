@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { apiClient } from '../utils/api';
 import {
   Building2,
   Store,
@@ -86,6 +87,7 @@ export const AdminConfigView: React.FC = () => {
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isResetConfirmModalOpen, setIsResetConfirmModalOpen] = useState(false);
+  const [clearDemoMaster, setClearDemoMaster] = useState(false);
   const [adminUsernameInput, setAdminUsernameInput] = useState('admin');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [notification, setNotification] = useState<string | null>(null);
@@ -1796,36 +1798,66 @@ export const AdminConfigView: React.FC = () => {
                 <li>Inventory stock quantities reset to clean 0 for actual opening intake</li>
               </ul>
 
-              <div className="font-bold text-emerald-400 flex items-center gap-1.5 pt-2 border-t border-slate-900">
-                <span>✓ What will be PRESERVED safely:</span>
+              <div className="pt-2 border-t border-slate-800">
+                <label className="flex items-center gap-2 cursor-pointer bg-rose-950/40 p-2.5 rounded-xl border border-rose-800/40">
+                  <input
+                    type="checkbox"
+                    checked={clearDemoMaster}
+                    onChange={(e) => setClearDemoMaster(e.target.checked)}
+                    className="w-4 h-4 accent-rose-500 rounded cursor-pointer"
+                  />
+                  <span className="text-rose-300 font-bold text-xs">
+                    Also wipe sample branches, demo workers, and demo products (Fresh Customer Setup)
+                  </span>
+                </label>
               </div>
-              <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1 text-[11px]">
-                <li>All Branches, Stores, Warehouses & Delivery Vehicles</li>
-                <li>All Registered Products, SKUs, Categories & Price Rules</li>
-                <li>All Workers, Departments, User Accounts & Security Roles</li>
-                <li>All System Settings & Master Configurations</li>
-              </ul>
+
+              {!clearDemoMaster && (
+                <>
+                  <div className="font-bold text-emerald-400 flex items-center gap-1.5 pt-2 border-t border-slate-900">
+                    <span>✓ What will be PRESERVED safely:</span>
+                  </div>
+                  <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1 text-[11px]">
+                    <li>All Branches, Stores, Warehouses & Delivery Vehicles</li>
+                    <li>All Registered Products, SKUs, Categories & Price Rules</li>
+                    <li>All Workers, Departments, User Accounts & Security Roles</li>
+                    <li>All System Settings & Master Configurations</li>
+                  </ul>
+                </>
+              )}
             </div>
 
             <div className="flex gap-2 border-t border-slate-800 pt-3">
               <button
                 type="button"
-                onClick={() => setIsResetConfirmModalOpen(false)}
+                onClick={() => {
+                  setIsResetConfirmModalOpen(false);
+                  setClearDemoMaster(false);
+                }}
                 className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs"
               >
                 Cancel / Keep Data
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  resetProductionData();
+                onClick={async () => {
+                  try {
+                    // Also trigger central server reset if online
+                    await apiClient.post('/api/v1/admin/reset-production', { clearDemoMaster }).catch(() => {});
+                  } catch (e) {}
+
+                  resetProductionData(clearDemoMaster);
                   setIsResetConfirmModalOpen(false);
-                  notify('Production ledger reset successfully! Test data wiped and ledger initialized.');
+                  notify(
+                    clearDemoMaster
+                      ? 'System completely reset for fresh customer setup! Master data & test ledger cleared.'
+                      : 'Production ledger reset successfully! Test sales wiped and stock initialized to 0.'
+                  );
                 }}
                 className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950 cursor-pointer"
               >
                 <Trash2 className="w-4 h-4" />
-                <span>Yes, Purge Test Data & Prepare Real Ledger</span>
+                <span>{clearDemoMaster ? 'Wipe Everything & Start Fresh' : 'Purge Test Data & Prepare Real Ledger'}</span>
               </button>
             </div>
           </div>

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Database, ShieldCheck, RefreshCw, HardDrive, CheckCircle2, AlertTriangle, Clock, Server } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { syncManager } from '../services/syncService';
 
 export const SyncAuditView: React.FC = () => {
   const { isOnline, syncStatus, pendingSyncCount, setSyncStatus, outboxQueue, auditLogs } = useStore();
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [backupSuccessMsg, setBackupSuccessMsg] = useState<string | null>(null);
+  const [syncFeedbackMsg, setSyncFeedbackMsg] = useState<string | null>(null);
 
-  const handleManualSync = () => {
-    setSyncStatus('SYNCING');
-    setTimeout(() => {
-      setSyncStatus('SYNCED', 0);
-    }, 1200);
+  const handleManualSync = async () => {
+    const res = await syncManager.triggerSync();
+    setSyncFeedbackMsg(res.message);
+    setTimeout(() => setSyncFeedbackMsg(null), 5000);
   };
 
   const handleCreateBackup = () => {
@@ -57,6 +58,13 @@ export const SyncAuditView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {syncFeedbackMsg && (
+        <div className="bg-cyan-950 border border-cyan-500/40 text-cyan-300 p-3.5 rounded-2xl text-xs flex items-center gap-2 shadow-lg animate-fade-in">
+          <CheckCircle2 className="w-5 h-5 text-cyan-400 flex-shrink-0" />
+          <span>{syncFeedbackMsg}</span>
+        </div>
+      )}
 
       {backupSuccessMsg && (
         <div className="bg-emerald-950 border border-emerald-500/40 text-emerald-300 p-3.5 rounded-2xl text-xs flex items-center gap-2 shadow-lg animate-fade-in">
