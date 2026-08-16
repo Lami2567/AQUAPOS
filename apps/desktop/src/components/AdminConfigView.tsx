@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
 import { apiClient } from '../utils/api';
+import { syncManager } from '../services/syncService';
 import {
   Building2,
   Store,
@@ -157,7 +158,11 @@ export const AdminConfigView: React.FC = () => {
         await apiClient.delete(`/api/v1/admin/${endpoint}/${id}`).catch(() => {});
       }
 
-      notify(`Deleted item successfully from local state and central cloud database.`);
+      if (navigator.onLine) {
+        syncManager.triggerSync().catch(() => {});
+      }
+
+      notify(`Deleted item successfully from local state and queued for central sync.`);
     } catch (e: any) {
       notify(`Error deleting item: ${e.message}`);
     }
@@ -289,6 +294,10 @@ export const AdminConfigView: React.FC = () => {
         saveSystemSettingInStore(editingItem);
         notify(`System Setting '${editingItem.settingKey}' saved successfully!`);
         break;
+    }
+
+    if (navigator.onLine) {
+      syncManager.triggerSync().catch(() => {});
     }
 
     setShowModal(false);

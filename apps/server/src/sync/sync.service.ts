@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service.js';
+import { AdminService } from '../admin/admin.service.js';
 import { SyncStatus } from '@water-business/shared-types';
 
 @Injectable()
 export class SyncService {
   private readonly logger = new Logger(SyncService.name);
 
-  constructor(private dbService: DatabaseService) {}
+  constructor(
+    private dbService: DatabaseService,
+    private adminService: AdminService
+  ) {}
 
   /**
    * Pull central data for an online dashboard or offline branch client.
@@ -312,22 +316,84 @@ export class SyncService {
 
           // 2. Apply transaction payload to relevant table
           const p = tx.payload || {};
+          const opUser = (tx as any).userId || p.userId || 'offline-sync';
 
-          if (tx.transactionType === 'SALE' && p.receiptNumber) {
+          if (tx.transactionType === 'SAVE_BRANCH' || tx.transactionType === 'BRANCH') {
+            await this.adminService.saveBranch(p, opUser);
+          } else if (tx.transactionType === 'DELETE_BRANCH') {
+            await this.adminService.deleteBranch(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_STORE' || tx.transactionType === 'STORE') {
+            await this.adminService.saveStore(p, opUser);
+          } else if (tx.transactionType === 'DELETE_STORE') {
+            await this.adminService.deleteStore(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_DEPARTMENT' || tx.transactionType === 'DEPARTMENT') {
+            await this.adminService.saveDepartment(p, opUser);
+          } else if (tx.transactionType === 'DELETE_DEPARTMENT') {
+            await this.adminService.deleteDepartment(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_WORKER' || tx.transactionType === 'WORKER') {
+            await this.adminService.saveWorker(p, opUser);
+          } else if (tx.transactionType === 'DELETE_WORKER') {
+            await this.adminService.deleteWorker(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_USER' || tx.transactionType === 'USER') {
+            await this.adminService.saveUser(p, opUser);
+          } else if (tx.transactionType === 'DELETE_USER') {
+            await this.adminService.deleteUser(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_ROLE' || tx.transactionType === 'ROLE') {
+            await this.adminService.saveRole(p, opUser);
+          } else if (tx.transactionType === 'DELETE_ROLE') {
+            await this.adminService.deleteRole(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_VEHICLE' || tx.transactionType === 'VEHICLE') {
+            await this.adminService.saveVehicle(p, opUser);
+          } else if (tx.transactionType === 'DELETE_VEHICLE') {
+            await this.adminService.deleteVehicle(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_PRODUCT' || tx.transactionType === 'PRODUCT') {
+            await this.adminService.saveProduct(p, opUser);
+          } else if (tx.transactionType === 'DELETE_PRODUCT') {
+            await this.adminService.deleteProduct(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_CATEGORY' || tx.transactionType === 'CATEGORY') {
+            await this.adminService.saveCategory(p, opUser);
+          } else if (tx.transactionType === 'DELETE_CATEGORY') {
+            await this.adminService.deleteCategory(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_BRANCH_PRICE' || tx.transactionType === 'BRANCH_PRICE' || tx.transactionType === 'SAVE_PRICE') {
+            await this.adminService.saveBranchPrice(p, opUser);
+          } else if (tx.transactionType === 'DELETE_BRANCH_PRICE') {
+            await this.adminService.deleteBranchPrice(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_PAYMENT_METHOD' || tx.transactionType === 'PAYMENT_METHOD') {
+            await this.adminService.savePaymentMethod(p, opUser);
+          } else if (tx.transactionType === 'DELETE_PAYMENT_METHOD') {
+            await this.adminService.deletePaymentMethod(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_EXPENSE_TYPE' || tx.transactionType === 'EXPENSE_TYPE') {
+            await this.adminService.saveExpenseType(p, opUser);
+          } else if (tx.transactionType === 'DELETE_EXPENSE_TYPE') {
+            await this.adminService.deleteExpenseType(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_DEBT_TYPE' || tx.transactionType === 'DEBT_TYPE') {
+            await this.adminService.saveDebtType(p, opUser);
+          } else if (tx.transactionType === 'DELETE_DEBT_TYPE') {
+            await this.adminService.deleteDebtType(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_SALARY_SETTING' || tx.transactionType === 'SALARY_SETTING') {
+            await this.adminService.saveSalarySetting(p, opUser);
+          } else if (tx.transactionType === 'DELETE_SALARY_SETTING') {
+            await this.adminService.deleteSalarySetting(p.id || tx.id, opUser);
+          } else if (tx.transactionType === 'SAVE_SYSTEM_SETTING' || tx.transactionType === 'SYSTEM_SETTING') {
+            await this.adminService.saveSystemSetting(p, opUser);
+          } else if (tx.transactionType === 'DELETE_SYSTEM_SETTING') {
+            await this.adminService.deleteSystemSetting(p.id || tx.id, opUser);
+          } else if ((tx.transactionType === 'SALE' || tx.transactionType === 'CREATE_SALE') && (p.receiptNumber || p.id)) {
             const saleId = p.id || tx.id;
+            const receiptNum = p.receiptNumber || `REC-${saleId.slice(-8)}`;
             await this.dbService.execute(
               `INSERT OR REPLACE INTO sales (id, receipt_number, store_id, cashier_id, customer_name, customer_phone, total_amount_ugx, discount_amount_ugx, net_amount_ugx, paid_amount_ugx, change_amount_ugx, payment_method, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
                 saleId,
-                p.receiptNumber,
+                receiptNum,
                 p.storeId,
                 p.cashierId || 'u-cashier',
                 p.customerName || null,
                 p.customerPhone || null,
                 p.totalAmountUgx || p.subtotalUgx || 0,
-                p.overallDiscountUgx || 0,
-                p.totalAmountUgx || 0,
+                p.overallDiscountUgx || p.discountAmountUgx || 0,
+                p.netAmountUgx || p.totalAmountUgx || 0,
                 p.paidAmountUgx || p.totalAmountUgx || 0,
                 p.changeAmountUgx || 0,
                 p.paymentMethod || 'CASH',
@@ -350,12 +416,12 @@ export class SyncService {
                     saleId,
                     p.cashierId || 'u-cashier',
                     deviceId,
-                    `POS Sale ${p.receiptNumber}`,
+                    `POS Sale ${receiptNum}`,
                   ]
                 );
               }
             }
-          } else if (tx.transactionType === 'STOCK_INTAKE' && p.storeId && p.productId) {
+          } else if ((tx.transactionType === 'STOCK_INTAKE' || tx.transactionType === 'ADD_STOCK_RECEIPT') && p.storeId && p.productId) {
             await this.dbService.execute(
               `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
                VALUES (?, ?, ?, 'RECEIPT', ?, ?, 'STOCK_RECEIPT', ?, ?, ?, ?)`,
@@ -371,7 +437,7 @@ export class SyncService {
                 p.notes || 'Stock Intake',
               ]
             );
-          } else if (tx.transactionType === 'EXPENSE' && p.voucherNumber) {
+          } else if (tx.transactionType === 'EXPENSE' && (p.voucherNumber || p.category)) {
             await this.dbService.execute(
               `INSERT OR REPLACE INTO expenses (id, branch_id, store_id, category, amount_ugx, description, approved_by, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -383,34 +449,34 @@ export class SyncService {
                 p.amountUgx,
                 p.description,
                 p.approvedBy || 'Manager',
-                p.date || new Date().toISOString(),
+                p.date || p.createdAt || new Date().toISOString(),
               ]
             );
-          } else if (tx.transactionType === 'DEBT' && p.debtorName) {
+          } else if (tx.transactionType === 'DEBT' && (p.debtorName || p.debtor_worker_id)) {
             await this.dbService.execute(
               `INSERT OR REPLACE INTO debts (id, debtor_customer_name, source_type, source_id, original_amount_ugx, paid_amount_ugx, balance_amount_ugx, reason, status, approved_by, created_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
                 p.id || tx.id,
-                p.debtorName,
+                p.debtorName || p.debtor_customer_name || 'Customer',
                 p.source || 'MANUAL',
                 tx.id,
-                p.originalAmountUgx || p.amountUgx,
+                p.originalAmountUgx || p.amountUgx || 0,
                 p.paidAmountUgx || 0,
-                p.balanceAmountUgx || p.amountUgx,
+                p.balanceAmountUgx || p.amountUgx || 0,
                 p.reason || 'Debt Record',
                 p.status || 'OUTSTANDING',
                 'Manager',
-                p.date || new Date().toISOString(),
+                p.date || p.createdAt || new Date().toISOString(),
               ]
             );
-          } else if (tx.transactionType === 'FIELD_SESSION' && p.sessionNumber) {
+          } else if (tx.transactionType === 'FIELD_SESSION' && (p.sessionNumber || p.id)) {
             await this.dbService.execute(
               `INSERT OR REPLACE INTO field_sessions (id, session_number, store_id, vehicle_id, worker_id, status, start_time, end_time, created_by)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
                 p.id || tx.id,
-                p.sessionNumber,
+                p.sessionNumber || `FS-${Date.now().toString().slice(-6)}`,
                 p.storeId,
                 p.vehicleId,
                 p.workerId,

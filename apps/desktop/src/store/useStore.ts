@@ -681,10 +681,21 @@ export const useStore = create<AppState>()(
         }),
 
       deleteBranchFromStore: (id) =>
-        set((state) => ({
-          branches: state.branches.filter((b) => b.id !== id),
-          currentBranchId: state.currentBranchId === id ? '' : state.currentBranchId,
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-branch-${id}-${Date.now()}`,
+            type: 'DELETE_BRANCH',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            branches: state.branches.filter((b) => b.id !== id),
+            currentBranchId: state.currentBranchId === id ? '' : state.currentBranchId,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveStoreInStore: (st) =>
         set((state) => {
@@ -706,166 +717,476 @@ export const useStore = create<AppState>()(
         }),
 
       deleteStoreFromStore: (id) =>
-        set((state) => ({
-          stores: state.stores.filter((s) => s.id !== id),
-          currentStoreId: state.currentStoreId === id ? '' : state.currentStoreId,
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-store-${id}-${Date.now()}`,
+            type: 'DELETE_STORE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            stores: state.stores.filter((s) => s.id !== id),
+            currentStoreId: state.currentStoreId === id ? '' : state.currentStoreId,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveDepartmentInStore: (dept) =>
-        set((state) => ({
-          departments: state.departments.some((d) => d.id === dept.id)
+        set((state) => {
+          const newDepts = state.departments.some((d) => d.id === dept.id)
             ? state.departments.map((d) => (d.id === dept.id ? dept : d))
-            : [...state.departments, dept],
-        })),
+            : [...state.departments, dept];
+          const outboxItem: OutboxRecord = {
+            id: `tx-dept-${dept.id}-${Date.now()}`,
+            type: 'SAVE_DEPARTMENT',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: dept,
+          };
+          return {
+            departments: newDepts,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteDepartmentFromStore: (id) =>
-        set((state) => ({
-          departments: state.departments.filter((d) => d.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-dept-${id}-${Date.now()}`,
+            type: 'DELETE_DEPARTMENT',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            departments: state.departments.filter((d) => d.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveWorkerInStore: (worker) =>
-        set((state) => ({
-          workers: state.workers.some((w) => w.id === worker.id)
+        set((state) => {
+          const newWorkers = state.workers.some((w) => w.id === worker.id)
             ? state.workers.map((w) => (w.id === worker.id ? worker : w))
-            : [...state.workers, worker],
-        })),
+            : [...state.workers, worker];
+          const outboxItem: OutboxRecord = {
+            id: `tx-worker-${worker.id}-${Date.now()}`,
+            type: 'SAVE_WORKER',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: worker,
+          };
+          return {
+            workers: newWorkers,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteWorkerFromStore: (id) =>
-        set((state) => ({
-          workers: state.workers.filter((w) => w.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-worker-${id}-${Date.now()}`,
+            type: 'DELETE_WORKER',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            workers: state.workers.filter((w) => w.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveUserInStore: (u) =>
-        set((state) => ({
-          usersList: state.usersList.some((usr) => usr.id === u.id)
+        set((state) => {
+          const newUsers = state.usersList.some((usr) => usr.id === u.id)
             ? state.usersList.map((usr) => (usr.id === u.id ? u : usr))
-            : [...state.usersList, u],
-        })),
+            : [...state.usersList, u];
+          const outboxItem: OutboxRecord = {
+            id: `tx-user-${u.id}-${Date.now()}`,
+            type: 'SAVE_USER',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: u,
+          };
+          return {
+            usersList: newUsers,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteUserFromStore: (id) =>
-        set((state) => ({
-          usersList: state.usersList.filter((usr) => usr.id !== id && usr.username !== 'admin'),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-user-${id}-${Date.now()}`,
+            type: 'DELETE_USER',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            usersList: state.usersList.filter((usr) => usr.id !== id && usr.username !== 'admin'),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveRoleInStore: (role) =>
-        set((state) => ({
-          rolesList: state.rolesList.some((r) => r.id === role.id)
+        set((state) => {
+          const newRoles = state.rolesList.some((r) => r.id === role.id)
             ? state.rolesList.map((r) => (r.id === role.id ? role : r))
-            : [...state.rolesList, role],
-        })),
+            : [...state.rolesList, role];
+          const outboxItem: OutboxRecord = {
+            id: `tx-role-${role.id}-${Date.now()}`,
+            type: 'SAVE_ROLE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: role,
+          };
+          return {
+            rolesList: newRoles,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteRoleFromStore: (id) =>
-        set((state) => ({
-          rolesList: state.rolesList.filter((r) => r.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-role-${id}-${Date.now()}`,
+            type: 'DELETE_ROLE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            rolesList: state.rolesList.filter((r) => r.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveVehicleInStore: (v) =>
-        set((state) => ({
-          vehicles: state.vehicles.some((veh) => veh.id === v.id)
+        set((state) => {
+          const newVehicles = state.vehicles.some((veh) => veh.id === v.id)
             ? state.vehicles.map((veh) => (veh.id === v.id ? v : veh))
-            : [...state.vehicles, v],
-        })),
+            : [...state.vehicles, v];
+          const outboxItem: OutboxRecord = {
+            id: `tx-vehicle-${v.id}-${Date.now()}`,
+            type: 'SAVE_VEHICLE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: v,
+          };
+          return {
+            vehicles: newVehicles,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteVehicleFromStore: (id) =>
-        set((state) => ({
-          vehicles: state.vehicles.filter((v) => v.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-vehicle-${id}-${Date.now()}`,
+            type: 'DELETE_VEHICLE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            vehicles: state.vehicles.filter((v) => v.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveProductInStore: (p) =>
-        set((state) => ({
-          products: state.products.some((prod) => prod.id === p.id)
+        set((state) => {
+          const newProducts = state.products.some((prod) => prod.id === p.id)
             ? state.products.map((prod) => (prod.id === p.id ? p : prod))
-            : [...state.products, p],
-        })),
+            : [...state.products, p];
+          const outboxItem: OutboxRecord = {
+            id: `tx-product-${p.id}-${Date.now()}`,
+            type: 'SAVE_PRODUCT',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: p,
+          };
+          return {
+            products: newProducts,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteProductFromStore: (id) =>
-        set((state) => ({
-          products: state.products.filter((p) => p.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-product-${id}-${Date.now()}`,
+            type: 'DELETE_PRODUCT',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            products: state.products.filter((p) => p.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveCategoryInStore: (cat) =>
-        set((state) => ({
-          categories: state.categories.some((c) => c.id === cat.id)
+        set((state) => {
+          const newCategories = state.categories.some((c) => c.id === cat.id)
             ? state.categories.map((c) => (c.id === cat.id ? cat : c))
-            : [...state.categories, cat],
-        })),
+            : [...state.categories, cat];
+          const outboxItem: OutboxRecord = {
+            id: `tx-category-${cat.id}-${Date.now()}`,
+            type: 'SAVE_CATEGORY',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: cat,
+          };
+          return {
+            categories: newCategories,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteCategoryFromStore: (id) =>
-        set((state) => ({
-          categories: state.categories.filter((c) => c.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-category-${id}-${Date.now()}`,
+            type: 'DELETE_CATEGORY',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            categories: state.categories.filter((c) => c.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveBranchPriceInStore: (price) =>
-        set((state) => ({
-          branchPrices: state.branchPrices.some((bp) => bp.branchId === price.branchId && bp.productId === price.productId)
+        set((state) => {
+          const newPrices = state.branchPrices.some((bp) => bp.branchId === price.branchId && bp.productId === price.productId)
             ? state.branchPrices.map((bp) => (bp.branchId === price.branchId && bp.productId === price.productId ? price : bp))
-            : [...state.branchPrices, price],
-        })),
+            : [...state.branchPrices, price];
+          const outboxItem: OutboxRecord = {
+            id: `tx-branchprice-${price.branchId}-${price.productId}-${Date.now()}`,
+            type: 'SAVE_BRANCH_PRICE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: price,
+          };
+          return {
+            branchPrices: newPrices,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteBranchPriceFromStore: (id) =>
-        set((state) => ({
-          branchPrices: state.branchPrices.filter((bp) => bp.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-branchprice-${id}-${Date.now()}`,
+            type: 'DELETE_BRANCH_PRICE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            branchPrices: state.branchPrices.filter((bp) => bp.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       savePaymentMethodInStore: (pm) =>
-        set((state) => ({
-          paymentMethodsList: state.paymentMethodsList.some((p) => p.id === pm.id)
+        set((state) => {
+          const newPaymentMethods = state.paymentMethodsList.some((p) => p.id === pm.id)
             ? state.paymentMethodsList.map((p) => (p.id === pm.id ? pm : p))
-            : [...state.paymentMethodsList, pm],
-        })),
+            : [...state.paymentMethodsList, pm];
+          const outboxItem: OutboxRecord = {
+            id: `tx-paymentmethod-${pm.id}-${Date.now()}`,
+            type: 'SAVE_PAYMENT_METHOD',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: pm,
+          };
+          return {
+            paymentMethodsList: newPaymentMethods,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deletePaymentMethodFromStore: (id) =>
-        set((state) => ({
-          paymentMethodsList: state.paymentMethodsList.filter((pm) => pm.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-pm-${id}-${Date.now()}`,
+            type: 'DELETE_PAYMENT_METHOD',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            paymentMethodsList: state.paymentMethodsList.filter((pm) => pm.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveExpenseTypeInStore: (et) =>
-        set((state) => ({
-          expenseTypes: state.expenseTypes.some((e) => e.id === et.id)
+        set((state) => {
+          const newTypes = state.expenseTypes.some((e) => e.id === et.id)
             ? state.expenseTypes.map((e) => (e.id === et.id ? et : e))
-            : [...state.expenseTypes, et],
-        })),
+            : [...state.expenseTypes, et];
+          const outboxItem: OutboxRecord = {
+            id: `tx-expensetype-${et.id}-${Date.now()}`,
+            type: 'SAVE_EXPENSE_TYPE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: et,
+          };
+          return {
+            expenseTypes: newTypes,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteExpenseTypeFromStore: (id) =>
-        set((state) => ({
-          expenseTypes: state.expenseTypes.filter((e) => e.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-expensetype-${id}-${Date.now()}`,
+            type: 'DELETE_EXPENSE_TYPE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            expenseTypes: state.expenseTypes.filter((e) => e.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveDebtTypeInStore: (dt) =>
-        set((state) => ({
-          debtTypes: state.debtTypes.some((d) => d.id === dt.id)
+        set((state) => {
+          const newDebtTypes = state.debtTypes.some((d) => d.id === dt.id)
             ? state.debtTypes.map((d) => (d.id === dt.id ? dt : d))
-            : [...state.debtTypes, dt],
-        })),
+            : [...state.debtTypes, dt];
+          const outboxItem: OutboxRecord = {
+            id: `tx-debttype-${dt.id}-${Date.now()}`,
+            type: 'SAVE_DEBT_TYPE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: dt,
+          };
+          return {
+            debtTypes: newDebtTypes,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteDebtTypeFromStore: (id) =>
-        set((state) => ({
-          debtTypes: state.debtTypes.filter((d) => d.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-debttype-${id}-${Date.now()}`,
+            type: 'DELETE_DEBT_TYPE',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            debtTypes: state.debtTypes.filter((d) => d.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveSalarySettingInStore: (ss) =>
-        set((state) => ({
-          salarySettings: state.salarySettings.some((s) => s.id === ss.id)
+        set((state) => {
+          const newSalarySettings = state.salarySettings.some((s) => s.id === ss.id)
             ? state.salarySettings.map((s) => (s.id === ss.id ? ss : s))
-            : [...state.salarySettings, ss],
-        })),
+            : [...state.salarySettings, ss];
+          const outboxItem: OutboxRecord = {
+            id: `tx-salarysetting-${ss.id}-${Date.now()}`,
+            type: 'SAVE_SALARY_SETTING',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: ss,
+          };
+          return {
+            salarySettings: newSalarySettings,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteSalarySettingFromStore: (id) =>
-        set((state) => ({
-          salarySettings: state.salarySettings.filter((s) => s.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-salarysetting-${id}-${Date.now()}`,
+            type: 'DELETE_SALARY_SETTING',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            salarySettings: state.salarySettings.filter((s) => s.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       saveSystemSettingInStore: (sys) =>
-        set((state) => ({
-          systemSettings: state.systemSettings.some((s) => s.id === sys.id)
+        set((state) => {
+          const newSystemSettings = state.systemSettings.some((s) => s.id === sys.id)
             ? state.systemSettings.map((s) => (s.id === sys.id ? sys : s))
-            : [...state.systemSettings, sys],
-        })),
+            : [...state.systemSettings, sys];
+          const outboxItem: OutboxRecord = {
+            id: `tx-systemsetting-${sys.id}-${Date.now()}`,
+            type: 'SAVE_SYSTEM_SETTING',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: sys,
+          };
+          return {
+            systemSettings: newSystemSettings,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       deleteSystemSettingFromStore: (id) =>
-        set((state) => ({
-          systemSettings: state.systemSettings.filter((sys) => sys.id !== id),
-        })),
+        set((state) => {
+          const outboxItem: OutboxRecord = {
+            id: `tx-del-systemsetting-${id}-${Date.now()}`,
+            type: 'DELETE_SYSTEM_SETTING',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: { id },
+          };
+          return {
+            systemSettings: state.systemSettings.filter((sys) => sys.id !== id),
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+          };
+        }),
 
       // Operational Mutators
       addSaleRecord: (sale) =>

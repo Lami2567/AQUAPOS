@@ -1,10 +1,12 @@
 import axios from 'axios';
 
 // Resolve Backend API URL: Checks VITE_API_URL, VITE_CLOUD_API_URL, or defaults to local server
-export const API_BASE_URL =
+const RAW_API_URL =
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_CLOUD_API_URL ||
   'http://localhost:3001';
+
+export const API_BASE_URL = RAW_API_URL.replace(/\/+$/, '');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

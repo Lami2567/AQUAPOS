@@ -75,7 +75,8 @@ class SyncManager {
       }
 
       // 2. PULL: Pull latest central master data and inventory
-      const pullRes = await apiClient.get(`/api/v1/sync/pull?branchId=${branchId}`);
+      const sinceParam = store.lastSyncedAt ? `&since=${encodeURIComponent(store.lastSyncedAt)}` : '';
+      const pullRes = await apiClient.get(`/api/v1/sync/pull?branchId=${branchId}${sinceParam}`);
       if (pullRes.data?.success && pullRes.data?.data) {
         store.mergeCentralData(pullRes.data.data);
       }
