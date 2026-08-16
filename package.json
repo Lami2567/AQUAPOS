@@ -17,7 +17,7 @@
     "dev:desktop": "npm run dev --workspace=apps/desktop",
     "setup:windows": "node scripts/setup-windows-service.js"
   },
-  "devDependencies": {
+  "dependencies": {
     "@types/node": "^20.12.12",
     "typescript": "^5.4.5"
   }

@@ -15,10 +15,8 @@
     "test": "node --test dist/calculations.test.js"
   },
   "dependencies": {
-    "@water-business/shared-types": "*"
-  },
-  "devDependencies": {
     "@types/node": "^20.12.12",
+    "@water-business/shared-types": "*",
     "typescript": "^5.4.5"
   }
 }
