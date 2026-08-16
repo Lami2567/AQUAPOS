@@ -248,6 +248,23 @@ CREATE TABLE IF NOT EXISTS debt_payments (
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS salaries (
+  id TEXT PRIMARY KEY,
+  worker_id TEXT NOT NULL,
+  period_year INTEGER NOT NULL,
+  period_month INTEGER NOT NULL,
+  basic_salary_ugx INTEGER NOT NULL,
+  commission_ugx INTEGER DEFAULT 0,
+  allowances_ugx INTEGER DEFAULT 0,
+  gross_salary_ugx INTEGER NOT NULL,
+  total_deductions_ugx INTEGER DEFAULT 0,
+  net_salary_ugx INTEGER NOT NULL,
+  payment_method TEXT NOT NULL,
+  payment_reference TEXT,
+  paid_by TEXT NOT NULL,
+  paid_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS audit_logs (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -357,4 +374,16 @@ CREATE TABLE IF NOT EXISTS sync_outbox (
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   synced_at TEXT
 );
+
+-- Central Sync Inbox Table
+CREATE TABLE IF NOT EXISTS sync_inbox (
+  id TEXT PRIMARY KEY, -- Client-side Transaction UUID
+  branch_id TEXT NOT NULL,
+  device_id TEXT NOT NULL,
+  transaction_type TEXT NOT NULL,
+  payload TEXT NOT NULL, -- JSON String
+  status TEXT NOT NULL DEFAULT 'PROCESSED',
+  received_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
 

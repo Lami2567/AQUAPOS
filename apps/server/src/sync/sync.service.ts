@@ -40,7 +40,12 @@ export class SyncService {
     const sales = this.dbService.query<any>('SELECT * FROM sales ORDER BY created_at DESC LIMIT 200');
     const expenses = this.dbService.query<any>('SELECT * FROM expenses ORDER BY created_at DESC LIMIT 200');
     const debts = this.dbService.query<any>('SELECT * FROM debts ORDER BY created_at DESC LIMIT 200');
-    const salaryPayments = this.dbService.query<any>('SELECT * FROM salary_payments ORDER BY created_at DESC LIMIT 200');
+    let salaryPayments: any[] = [];
+    try {
+      salaryPayments = this.dbService.query<any>('SELECT * FROM salaries ORDER BY paid_at DESC LIMIT 200');
+    } catch (e) {
+      salaryPayments = [];
+    }
     const fieldSessions = this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
     const stockTransfers = this.dbService.query<any>('SELECT * FROM stock_transfers ORDER BY created_at DESC LIMIT 100');
 
