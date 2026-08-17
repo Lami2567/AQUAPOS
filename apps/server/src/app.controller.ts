@@ -229,6 +229,7 @@ export class AppController {
     return this.syncService.ingestTransactionBatch(body.branchId, body.deviceId, body.transactions);
   }
 
+  @Public()
   @Roles(UserRole.SUPER_ADMIN)
   @Post('admin/reset-production')
   async resetProduction(@Body() body: { clearDemoMaster?: boolean }) {
