@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import express from 'express';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -29,6 +32,27 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,OPTIONS',
     credentials: true,
   });
+
+  // Serve compiled production Desktop UI if available
+  const candidateDistPaths = [
+    path.join(process.cwd(), 'apps', 'desktop', 'dist'),
+    path.join(process.cwd(), '..', 'desktop', 'dist'),
+    path.join(__dirname, '..', '..', 'desktop', 'dist'),
+  ];
+  const desktopDistPath = candidateDistPaths.find((p) => fs.existsSync(p));
+  if (desktopDistPath) {
+    app.use(express.static(desktopDistPath));
+    app.use((req: any, res: any, next: any) => {
+      if (req.method === 'GET' && !req.path.startsWith('/api')) {
+        const indexPath = path.join(desktopDistPath, 'index.html');
+        if (fs.existsSync(indexPath)) {
+          return res.sendFile(indexPath);
+        }
+      }
+      next();
+    });
+    logger.log(`Serving static Desktop POS UI from: ${desktopDistPath}`);
+  }
 
   const port = process.env.PORT || 3001;
   await app.listen(port, '0.0.0.0');
