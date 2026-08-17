@@ -2,24 +2,21 @@ import React, { useState } from 'react';
 import {
   BarChart3,
   TrendingUp,
+  TrendingDown,
   DollarSign,
   Package,
   AlertTriangle,
-  Users,
-  Truck,
   Database,
-  FileText,
-  Calendar,
-  Filter,
   Download,
-  Printer,
+  Receipt,
   FileSpreadsheet,
+  PieChart,
+  Wallet,
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 export const DashboardReportsView: React.FC = () => {
   const {
-    user,
     branches,
     stores,
     products,
@@ -28,11 +25,9 @@ export const DashboardReportsView: React.FC = () => {
     fieldSessionsList,
     expensesList,
     debtsList,
-    salaryPaymentsList,
     auditLogs,
     currentBranchId,
     isOnline,
-    syncStatus,
     pendingSyncCount,
   } = useStore();
 
@@ -44,9 +39,9 @@ export const DashboardReportsView: React.FC = () => {
   );
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedBranch, setSelectedBranch] = useState(currentBranchId || 'ALL');
-  const [selectedReportType, setSelectedReportType] = useState('DAILY_SALES');
+  const [selectedReportType, setSelectedReportType] = useState('PROFITABILITY');
 
-  // Determine active branch scope: if specific branch selected, filter stores
+  // Determine active branch scope
   const activeBranchFilter = selectedBranch === 'ALL' ? currentBranchId : selectedBranch;
   const activeBranchStores = stores.filter((s) => !activeBranchFilter || s.branchId === activeBranchFilter);
   const activeStoreIdSet = new Set(activeBranchStores.map((s) => s.id));
@@ -89,6 +84,10 @@ export const DashboardReportsView: React.FC = () => {
 
   const expensesUgx = filteredExpenses.reduce((sum, e) => sum + e.amountUgx, 0);
 
+  // Net Profit Calculation: Gross Sales Revenue minus Operational Expenses and Outstanding Debts
+  const netProfitUgx = totalSalesUgx - expensesUgx - outstandingDebtsUgx;
+  const profitMarginPercent = totalSalesUgx > 0 ? ((netProfitUgx / totalSalesUgx) * 100).toFixed(1) : '0.0';
+
   const bankedMoneyUgx = filteredSales
     .filter((s) => s.paymentMethod === 'BANK_TRANSFER')
     .reduce((sum, s) => sum + s.totalAmountUgx, 0);
@@ -99,8 +98,6 @@ export const DashboardReportsView: React.FC = () => {
 
   const stockVariancesCount = filteredSessions.filter((s) => s.status === 'OPEN').length;
 
-  const currentBranchName = branches.find((b) => b.id === activeBranchFilter)?.name || 'All Branches';
-
   const adminMetrics = {
     totalSalesUgx,
     todaysSalesUgx,
@@ -109,6 +106,8 @@ export const DashboardReportsView: React.FC = () => {
     lowStockCount,
     outstandingDebtsUgx,
     expensesUgx,
+    netProfitUgx,
+    profitMarginPercent,
     bankedMoneyUgx,
     mobileMoneyUgx,
     stockVariancesCount,
@@ -117,24 +116,47 @@ export const DashboardReportsView: React.FC = () => {
   };
 
   const reportsList = [
+    { id: 'PROFITABILITY', title: 'Gross & Net Profitability Summary (After Expenses & Debts)' },
     { id: 'DAILY_SALES', title: 'Daily Sales Report' },
     { id: 'MONTHLY_SALES', title: 'Monthly Sales Summary' },
     { id: 'BRANCH_PERFORMANCE', title: 'Branch Performance & Profitability' },
     { id: 'PRODUCT_SALES', title: 'Product Sales Analysis' },
     { id: 'STOCK_BALANCE', title: 'Stock Balance Report' },
-    { id: 'STOCK_MOVEMENT', title: 'Immutable Stock Movement Ledger' },
-    { id: 'FIELD_SESSION', title: 'Field Session & Delivery Log' },
-    { id: 'FIELD_RECONCILIATION', title: 'Field Dual Reconciliation Report' },
-    { id: 'VEHICLE_PERFORMANCE', title: 'Vehicle (Lorry/Tricycle) Efficiency' },
-    { id: 'WORKER_PERFORMANCE', title: 'Worker Performance & Commission' },
     { id: 'EXPENSES', title: 'Branch Expenses Summary' },
     { id: 'DEBTS_PAID', title: 'Outstanding Debts & Payments' },
-    { id: 'PROFITABILITY', title: 'Gross Profit & Margin Report' },
     { id: 'AUDIT_LOG', title: 'System Audit Log Report' },
   ];
 
   const handleExportCSV = () => {
-    const csvData = `Report,Date Range,Branch,Generated At\n${selectedReportType},${startDate} to ${endDate},${selectedBranch},${new Date().toISOString()}`;
+    let csvData = `AquaPOS Business Report - ${selectedReportType}\n`;
+    csvData += `Generated At,${new Date().toLocaleString()}\n`;
+    csvData += `Date Scope,${startDate} to ${endDate}\n`;
+    csvData += `Branch Scope,${selectedBranch === 'ALL' ? 'Consolidated All Branches' : 'Filtered Branch'}\n\n`;
+    csvData += `FINANCIAL SUMMARY\n`;
+    csvData += `Gross Sales Revenue (UGX),${totalSalesUgx}\n`;
+    csvData += `Total Expenses (UGX),${expensesUgx}\n`;
+    csvData += `Outstanding Uncollected Debts (UGX),${outstandingDebtsUgx}\n`;
+    csvData += `NET PROFIT REALIZED (UGX),${netProfitUgx}\n`;
+    csvData += `Profit Margin (%),${profitMarginPercent}%\n\n`;
+
+    if (selectedReportType === 'EXPENSES') {
+      csvData += `Voucher Ref,Category,Description,Branch,Date,Amount (UGX)\n`;
+      filteredExpenses.forEach((e) => {
+        csvData += `"${e.voucherNumber}","${e.category}","${e.description}","${e.branchId}","${e.date}",${e.amountUgx}\n`;
+      });
+    } else if (selectedReportType === 'DEBTS_PAID') {
+      csvData += `Debtor Name,Source,Original Amount (UGX),Paid (UGX),Balance (UGX),Status,Date\n`;
+      debtsList.forEach((d) => {
+        csvData += `"${d.debtorName}","${d.source}",${d.originalAmountUgx},${d.paidAmountUgx},${d.balanceAmountUgx},"${d.status}","${d.date}"\n`;
+      });
+    } else {
+      csvData += `Receipt Ref,Date,Payment Method,Items,Total Amount (UGX)\n`;
+      filteredSales.forEach((s) => {
+        const itemsStr = s.items.map((it) => `${it.quantity}x ${it.name}`).join('; ');
+        csvData += `"${s.receiptNumber}","${s.date}","${s.paymentMethod}","${itemsStr}",${s.totalAmountUgx}\n`;
+      });
+    }
+
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -151,10 +173,10 @@ export const DashboardReportsView: React.FC = () => {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-100 flex items-center gap-2">
             <BarChart3 className="w-7 h-7 text-cyan-400" />
-            <span>Role Dashboards & Professional Reports</span>
+            <span>Business Reports & Financial Analytics</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time business performance analytics, financial metrics, and exportable audit-grade reporting.
+            Real-time business performance analytics, expense tracking, and net profit calculations after expenses & debts.
           </p>
         </div>
 
@@ -184,28 +206,75 @@ export const DashboardReportsView: React.FC = () => {
 
       {activeTab === 'dashboard' ? (
         <div className="space-y-6">
-          {/* Top Key Metrics Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Financial Summary Metrics Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            <div className="glass-card rounded-2xl p-4 border border-slate-800">
+            {/* 1. Total Sales / Revenue */}
+            <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/80">
               <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
-                <span>Total Sales</span>
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <span>Total Sales (Gross Revenue)</span>
+                <TrendingUp className="w-4 h-4 text-cyan-400" />
               </div>
               <div className="text-2xl font-extrabold text-cyan-400 mt-2 font-mono">
                 UGX {adminMetrics.totalSalesUgx.toLocaleString()}
               </div>
               <div className="text-[11px] text-slate-400 mt-1">
-                Today: UGX {adminMetrics.todaysSalesUgx.toLocaleString()} • ({salesHistory.length} sales)
+                Today: UGX {adminMetrics.todaysSalesUgx.toLocaleString()} • ({filteredSales.length} sales)
               </div>
             </div>
 
-            <div className="glass-card rounded-2xl p-4 border border-slate-800">
+            {/* 2. Total Expenses */}
+            <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/80">
               <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
-                <span>Current Stock</span>
+                <span>Total Expenses</span>
+                <TrendingDown className="w-4 h-4 text-rose-400" />
+              </div>
+              <div className="text-2xl font-extrabold text-rose-400 mt-2 font-mono">
+                UGX {adminMetrics.expensesUgx.toLocaleString()}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-1">
+                ({filteredExpenses.length} Expense Voucher Records)
+              </div>
+            </div>
+
+            {/* 3. Outstanding Debts */}
+            <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/80">
+              <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
+                <span>Outstanding Debts</span>
+                <DollarSign className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="text-2xl font-extrabold text-amber-400 mt-2 font-mono">
+                UGX {adminMetrics.outstandingDebtsUgx.toLocaleString()}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-1">
+                Uncollected Credit & Debt Balances
+              </div>
+            </div>
+
+            {/* 4. Net Profit Realized */}
+            <div className={`glass-card rounded-2xl p-4 border ${netProfitUgx >= 0 ? 'border-emerald-500/40 bg-emerald-950/20' : 'border-rose-500/40 bg-rose-950/20'}`}>
+              <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
+                <span className="text-slate-200 font-bold">Net Profit (After Exp. & Debts)</span>
+                <PieChart className={`w-4 h-4 ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`} />
+              </div>
+              <div className={`text-2xl font-extrabold mt-2 font-mono ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                UGX {netProfitUgx.toLocaleString()}
+              </div>
+              <div className="text-[11px] text-slate-300 mt-1 font-semibold">
+                Margin: <span className="text-cyan-400 font-bold">{profitMarginPercent}%</span> • (Sales - Expenses - Debts)
+              </div>
+            </div>
+
+          </div>
+
+          {/* Secondary Operational Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/60">
+              <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
+                <span>Current Stock Level</span>
                 <Package className="w-4 h-4 text-cyan-400" />
               </div>
-              <div className="text-2xl font-extrabold text-slate-100 mt-2 font-mono">
+              <div className="text-xl font-extrabold text-slate-100 mt-2 font-mono">
                 {adminMetrics.currentStockCartons.toLocaleString()} <span className="text-xs font-normal text-slate-400">Cartons / Units</span>
               </div>
               <div className={`text-[11px] mt-1 font-semibold ${adminMetrics.lowStockCount > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
@@ -213,18 +282,20 @@ export const DashboardReportsView: React.FC = () => {
               </div>
             </div>
 
-            <div className="glass-card rounded-2xl p-4 border border-slate-800">
+            <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/60">
               <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
-                <span>Outstanding Debts</span>
-                <DollarSign className="w-4 h-4 text-rose-400" />
+                <span>Digital Collections</span>
+                <Wallet className="w-4 h-4 text-cyan-400" />
               </div>
-              <div className="text-2xl font-extrabold text-rose-400 mt-2 font-mono">
-                UGX {adminMetrics.outstandingDebtsUgx.toLocaleString()}
+              <div className="text-xl font-extrabold text-cyan-400 mt-2 font-mono">
+                UGX {(mobileMoneyUgx + bankedMoneyUgx).toLocaleString()}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">Expenses: UGX {adminMetrics.expensesUgx.toLocaleString()}</div>
+              <div className="text-[11px] text-slate-400 mt-1">
+                MoMo: UGX {mobileMoneyUgx.toLocaleString()} • Bank: UGX {bankedMoneyUgx.toLocaleString()}
+              </div>
             </div>
 
-            <div className="glass-card rounded-2xl p-4 border border-slate-800">
+            <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/60">
               <div className="flex justify-between items-center text-slate-400 text-xs font-semibold">
                 <span>Sync & Backup Status</span>
                 <Database className="w-4 h-4 text-emerald-400" />
@@ -234,73 +305,38 @@ export const DashboardReportsView: React.FC = () => {
               </div>
               <div className="text-[11px] text-slate-400 mt-1 truncate">{adminMetrics.backupStatus}</div>
             </div>
-
           </div>
 
-          {/* Branch & Field Performance Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
-              <h3 className="font-bold text-slate-200 text-sm">Branch Performance Breakdown</h3>
-              <div className="space-y-3 text-xs">
-                {branches.map((b) => {
-                  const branchStores = stores.filter((s) => s.branchId === b.id);
-                  let branchStock = 0;
-                  branchStores.forEach((st) => {
-                    const prodMap = inventoryStock[st.id] || {};
-                    Object.values(prodMap).forEach((q) => {
-                      branchStock += q;
-                    });
+          {/* Branch Performance Breakdown */}
+          <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+            <h3 className="font-bold text-slate-200 text-sm">Branch Performance & Stock Availability</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              {branches.map((b) => {
+                const branchStores = stores.filter((s) => s.branchId === b.id);
+                let branchStock = 0;
+                branchStores.forEach((st) => {
+                  const prodMap = inventoryStock[st.id] || {};
+                  Object.values(prodMap).forEach((q) => {
+                    branchStock += q;
                   });
+                });
 
-                  return (
-                    <div key={b.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex justify-between items-center">
-                      <div>
-                        <div className="font-bold text-slate-100 text-sm">{b.name}</div>
-                        <div className="text-slate-400 text-[11px]">{b.location} • {branchStores.length} Stores</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-extrabold text-cyan-400 text-sm font-mono">{branchStock.toLocaleString()} Units</div>
-                        <div className="text-emerald-400 text-[10px] font-semibold">Live Stock Available</div>
-                      </div>
+                return (
+                  <div key={b.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex justify-between items-center">
+                    <div>
+                      <div className="font-bold text-slate-100 text-sm">{b.name}</div>
+                      <div className="text-slate-400 text-[11px]">{b.location} • {branchStores.length} Stores</div>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="text-right">
+                      <div className="font-extrabold text-cyan-400 text-sm font-mono">{branchStock.toLocaleString()} Units</div>
+                      <div className="text-emerald-400 text-[10px] font-semibold">Live Stock Available</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
-              <h3 className="font-bold text-slate-200 text-sm">Operational Activity Summary</h3>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
-                  <div className="text-slate-400">Total Expenses Filed</div>
-                  <div className="text-base font-extrabold text-rose-400 mt-1 font-mono">
-                    UGX {adminMetrics.expensesUgx.toLocaleString()}
-                  </div>
-                </div>
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-3">
-                  <div className="text-slate-400">Mobile Money Received</div>
-                  <div className="text-base font-extrabold text-cyan-400 mt-1 font-mono">
-                    UGX {adminMetrics.mobileMoneyUgx.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-
-              {adminMetrics.stockVariancesCount > 0 ? (
-                <div className="bg-amber-950/60 border border-amber-500/40 rounded-xl p-3 text-xs text-amber-300 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    <span>{adminMetrics.stockVariancesCount} Active Field Session(s) Out on Route</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 flex items-center gap-2">
-                  <span>No active route sessions currently dispatched.</span>
-                </div>
-              )}
-            </div>
-
           </div>
+
         </div>
       ) : (
         /* Professional Reports Center */
@@ -324,7 +360,7 @@ export const DashboardReportsView: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Branch Filter</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Branch Scope</label>
               <select
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
@@ -360,6 +396,54 @@ export const DashboardReportsView: React.FC = () => {
             </div>
           </div>
 
+          {/* Prominent Profitability & Expense Financial Summary Banner */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div className="text-slate-400 text-xs font-semibold flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Gross Revenue (Sales)</span>
+              </div>
+              <div className="text-xl font-extrabold text-cyan-400 mt-1 font-mono">
+                UGX {totalSalesUgx.toLocaleString()}
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div className="text-slate-400 text-xs font-semibold flex items-center gap-1.5">
+                <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+                <span>Total Expenses</span>
+              </div>
+              <div className="text-xl font-extrabold text-rose-400 mt-1 font-mono">
+                UGX {expensesUgx.toLocaleString()}
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div className="text-slate-400 text-xs font-semibold flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-amber-400" />
+                <span>Outstanding Debts</span>
+              </div>
+              <div className="text-xl font-extrabold text-amber-400 mt-1 font-mono">
+                UGX {outstandingDebtsUgx.toLocaleString()}
+              </div>
+            </div>
+
+            <div className={`p-3 bg-slate-900/80 rounded-xl border ${netProfitUgx >= 0 ? 'border-emerald-500/40' : 'border-rose-500/40'}`}>
+              <div className="text-slate-400 text-xs font-semibold flex items-center justify-between">
+                <span className="text-slate-200 font-bold">Net Profit Realized</span>
+                <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${netProfitUgx >= 0 ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-rose-950 text-rose-400 border border-rose-800'}`}>
+                  {netProfitUgx >= 0 ? 'PROFIT ✓' : 'LOSS'}
+                </span>
+              </div>
+              <div className={`text-xl font-extrabold mt-1 font-mono ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                UGX {netProfitUgx.toLocaleString()}
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">
+                Margin: {profitMarginPercent}% • Sales - Expenses - Debts
+              </div>
+            </div>
+          </div>
+
           <div className="flex justify-between items-center border-b border-slate-800 pb-4">
             <div>
               <h2 className="text-base font-bold text-cyan-400">
@@ -382,37 +466,157 @@ export const DashboardReportsView: React.FC = () => {
 
           {/* Dynamic Report Data Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
-                <tr>
-                  <th className="p-3">Transaction / Ref</th>
-                  <th className="p-3">Entity / Product</th>
-                  <th className="p-3">Date</th>
-                  <th className="p-3 text-right">Amount / Qty</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {salesHistory.map((s) => (
-                  <tr key={s.id}>
-                    <td className="p-3 font-mono font-bold text-cyan-400">{s.receiptNumber}</td>
-                    <td className="p-3 font-semibold text-slate-200">
-                      {s.items.map((it) => `${it.quantity}x ${it.name}`).join(', ')}
-                    </td>
-                    <td className="p-3 text-slate-400">{s.date}</td>
-                    <td className="p-3 text-right font-mono font-bold text-emerald-400">
-                      UGX {s.totalAmountUgx.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-                {salesHistory.length === 0 && (
+            {selectedReportType === 'EXPENSES' ? (
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-slate-500">
-                      No sales or transactions recorded for this period.
+                    <th className="p-3">Voucher #</th>
+                    <th className="p-3">Category</th>
+                    <th className="p-3">Description</th>
+                    <th className="p-3">Date</th>
+                    <th className="p-3 text-right">Amount (UGX)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {filteredExpenses.map((exp) => (
+                    <tr key={exp.id}>
+                      <td className="p-3 font-mono font-bold text-cyan-400">{exp.voucherNumber}</td>
+                      <td className="p-3 font-semibold text-slate-200">{exp.category}</td>
+                      <td className="p-3 text-slate-300">{exp.description}</td>
+                      <td className="p-3 text-slate-400">{exp.date}</td>
+                      <td className="p-3 text-right font-mono font-bold text-rose-400">
+                        UGX {exp.amountUgx.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredExpenses.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-slate-500">
+                        No expense records filed for this period.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            ) : selectedReportType === 'DEBTS_PAID' ? (
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+                  <tr>
+                    <th className="p-3">Debtor Name</th>
+                    <th className="p-3">Source / Reason</th>
+                    <th className="p-3">Original Debt</th>
+                    <th className="p-3">Paid Amount</th>
+                    <th className="p-3 text-right">Balance (UGX)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {debtsList.map((d) => (
+                    <tr key={d.id}>
+                      <td className="p-3 font-bold text-slate-100">{d.debtorName}</td>
+                      <td className="p-3 text-slate-300">{d.source}</td>
+                      <td className="p-3 font-mono text-slate-400">UGX {d.originalAmountUgx.toLocaleString()}</td>
+                      <td className="p-3 font-mono text-emerald-400">UGX {d.paidAmountUgx.toLocaleString()}</td>
+                      <td className="p-3 text-right font-mono font-bold text-amber-400">
+                        UGX {d.balanceAmountUgx.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {debtsList.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-slate-500">
+                        No outstanding debts recorded.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            ) : selectedReportType === 'PROFITABILITY' ? (
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+                  <tr>
+                    <th className="p-3">Financial Statement Metric</th>
+                    <th className="p-3">Calculation Details</th>
+                    <th className="p-3 text-right">Amount (UGX)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  <tr>
+                    <td className="p-3 font-bold text-cyan-400 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-cyan-400" />
+                      <span>Gross Sales Revenue</span>
+                    </td>
+                    <td className="p-3 text-slate-400">Sum of all completed sales across branch stores</td>
+                    <td className="p-3 text-right font-mono font-extrabold text-cyan-400">
+                      UGX {totalSalesUgx.toLocaleString()}
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                  <tr>
+                    <td className="p-3 font-bold text-rose-400 flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4 text-rose-400" />
+                      <span>Operational Expenses</span>
+                    </td>
+                    <td className="p-3 text-slate-400">Sum of fuel, maintenance, salaries & operational vouchers</td>
+                    <td className="p-3 text-right font-mono font-extrabold text-rose-400">
+                      - UGX {expensesUgx.toLocaleString()}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-bold text-amber-400 flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-amber-400" />
+                      <span>Outstanding Uncollected Debts</span>
+                    </td>
+                    <td className="p-3 text-slate-400">Uncollected customer & credit balances</td>
+                    <td className="p-3 text-right font-mono font-extrabold text-amber-400">
+                      - UGX {outstandingDebtsUgx.toLocaleString()}
+                    </td>
+                  </tr>
+                  <tr className="bg-slate-900/90 font-extrabold text-sm">
+                    <td className={`p-4 flex items-center gap-2 ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      <Receipt className="w-5 h-5" />
+                      <span>Net Realized Profit</span>
+                    </td>
+                    <td className="p-4 text-slate-300 text-xs font-normal">
+                      Net Profit = Gross Sales - Expenses - Debts (Margin: {profitMarginPercent}%)
+                    </td>
+                    <td className={`p-4 text-right font-mono text-base ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      UGX {netProfitUgx.toLocaleString()}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+                  <tr>
+                    <th className="p-3">Receipt / Ref</th>
+                    <th className="p-3">Entity / Products</th>
+                    <th className="p-3">Date</th>
+                    <th className="p-3 text-right">Amount / Qty</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {filteredSales.map((s) => (
+                    <tr key={s.id}>
+                      <td className="p-3 font-mono font-bold text-cyan-400">{s.receiptNumber}</td>
+                      <td className="p-3 font-semibold text-slate-200">
+                        {s.items.map((it) => `${it.quantity}x ${it.name}`).join(', ')}
+                      </td>
+                      <td className="p-3 text-slate-400">{s.date}</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-400">
+                        UGX {s.totalAmountUgx.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredSales.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="p-8 text-center text-slate-500">
+                        No sales or transactions recorded for this period.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
 
         </div>
