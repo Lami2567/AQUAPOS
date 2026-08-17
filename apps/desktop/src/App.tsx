@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from './store/useStore';
+import { syncManager } from './services/syncService';
 import { UserRole } from '@water-business/shared-types';
 import { Navbar, NavSelection } from './components/Navbar';
 import { DashboardReportsView } from './components/DashboardReportsView';
@@ -35,11 +36,12 @@ export const App: React.FC = () => {
   const { user } = useStore();
   const [currentNav, setCurrentNav] = useState<NavSelection>(() => getDefaultNavForRole(user?.role));
 
-  // Automatically land user on their role's respective default interface upon login
+  // Automatically land user on their role's respective default interface upon login & sync SQLite
   useEffect(() => {
     if (user) {
       setCurrentNav(getDefaultNavForRole(user.role));
     }
+    syncManager.triggerSync().catch(() => {});
   }, [user?.id, user?.role]);
 
   // If user is signed out, render Login Authentication Portal

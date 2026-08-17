@@ -17,18 +17,14 @@ class SyncManager {
       useStore.getState().setSyncStatus('OFFLINE');
     });
 
-    // Auto-sync poll interval (every 30 seconds when online)
+    // High-frequency local SQLite auto-sync poll interval (every 3 seconds)
     if (this.syncTimer) clearInterval(this.syncTimer);
     this.syncTimer = setInterval(() => {
-      if (navigator.onLine) {
-        this.triggerSync();
-      }
-    }, 30000);
+      this.triggerSync();
+    }, 3000);
 
-    // Initial sync trigger on boot
-    if (navigator.onLine) {
-      setTimeout(() => this.triggerSync(), 1500);
-    }
+    // Immediate initial sync trigger on boot (0ms delay) to populate SQLite data into state
+    this.triggerSync();
   }
 
   public async triggerSync(): Promise<{ success: boolean; message: string }> {
@@ -37,19 +33,13 @@ class SyncManager {
     }
 
     const store = useStore.getState();
-    if (!navigator.onLine) {
-      store.setOnlineStatus(false);
-      store.setSyncStatus('OFFLINE', store.outboxQueue.filter((o) => o.status === 'PENDING').length);
-      return { success: false, message: 'Working offline' };
-    }
 
     this.isSyncing = true;
-    store.setSyncStatus('SYNCING');
 
     try {
-      // 1. PUSH: Push pending outbox transactions to central server
+      // 1. PUSH: Push pending outbox transactions to local NestJS SQLite & central server
       const pendingOutbox = store.outboxQueue.filter((item) => item.status === 'PENDING');
-      const branchId = store.currentBranchId || 'b1111111-1111-1111-1111-111111111111';
+      const branchId = store.currentBranchId || '';
       const deviceId = (import.meta.env.VITE_DEVICE_ID as string) || 'web-admin-01';
 
       if (pendingOutbox.length > 0) {
@@ -74,9 +64,11 @@ class SyncManager {
         }
       }
 
-      // 2. PULL: Pull latest central master data and inventory
+      // 2. PULL: Pull latest master data and inventory directly from SQLite database
       const sinceParam = store.lastSyncedAt ? `&since=${encodeURIComponent(store.lastSyncedAt)}` : '';
-      const pullRes = await apiClient.get(`/api/v1/sync/pull?branchId=${branchId}${sinceParam}`);
+      const pullUrl = branchId ? `/api/v1/sync/pull?branchId=${branchId}${sinceParam}` : `/api/v1/sync/pull${sinceParam ? `?${sinceParam.slice(1)}` : ''}`;
+      const pullRes = await apiClient.get(pullUrl);
+      
       if (pullRes.data?.success && pullRes.data?.data) {
         store.mergeCentralData(pullRes.data.data);
       }
@@ -88,16 +80,15 @@ class SyncManager {
 
       return {
         success: true,
-        message: `Synchronized successfully! Central data updated (${pendingOutbox.length} pushed).`,
+        message: `Synchronized successfully with SQLite database! (${pendingOutbox.length} pushed).`,
       };
     } catch (err: any) {
-      console.warn('Background sync encountered network or server delay:', err?.message || err);
       const remainingPending = store.outboxQueue.filter((o) => o.status === 'PENDING').length;
-      store.setSyncStatus('ONLINE', remainingPending);
+      store.setSyncStatus('OFFLINE', remainingPending);
       this.isSyncing = false;
       return {
         success: false,
-        message: `Sync delayed: ${err?.message || 'Server unreachable'}. Working in local offline mode.`,
+        message: `Sync delayed: ${err?.message || 'Server unreachable'}. Working in local mode.`,
       };
     }
   }

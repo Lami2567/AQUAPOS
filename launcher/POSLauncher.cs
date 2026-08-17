@@ -10,7 +10,6 @@ namespace WaterPOSLauncher
     static class Program
     {
         private static readonly string MutexName = "AquaPOSLauncherMutex_2026";
-        private static Process serverProcess = null;
         private static string logFilePath = null;
 
         [STAThread]
@@ -22,12 +21,6 @@ namespace WaterPOSLauncher
             bool isNewInstance;
             using (Mutex mutex = new Mutex(true, MutexName, out isNewInstance))
             {
-                if (!isNewInstance)
-                {
-                    // Already running
-                    return;
-                }
-
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 string rootDir = baseDir;
 
@@ -45,7 +38,7 @@ namespace WaterPOSLauncher
                 logFilePath = Path.Combine(logsDir, "launcher.log");
 
                 Log("----------------------------------------------------");
-                Log("Starting POS System via POSLauncher...");
+                Log("Starting AquaPOS System Background Service...");
                 Log("Root Directory: " + rootDir);
 
                 try
@@ -55,13 +48,13 @@ namespace WaterPOSLauncher
 
                     if (!serverAlreadyRunning)
                     {
-                        Log("Backend not detected on port 3001. Starting Node.js server silently...");
+                        Log("Backend not detected on port 3001. Starting Node.js server silently in background...");
 
                         string serverScript = Path.Combine(rootDir, "apps", "server", "dist", "main.js");
                         if (!File.Exists(serverScript))
                         {
                             Log("ERROR: Server entry point not found at " + serverScript);
-                            MessageBox.Show("POS System could not start (Missing server bundle). Please contact the administrator.", "WaterPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("POS System could not start (Missing server bundle). Please run 'npm run build' first.", "WaterPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
 
@@ -75,8 +68,8 @@ namespace WaterPOSLauncher
                             WindowStyle = ProcessWindowStyle.Hidden
                         };
 
-                        serverProcess = Process.Start(psi);
-                        Log("Node server process launched with PID: " + (serverProcess != null ? serverProcess.Id.ToString() : "UNKNOWN"));
+                        Process serverProc = Process.Start(psi);
+                        Log("Node server background process launched with PID: " + (serverProc != null ? serverProc.Id.ToString() : "UNKNOWN"));
                     }
                     else
                     {
@@ -84,45 +77,35 @@ namespace WaterPOSLauncher
                     }
 
                     // 2. Wait for backend to initialize
-                    Log("Waiting for backend API health check...");
+                    Log("Waiting for backend API health check on http://localhost:3001...");
                     bool healthy = WaitForBackend(15000);
 
                     if (!healthy)
                     {
                         Log("ERROR: Backend server failed to respond within timeout.");
                         MessageBox.Show("POS System could not start. Please contact the administrator.", "WaterPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        CleanupServer();
                         return;
                     }
 
-                    Log("Backend server confirmed HEALTHY.");
+                    Log("Backend server confirmed HEALTHY on http://localhost:3001.");
 
-                    // 3. Launch Desktop UI Window
+                    // 3. Open POS System in Default Browser
                     string targetUrl = "http://localhost:3001";
-                    Log("Launching Desktop POS UI window pointing to " + targetUrl);
+                    Log("Opening POS application URL in browser: " + targetUrl);
 
-                    Process uiProcess = LaunchDesktopUI(targetUrl);
+                    ProcessStartInfo browserPsi = new ProcessStartInfo
+                    {
+                        FileName = targetUrl,
+                        UseShellExecute = true
+                    };
+                    Process.Start(browserPsi);
 
-                    if (uiProcess != null)
-                    {
-                        Log("Desktop UI process active. Monitoring...");
-                        uiProcess.WaitForExit();
-                        Log("Desktop UI closed by user.");
-                    }
-                    else
-                    {
-                        Log("Fallback: Launched default browser for POS UI.");
-                    }
+                    Log("POS Application opened in browser. Background server will continue running.");
                 }
                 catch (Exception ex)
                 {
                     Log("FATAL EXCEPTION: " + ex.ToString());
                     MessageBox.Show("POS System encountered an error during startup. Please contact the administrator.", "WaterPOS Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    CleanupServer();
-                    Log("POSLauncher shutting down cleanly.");
                 }
             }
         }
@@ -156,50 +139,6 @@ namespace WaterPOSLauncher
                 elapsed += step;
             }
             return false;
-        }
-
-        private static Process LaunchDesktopUI(string url)
-        {
-            // Attempt to launch MS Edge in Application Window mode
-            string msEdgePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft", "Edge", "Application", "msedge.exe");
-            if (!File.Exists(msEdgePath))
-            {
-                msEdgePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Microsoft", "Edge", "Application", "msedge.exe");
-            }
-
-            if (File.Exists(msEdgePath))
-            {
-                ProcessStartInfo edgePsi = new ProcessStartInfo
-                {
-                    FileName = msEdgePath,
-                    Arguments = "--app=\"" + url + "\" --window-size=1280,800",
-                    UseShellExecute = false
-                };
-                return Process.Start(edgePsi);
-            }
-
-            // Fallback to default browser
-            ProcessStartInfo defaultPsi = new ProcessStartInfo
-            {
-                FileName = url,
-                UseShellExecute = true
-            };
-            return Process.Start(defaultPsi);
-        }
-
-        private static void CleanupServer()
-        {
-            if (serverProcess != null && !serverProcess.HasExited)
-            {
-                try
-                {
-                    Log("Terminating background server process (PID " + serverProcess.Id + ")...");
-                    serverProcess.Kill();
-                    serverProcess.Dispose();
-                }
-                catch { }
-                serverProcess = null;
-            }
         }
 
         private static void Log(string message)
