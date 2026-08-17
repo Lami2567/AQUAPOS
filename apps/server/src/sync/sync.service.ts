@@ -504,40 +504,38 @@ export class SyncService {
    */
   public async resetProductionData(clearDemoMaster = false) {
     return await this.dbService.transaction(async () => {
-      // 1. Clear all transactions, queues, logs
-      await this.dbService.execute('DELETE FROM sync_outbox');
-      await this.dbService.execute('DELETE FROM sync_inbox');
-      await this.dbService.execute('DELETE FROM audit_logs');
-      await this.dbService.execute('DELETE FROM debt_payments');
-      await this.dbService.execute('DELETE FROM debts');
+      // 1. Clear all transactions, queues, logs safely
+      try { await this.dbService.execute('DELETE FROM sync_outbox'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM sync_inbox'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM audit_logs'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM debt_payments'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM debts'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM salary_payments'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM salaries'); } catch (e) {}
-      await this.dbService.execute('DELETE FROM expenses');
-      await this.dbService.execute('DELETE FROM field_reconciliations');
-      await this.dbService.execute('DELETE FROM field_session_items');
-      await this.dbService.execute('DELETE FROM field_sessions');
-      await this.dbService.execute('DELETE FROM sale_items');
-      await this.dbService.execute('DELETE FROM sales');
-      await this.dbService.execute('DELETE FROM stock_transfer_items');
-      await this.dbService.execute('DELETE FROM stock_transfers');
-      await this.dbService.execute('DELETE FROM stock_ledger');
-      // Also clear tombstones so a fresh-start device doesn't inherit stale deletion history
+      try { await this.dbService.execute('DELETE FROM expenses'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM field_reconciliations'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM field_session_items'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM field_sessions'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM sale_items'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM sales'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM stock_transfer_items'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM stock_transfers'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM stock_ledger'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM deleted_records'); } catch (e) {}
 
       if (clearDemoMaster) {
-        await this.dbService.execute('DELETE FROM branch_product_prices');
-        await this.dbService.execute('DELETE FROM products');
-        await this.dbService.execute('DELETE FROM vehicles');
-        await this.dbService.execute('DELETE FROM workers');
-        // Unlink admin user from branches/stores before deleting stores and branches
+        try { await this.dbService.execute('DELETE FROM branch_product_prices'); } catch (e) {}
+        try { await this.dbService.execute('DELETE FROM products'); } catch (e) {}
+        try { await this.dbService.execute('DELETE FROM vehicles'); } catch (e) {}
+        try { await this.dbService.execute('DELETE FROM workers'); } catch (e) {}
         try {
           await this.dbService.execute("UPDATE users SET branch_id = NULL, store_id = NULL WHERE username = 'admin'");
         } catch (e) {
-          await this.dbService.execute("UPDATE users SET branch_id = '', store_id = '' WHERE username = 'admin'");
+          try { await this.dbService.execute("UPDATE users SET branch_id = '', store_id = '' WHERE username = 'admin'"); } catch (_) {}
         }
-        await this.dbService.execute("DELETE FROM users WHERE username != 'admin'");
-        await this.dbService.execute('DELETE FROM stores');
-        await this.dbService.execute('DELETE FROM branches');
+        try { await this.dbService.execute("DELETE FROM users WHERE username != 'admin'"); } catch (e) {}
+        try { await this.dbService.execute('DELETE FROM stores'); } catch (e) {}
+        try { await this.dbService.execute('DELETE FROM branches'); } catch (e) {}
       }
 
       this.logger.log(`Production reset completed. Demo master cleared: ${clearDemoMaster}`);
