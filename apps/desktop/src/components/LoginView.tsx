@@ -151,20 +151,6 @@ export const LoginView: React.FC = () => {
           </button>
         </form>
 
-        {/* Demo Credentials Info Hint */}
-        <div className="p-3 bg-slate-950/80 border border-slate-800/80 rounded-xl text-[11px] text-slate-400 space-y-1">
-          <div className="flex items-center gap-1.5 text-cyan-400 font-bold text-[10px] uppercase tracking-wider">
-            <Info className="w-3.5 h-3.5" />
-            <span>Registered Staff Accounts</span>
-          </div>
-          <div className="font-mono text-[10px] text-slate-300 space-y-0.5">
-            <div>• Super Admin: <span className="text-cyan-300 font-bold">admin</span> (pass: <span className="text-amber-300 font-bold">admin123</span>)</div>
-            <div>• Branch Manager: <span className="text-cyan-300 font-bold">mgr_lwengo</span> (pass: <span className="text-amber-300 font-bold">password123</span>)</div>
-            <div>• Storekeeper: <span className="text-cyan-300 font-bold">storekeeper_a</span> (pass: <span className="text-amber-300 font-bold">password123</span>)</div>
-            <div>• Cashier: <span className="text-cyan-300 font-bold">cashier_isingiro</span> (pass: <span className="text-amber-300 font-bold">password123</span>)</div>
-          </div>
-        </div>
-
         {/* Security Footer */}
         <div className="pt-2 border-t border-slate-800/80 text-center text-[10px] text-slate-500 flex items-center justify-center gap-2">
           <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
