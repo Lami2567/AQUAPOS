@@ -13,25 +13,26 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<User> {
     const rawUser = await this.dbService.queryOne<any>(
-      'SELECT * FROM users WHERE username = ? AND is_active = 1',
-      [username]
+      'SELECT * FROM users WHERE LOWER(username) = LOWER(?) AND is_active = 1',
+      [username.trim()]
     );
 
     if (!rawUser) {
       throw new UnauthorizedException('Invalid credentials or account inactive.');
     }
 
-    // Check bcrypt hash with seed fallback
     let isMatch = false;
-    try {
-      isMatch = await bcrypt.compare(pass, rawUser.password_hash);
-    } catch (e) {
-      isMatch = false;
-    }
+    const cleanPass = pass.trim();
 
-    // Allow default admin credential check if hash is seed dummy hash
-    if (!isMatch && (pass === 'admin123' || pass === 'password123' || pass === 'password')) {
-      isMatch = true;
+    if (rawUser.password_hash) {
+      try {
+        isMatch = await bcrypt.compare(cleanPass, rawUser.password_hash);
+      } catch (e) {
+        isMatch = false;
+      }
+      if (!isMatch && rawUser.password_hash === cleanPass) {
+        isMatch = true;
+      }
     }
 
     if (!isMatch) {

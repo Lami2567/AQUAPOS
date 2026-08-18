@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { apiClient } from '../utils/api';
 import { BRAND_ASSETS } from '../config/assets.config';
 import { UserRole, User } from '@water-business/shared-types';
 import {
@@ -21,7 +22,7 @@ export const LoginView: React.FC = () => {
 
   const LogoIcon = BRAND_ASSETS.LogoIcon;
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedUser = username.trim();
     const trimmedPass = password.trim();
@@ -36,36 +37,45 @@ export const LoginView: React.FC = () => {
     }
 
     setIsLoading(true);
+    setErrorMsg(null);
 
-    setTimeout(() => {
-      // Find matching user in registered users list
-      const existingUser = usersList.find(
-        (u) => u.username.toLowerCase() === trimmedUser.toLowerCase()
-      );
+    try {
+      // 1. Authenticate directly with central Neon PostgreSQL server API
+      const res = await apiClient.post('/api/v1/auth/login', {
+        username: trimmedUser,
+        password: trimmedPass,
+      });
 
-      // 1. Check if user exists
-      if (!existingUser) {
-        setErrorMsg(`Invalid Credentials: User "${trimmedUser}" is not registered in the system.`);
+      if (res.data?.user && res.data?.accessToken) {
+        setUser(res.data.user, res.data.accessToken);
         setIsLoading(false);
         return;
       }
+    } catch (err: any) {
+      const serverError = err?.response?.data?.message || err?.message;
+      
+      // Fallback for local offline mode if server is unreachable
+      if (!navigator.onLine || err?.code === 'ERR_NETWORK') {
+        const existingUser = usersList.find(
+          (u) => u.username.toLowerCase() === trimmedUser.toLowerCase()
+        );
 
-      // 2. Validate password credentials
-      // Default passwords: admin -> admin123; other staff -> password123 (or custom user password if set)
-      const expectedPassword =
-        (existingUser as any).password ||
-        (existingUser.username === 'admin' ? 'admin123' : 'password123');
+        if (existingUser) {
+          const expectedPassword =
+            (existingUser as any).password ||
+            (existingUser.username === 'admin' ? 'admin123' : 'password123');
 
-      if (trimmedPass !== expectedPassword) {
-        setErrorMsg(`Invalid Credentials: Password is incorrect for user "${trimmedUser}".`);
-        setIsLoading(false);
-        return;
+          if (trimmedPass === expectedPassword) {
+            setUser(existingUser, `jwt-token-${Date.now()}`);
+            setIsLoading(false);
+            return;
+          }
+        }
       }
 
-      // Successful authentication!
-      setUser(existingUser, `jwt-token-${Date.now()}`);
+      setErrorMsg(serverError || `Invalid Credentials for user "${trimmedUser}". Please verify your password.`);
       setIsLoading(false);
-    }, 400);
+    }
   };
 
   return (

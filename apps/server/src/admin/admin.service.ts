@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { DatabaseService } from '../database/database.service.js';
 import { AuditService } from '../audit/audit.service.js';
 import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AdminService {
@@ -135,16 +136,25 @@ export class AdminService {
     `);
   }
 
-  async saveUser(data: { id?: string; username: string; fullName: string; role: string; branchId: string; storeId?: string; passwordHash?: string; isActive?: boolean }, userId: string) {
+  async saveUser(data: { id?: string; username: string; fullName: string; role: string; branchId: string; storeId?: string; password?: string; passwordHash?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
     const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
     const existing = await this.dbService.queryOne('SELECT * FROM users WHERE id = ?', [id]);
 
+    let finalHash = data.passwordHash;
+    if (!finalHash && data.password && data.password.trim()) {
+      try {
+        finalHash = await bcrypt.hash(data.password.trim(), 10);
+      } catch (e) {
+        finalHash = data.password.trim();
+      }
+    }
+
     if (existing) {
-      if (data.passwordHash) {
+      if (finalHash) {
         await this.dbService.execute(
           'UPDATE users SET username = ?, full_name = ?, role = ?, branch_id = ?, store_id = ?, password_hash = ?, is_active = ? WHERE id = ?',
-          [data.username, data.fullName, data.role, data.branchId, data.storeId || null, data.passwordHash, isActive, id]
+          [data.username, data.fullName, data.role, data.branchId, data.storeId || null, finalHash, isActive, id]
         );
       } else {
         await this.dbService.execute(
@@ -154,7 +164,7 @@ export class AdminService {
       }
       this.auditService.logAction(userId, 'System Admin', data.branchId, 'SERVER-01', 'UPDATE', 'User', id, existing, data);
     } else {
-      const defaultHash = data.passwordHash || '$2b$10$wE1.h4.oZqU/9P7vFhD2g.y6c3gA0jX8A0C9Z0C9Z0C9Z0C9Z0C9Z';
+      const defaultHash = finalHash || await bcrypt.hash('password123', 10);
       await this.dbService.execute(
         'INSERT INTO users (id, username, full_name, password_hash, role, branch_id, store_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [id, data.username, data.fullName, defaultHash, data.role, data.branchId, data.storeId || null, isActive]
