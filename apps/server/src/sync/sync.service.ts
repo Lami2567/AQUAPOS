@@ -537,8 +537,13 @@ export class SyncService {
         "ALTER TABLE stock_ledger DROP CONSTRAINT IF EXISTS stock_ledger_product_id_fkey",
         "ALTER TABLE sync_inbox ALTER COLUMN device_id DROP DEFAULT",
         "ALTER TABLE sync_inbox ALTER COLUMN device_id SET DATA TYPE TEXT USING device_id::TEXT",
+        "ALTER TABLE expenses DROP CONSTRAINT IF EXISTS expenses_approved_by_fkey",
+        "ALTER TABLE expenses DROP CONSTRAINT IF EXISTS expenses_branch_id_fkey",
+        "ALTER TABLE expenses DROP CONSTRAINT IF EXISTS expenses_store_id_fkey",
         "ALTER TABLE expenses ALTER COLUMN approved_by DROP DEFAULT",
         "ALTER TABLE expenses ALTER COLUMN approved_by SET DATA TYPE TEXT USING approved_by::TEXT",
+        "ALTER TABLE debts DROP CONSTRAINT IF EXISTS debts_approved_by_fkey",
+        "ALTER TABLE debts DROP CONSTRAINT IF EXISTS debts_debtor_worker_id_fkey",
         "ALTER TABLE debts ALTER COLUMN approved_by DROP DEFAULT",
         "ALTER TABLE debts ALTER COLUMN approved_by SET DATA TYPE TEXT USING approved_by::TEXT",
       ];
