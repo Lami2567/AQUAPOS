@@ -523,6 +523,28 @@ export class SyncService {
       try { await this.dbService.execute('DELETE FROM sync_outbox'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM sync_inbox'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM audit_logs'); } catch (e) {}
+
+      // 1b. Fix column types in PostgreSQL to allow string identifiers
+      const tableColumnFixes = [
+        "ALTER TABLE stock_ledger ALTER COLUMN reference_id DROP DEFAULT",
+        "ALTER TABLE stock_ledger ALTER COLUMN reference_id SET DATA TYPE TEXT USING reference_id::TEXT",
+        "ALTER TABLE stock_ledger ALTER COLUMN created_by DROP DEFAULT",
+        "ALTER TABLE stock_ledger ALTER COLUMN created_by SET DATA TYPE TEXT USING created_by::TEXT",
+        "ALTER TABLE stock_ledger ALTER COLUMN device_id DROP DEFAULT",
+        "ALTER TABLE stock_ledger ALTER COLUMN device_id SET DATA TYPE TEXT USING device_id::TEXT",
+        "ALTER TABLE stock_ledger DROP CONSTRAINT IF EXISTS stock_ledger_created_by_fkey",
+        "ALTER TABLE stock_ledger DROP CONSTRAINT IF EXISTS stock_ledger_store_id_fkey",
+        "ALTER TABLE stock_ledger DROP CONSTRAINT IF EXISTS stock_ledger_product_id_fkey",
+        "ALTER TABLE sync_inbox ALTER COLUMN device_id DROP DEFAULT",
+        "ALTER TABLE sync_inbox ALTER COLUMN device_id SET DATA TYPE TEXT USING device_id::TEXT",
+        "ALTER TABLE expenses ALTER COLUMN approved_by DROP DEFAULT",
+        "ALTER TABLE expenses ALTER COLUMN approved_by SET DATA TYPE TEXT USING approved_by::TEXT",
+        "ALTER TABLE debts ALTER COLUMN approved_by DROP DEFAULT",
+        "ALTER TABLE debts ALTER COLUMN approved_by SET DATA TYPE TEXT USING approved_by::TEXT",
+      ];
+      for (const fixStmt of tableColumnFixes) {
+        try { await this.dbService.execute(fixStmt); } catch (e) {}
+      }
       try { await this.dbService.execute('DELETE FROM debt_payments'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM debts'); } catch (e) {}
       try { await this.dbService.execute('DELETE FROM salary_payments'); } catch (e) {}
