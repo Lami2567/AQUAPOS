@@ -486,6 +486,21 @@ export class SyncService {
                 p.workerName || 'Salesperson',
               ]
             );
+          } else if (tx.transactionType === 'SALARY_PAYMENT' && (p.workerId || p.workerName)) {
+            try {
+              await this.dbService.execute(
+                `INSERT OR REPLACE INTO salaries (id, worker_id, month_year, gross_salary_ugx, net_salary_ugx, status, paid_at)
+                 VALUES (?, ?, ?, ?, ?, 'PAID', ?)`,
+                [
+                  p.id || tx.id,
+                  p.workerId || tx.id,
+                  p.month || new Date().toISOString().slice(0, 7),
+                  p.basicSalaryUgx || 0,
+                  p.netPaidUgx || p.basicSalaryUgx || 0,
+                  p.paymentDate || p.createdAt || new Date().toISOString(),
+                ]
+              );
+            } catch (_) {}
           }
         });
 

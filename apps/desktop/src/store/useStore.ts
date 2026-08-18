@@ -521,6 +521,80 @@ export const useStore = create<AppState>()(
             updatedAt: sys.updatedAt || sys.updated_at || new Date().toISOString(),
           }));
 
+          const mergedSales = upsertEntities(state.salesHistory, centralData.sales, (s: any) => ({
+            id: s.id,
+            receiptNumber: s.receiptNumber || s.receipt_number || `REC-${s.id}`,
+            storeId: s.storeId || s.store_id || '',
+            cashierId: s.cashierId || s.cashier_id || '',
+            items: Array.isArray(s.items) ? s.items : (typeof s.items === 'string' ? (() => { try { return JSON.parse(s.items); } catch(e) { return []; } })() : []),
+            subtotalUgx: Number(s.subtotalUgx ?? s.totalAmountUgx ?? s.total_amount_ugx ?? 0),
+            totalAmountUgx: Number(s.totalAmountUgx ?? s.total_amount_ugx ?? 0),
+            overallDiscountUgx: Number(s.overallDiscountUgx ?? s.discount_amount_ugx ?? 0),
+            netAmountUgx: Number(s.netAmountUgx ?? s.net_amount_ugx ?? 0),
+            paidAmountUgx: Number(s.paidAmountUgx ?? s.paid_amount_ugx ?? 0),
+            changeAmountUgx: Number(s.changeAmountUgx ?? s.change_amount_ugx ?? 0),
+            paymentMethod: s.paymentMethod || s.payment_method || 'CASH',
+            customerName: s.customerName || s.customer_name || '',
+            customerPhone: s.customerPhone || s.customer_phone || '',
+            date: s.date || (s.created_at ? s.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+            createdAt: s.createdAt || s.created_at || new Date().toISOString(),
+          }));
+
+          const mergedExpenses = upsertEntities(state.expensesList, centralData.expenses, (e: any) => ({
+            id: e.id,
+            voucherNumber: e.voucherNumber || e.voucher_number || `EXP-${e.id}`,
+            category: e.category || 'GENERAL',
+            description: e.description || '',
+            amountUgx: Number(e.amountUgx ?? e.amount_ugx ?? 0),
+            branchId: e.branchId || e.branch_id || '',
+            storeId: e.storeId || e.store_id || '',
+            paymentMethod: e.paymentMethod || e.payment_method || 'CASH',
+            approvedBy: e.approvedBy || e.approved_by || 'Manager',
+            date: e.date || (e.created_at ? e.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+          }));
+
+          const mergedDebts = upsertEntities(state.debtsList, centralData.debts, (d: any) => ({
+            id: d.id,
+            debtorName: d.debtorName || d.debtor_customer_name || 'Customer',
+            source: d.source || d.source_type || 'MANUAL',
+            originalAmountUgx: Number(d.originalAmountUgx ?? d.original_amount_ugx ?? 0),
+            paidAmountUgx: Number(d.paidAmountUgx ?? d.paid_amount_ugx ?? 0),
+            balanceAmountUgx: Number(d.balanceAmountUgx ?? d.balance_amount_ugx ?? 0),
+            status: d.status || (Number(d.balance_amount_ugx || 0) === 0 ? 'CLEARED' : 'OUTSTANDING'),
+            date: d.date || (d.created_at ? d.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+            reason: d.reason || '',
+          }));
+
+          const mergedSalaries = upsertEntities(state.salaryPaymentsList, centralData.salaryPayments, (sp: any) => ({
+            id: sp.id,
+            workerId: sp.workerId || sp.worker_id || '',
+            workerName: sp.workerName || sp.worker_name || 'Worker',
+            department: sp.department || 'GENERAL',
+            month: sp.month || sp.month_year || new Date().toISOString().slice(0, 7),
+            basicSalaryUgx: Number(sp.basicSalaryUgx ?? sp.gross_salary_ugx ?? 0),
+            commissionUgx: Number(sp.commissionUgx || 0),
+            allowancesUgx: Number(sp.allowancesUgx || 0),
+            debtDeductedUgx: Number(sp.debtDeductedUgx || 0),
+            netPaidUgx: Number(sp.netPaidUgx ?? sp.net_salary_ugx ?? 0),
+            paymentDate: sp.paymentDate || sp.paid_at || new Date().toISOString(),
+            paymentMethod: sp.paymentMethod || 'CASH',
+            voucherNumber: sp.voucherNumber || `PAY-${sp.id}`,
+          }));
+
+          const mergedFieldSessions = upsertEntities(state.fieldSessionsList, centralData.fieldSessions, (fs: any) => ({
+            id: fs.id,
+            sessionNumber: fs.sessionNumber || fs.session_number || `FS-${fs.id}`,
+            storeId: fs.storeId || fs.store_id || '',
+            vehicleId: fs.vehicleId || fs.vehicle_id || '',
+            vehicleName: fs.vehicleName || fs.vehicle_name || 'Delivery Vehicle',
+            workerId: fs.workerId || fs.worker_id || '',
+            workerName: fs.workerName || fs.worker_name || fs.createdBy || fs.created_by || 'Salesperson',
+            status: fs.status || 'OPEN',
+            startTime: fs.startTime || fs.start_time || new Date().toISOString(),
+            endTime: fs.endTime || fs.end_time || '',
+            items: Array.isArray(fs.items) ? fs.items : (typeof fs.items === 'string' ? (() => { try { return JSON.parse(fs.items); } catch(e) { return []; } })() : []),
+          }));
+
           // Merge live central inventory levels
           const mergedStock = { ...state.inventoryStock };
           if (centralData.inventoryStock && typeof centralData.inventoryStock === 'object') {
@@ -631,6 +705,11 @@ export const useStore = create<AppState>()(
             debtTypes: finalDebtTypes,
             salarySettings: finalSalarySettings,
             systemSettings: finalSystemSettings,
+            salesHistory: mergedSales,
+            expensesList: mergedExpenses,
+            debtsList: mergedDebts,
+            salaryPaymentsList: mergedSalaries,
+            fieldSessionsList: mergedFieldSessions,
             inventoryStock: mergedStock,
             outboxQueue: updatedOutbox,
             pendingSyncCount: remainingPending,
