@@ -544,6 +544,7 @@ export class SyncService {
         "ALTER TABLE expenses ALTER COLUMN approved_by SET DATA TYPE TEXT USING approved_by::TEXT",
         "ALTER TABLE debts DROP CONSTRAINT IF EXISTS debts_approved_by_fkey",
         "ALTER TABLE debts DROP CONSTRAINT IF EXISTS debts_debtor_worker_id_fkey",
+        "ALTER TABLE debts DROP CONSTRAINT IF EXISTS debts_source_type_check",
         "ALTER TABLE debts ALTER COLUMN approved_by DROP DEFAULT",
         "ALTER TABLE debts ALTER COLUMN approved_by SET DATA TYPE TEXT USING approved_by::TEXT",
       ];
