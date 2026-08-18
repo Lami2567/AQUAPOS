@@ -11,6 +11,8 @@ namespace WaterPOSLauncher
     {
         private static readonly string MutexName = "AquaPOSLauncherMutex_2026";
         private static string logFilePath = null;
+        private static string stderrLogPath = null;
+        private static string stdoutLogPath = null;
 
         [STAThread]
         static void Main()
@@ -36,6 +38,8 @@ namespace WaterPOSLauncher
                     try { Directory.CreateDirectory(logsDir); } catch { }
                 }
                 logFilePath = Path.Combine(logsDir, "launcher.log");
+                stdoutLogPath = Path.Combine(logsDir, "server-stdout.log");
+                stderrLogPath = Path.Combine(logsDir, "server-stderr.log");
 
                 Log("----------------------------------------------------");
                 Log("Starting AquaPOS System Background Service...");
@@ -43,7 +47,21 @@ namespace WaterPOSLauncher
 
                 try
                 {
-                    // 1. Check if backend is already responding on port 3001
+                    // 1. Check if Node.js is installed
+                    if (!IsNodeInstalled())
+                    {
+                        Log("ERROR: Node.js is not installed or not available in system PATH.");
+                        MessageBox.Show(
+                            "Node.js Runtime is not installed on this computer.\n\n" +
+                            "Please install Node.js (LTS Version) from https://nodejs.org/ and try launching again.",
+                            "AquaPOS - Missing Prerequisite",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning
+                        );
+                        return;
+                    }
+
+                    // 2. Check if backend server is already responding on port 3001
                     bool serverAlreadyRunning = IsBackendHealthy();
 
                     if (!serverAlreadyRunning)
@@ -54,9 +72,13 @@ namespace WaterPOSLauncher
                         if (!File.Exists(serverScript))
                         {
                             Log("ERROR: Server entry point not found at " + serverScript);
-                            MessageBox.Show("POS System could not start (Missing server bundle). Please run 'npm run build' first.", "WaterPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("POS System could not start (Missing server bundle).\n\nPlease run 'npm run build' or copy full build files.", "AquaPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
+
+                        // Clear old logs
+                        try { if (File.Exists(stdoutLogPath)) File.Delete(stdoutLogPath); } catch { }
+                        try { if (File.Exists(stderrLogPath)) File.Delete(stderrLogPath); } catch { }
 
                         ProcessStartInfo psi = new ProcessStartInfo
                         {
@@ -65,31 +87,66 @@ namespace WaterPOSLauncher
                             WorkingDirectory = rootDir,
                             CreateNoWindow = true,
                             UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
                             WindowStyle = ProcessWindowStyle.Hidden
                         };
 
-                        Process serverProc = Process.Start(psi);
-                        Log("Node server background process launched with PID: " + (serverProc != null ? serverProc.Id.ToString() : "UNKNOWN"));
+                        Process serverProc = new Process();
+                        serverProc.StartInfo = psi;
+
+                        serverProc.OutputDataReceived += (sender, e) =>
+                        {
+                            if (!string.IsNullOrEmpty(e.Data))
+                            {
+                                try { File.AppendAllText(stdoutLogPath, "[" + DateTime.Now.ToString("HH:mm:ss") + "] " + e.Data + Environment.NewLine); } catch { }
+                            }
+                        };
+
+                        serverProc.ErrorDataReceived += (sender, e) =>
+                        {
+                            if (!string.IsNullOrEmpty(e.Data))
+                            {
+                                try { File.AppendAllText(stderrLogPath, "[" + DateTime.Now.ToString("HH:mm:ss") + "] " + e.Data + Environment.NewLine); } catch { }
+                            }
+                        };
+
+                        bool started = serverProc.Start();
+                        if (started)
+                        {
+                            serverProc.BeginOutputReadLine();
+                            serverProc.BeginErrorReadLine();
+                            Log("Node server background process launched with PID: " + serverProc.Id.ToString());
+                        }
                     }
                     else
                     {
                         Log("Backend server is already running on port 3001.");
                     }
 
-                    // 2. Wait for backend to initialize
+                    // 3. Wait up to 30 seconds for backend health check
                     Log("Waiting for backend API health check on http://localhost:3001...");
-                    bool healthy = WaitForBackend(15000);
+                    bool healthy = WaitForBackend(30000);
 
                     if (!healthy)
                     {
-                        Log("ERROR: Backend server failed to respond within timeout.");
-                        MessageBox.Show("POS System could not start. Please contact the administrator.", "WaterPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        string detailedError = GetStderrSummary();
+                        Log("ERROR: Backend server failed to respond within 30s. Stderr: " + detailedError);
+
+                        string userMessage = "POS System backend server failed to start within timeout.\n\n";
+                        if (!string.IsNullOrEmpty(detailedError))
+                        {
+                            userMessage += "Diagnostic details:\n" + detailedError + "\n\n";
+                        }
+                        userMessage += "Please check that dependencies are installed (run 'npm install --omit=dev') or view logs/server-stderr.log.";
+
+                        MessageBox.Show(userMessage, "AquaPOS Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
                     Log("Backend server confirmed HEALTHY on http://localhost:3001.");
 
-                    // 3. Open POS System in Default Browser
+                    // 4. Open POS System in Default Browser
                     string targetUrl = "http://localhost:3001";
                     Log("Opening POS application URL in browser: " + targetUrl);
 
@@ -105,8 +162,32 @@ namespace WaterPOSLauncher
                 catch (Exception ex)
                 {
                     Log("FATAL EXCEPTION: " + ex.ToString());
-                    MessageBox.Show("POS System encountered an error during startup. Please contact the administrator.", "WaterPOS Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("POS System encountered an error during startup:\n\n" + ex.Message, "AquaPOS Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private static bool IsNodeInstalled()
+        {
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "node",
+                    Arguments = "-v",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
+                using (Process p = Process.Start(psi))
+                {
+                    p.WaitForExit(3000);
+                    return p.ExitCode == 0;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -139,6 +220,24 @@ namespace WaterPOSLauncher
                 elapsed += step;
             }
             return false;
+        }
+
+        private static string GetStderrSummary()
+        {
+            if (string.IsNullOrEmpty(stderrLogPath) || !File.Exists(stderrLogPath)) return "";
+            try
+            {
+                string[] lines = File.ReadAllLines(stderrLogPath);
+                if (lines.Length == 0) return "";
+                int count = Math.Min(5, lines.Length);
+                string[] lastLines = new string[count];
+                Array.Copy(lines, lines.Length - count, lastLines, 0, count);
+                return string.Join(Environment.NewLine, lastLines);
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         private static void Log(string message)
