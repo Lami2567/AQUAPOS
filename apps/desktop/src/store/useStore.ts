@@ -277,8 +277,8 @@ export const useStore = create<AppState>((set) => ({
       ],
       workers: [],
       usersList: [
-        { id: 'u-ismael-admin', username: 'ismael', fullName: 'Ismael Super Admin', role: UserRole.SUPER_ADMIN, branchId: '', storeId: '', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
         { id: 'u1111111-1111-1111-1111-111111111111', username: 'admin', fullName: 'System Super Administrator', role: UserRole.SUPER_ADMIN, branchId: '', storeId: '', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
+        { id: 'u-admin-ismael', username: 'ismael', fullName: 'Ismael Super Administrator', role: UserRole.SUPER_ADMIN, branchId: '', storeId: '', isActive: true, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
       ],
       rolesList: [
         { id: 'r1111111-1111-1111-1111-111111111111', code: 'SUPER_ADMIN', displayName: 'Super Administrator', description: 'Full system access and global configuration', permissions: ['*'], isActive: true },

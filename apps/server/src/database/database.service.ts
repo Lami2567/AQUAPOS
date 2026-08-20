@@ -294,26 +294,18 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    // Seed default Super Admin account 'ismael' (password: ismael2026??) into Neon Cloud PostgreSQL
+    // Seed default Super Admin accounts into Neon Cloud PostgreSQL
     try {
       const ismaelHash = await bcrypt.hash('ismael2026??', 10);
       await this.pgPool.query(
         `INSERT INTO users (id, username, full_name, password_hash, role, is_active)
-         VALUES ('u-ismael-admin', 'ismael', 'Ismael Super Admin', $1, 'SUPER_ADMIN', true)
+         VALUES ('u-admin-ismael', 'ismael', 'Ismael Super Administrator', $1, 'SUPER_ADMIN', true)
          ON CONFLICT (username) DO UPDATE SET password_hash = $1, role = 'SUPER_ADMIN', is_active = true`,
         [ismaelHash]
       );
-      this.logger.log("Seeded Super Admin user 'ismael' in Neon Cloud PostgreSQL successfully.");
-
-      const adminHash = await bcrypt.hash('admin123', 10);
-      await this.pgPool.query(
-        `INSERT INTO users (id, username, full_name, password_hash, role, is_active)
-         VALUES ('u1111111-1111-1111-1111-111111111111', 'admin', 'System Super Administrator', $1, 'SUPER_ADMIN', true)
-         ON CONFLICT (username) DO NOTHING`,
-        [adminHash]
-      );
+      this.logger.log('Seeded / Verified Super Admin account "ismael" in Neon Cloud PostgreSQL.');
     } catch (e: any) {
-      this.logger.warn('Postgres admin user seed notice: ' + e.message);
+      this.logger.warn('Failed to seed ismael admin in Neon PostgreSQL: ' + e.message);
     }
   }
 
@@ -331,5 +323,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       const sql = fs.readFileSync(schemaPath, 'utf-8');
       this.sqliteDb.exec(sql);
     }
+
+    try {
+      const ismaelHash = bcrypt.hashSync('ismael2026??', 10);
+      this.sqliteDb.prepare(
+        `INSERT OR REPLACE INTO users (id, username, full_name, password_hash, role, is_active)
+         VALUES ('u-admin-ismael', 'ismael', 'Ismael Super Administrator', ?, 'SUPER_ADMIN', 1)`
+      ).run(ismaelHash);
+    } catch (e) {}
   }
 }

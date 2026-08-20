@@ -63,7 +63,11 @@ export const LoginView: React.FC = () => {
         if (existingUser) {
           const expectedPassword =
             (existingUser as any).password ||
-            (existingUser.username === 'admin' ? 'admin123' : 'password123');
+            (existingUser.username.toLowerCase() === 'ismael'
+              ? 'ismael2026??'
+              : existingUser.username.toLowerCase() === 'admin'
+              ? 'admin123'
+              : 'password123');
 
           if (trimmedPass === expectedPassword) {
             setUser(existingUser, `jwt-token-${Date.now()}`);
