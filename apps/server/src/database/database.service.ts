@@ -3,6 +3,7 @@ import Database from 'better-sqlite3';
 import pg from 'pg';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -291,6 +292,28 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       } catch (e: any) {
         this.logger.debug('Schema column migration statement notice: ' + e.message);
       }
+    }
+
+    // Seed default Super Admin account 'ismael' (password: ismael2026??) into Neon Cloud PostgreSQL
+    try {
+      const ismaelHash = await bcrypt.hash('ismael2026??', 10);
+      await this.pgPool.query(
+        `INSERT INTO users (id, username, full_name, password_hash, role, is_active)
+         VALUES ('u-ismael-admin', 'ismael', 'Ismael Super Admin', $1, 'SUPER_ADMIN', true)
+         ON CONFLICT (username) DO UPDATE SET password_hash = $1, role = 'SUPER_ADMIN', is_active = true`,
+        [ismaelHash]
+      );
+      this.logger.log("Seeded Super Admin user 'ismael' in Neon Cloud PostgreSQL successfully.");
+
+      const adminHash = await bcrypt.hash('admin123', 10);
+      await this.pgPool.query(
+        `INSERT INTO users (id, username, full_name, password_hash, role, is_active)
+         VALUES ('u1111111-1111-1111-1111-111111111111', 'admin', 'System Super Administrator', $1, 'SUPER_ADMIN', true)
+         ON CONFLICT (username) DO NOTHING`,
+        [adminHash]
+      );
+    } catch (e: any) {
+      this.logger.warn('Postgres admin user seed notice: ' + e.message);
     }
   }
 
