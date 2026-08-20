@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import {
   User,
   UserRole,
@@ -257,9 +256,7 @@ export interface AppState {
   clearCart: () => void;
 }
 
-export const useStore = create<AppState>()(
-  persist(
-    (set) => ({
+export const useStore = create<AppState>((set) => ({
       user: null,
       token: null,
       currentBranchId: '',
@@ -340,7 +337,14 @@ export const useStore = create<AppState>()(
       overallDiscountUgx: 0,
       selectedPaymentMethod: 'CASH' as PaymentMethod,
 
-      setUser: (user, token) => set({ user, token }),
+      setUser: (user, token) => {
+        if (token) {
+          try { sessionStorage.setItem('aquapos-auth-token', token); } catch (_) {}
+        } else {
+          try { sessionStorage.removeItem('aquapos-auth-token'); } catch (_) {}
+        }
+        set({ user, token });
+      },
       setStore: (currentBranchId, currentStoreId) => set({ currentBranchId, currentStoreId }),
       setOnlineStatus: (isOnline) => set({ isOnline, syncStatus: isOnline ? 'SYNCED' : 'OFFLINE' }),
       setSyncStatus: (syncStatus, pendingSyncCount) =>
@@ -1612,10 +1616,5 @@ export const useStore = create<AppState>()(
       setOverallDiscount: (overallDiscountUgx) => set({ overallDiscountUgx: Math.max(0, overallDiscountUgx) }),
       setPaymentMethod: (selectedPaymentMethod) => set({ selectedPaymentMethod }),
       clearCart: () => set({ cart: [], overallDiscountUgx: 0 }),
-    }),
-    {
-      name: 'aquapos-offline-storage',
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
+    })
 );
