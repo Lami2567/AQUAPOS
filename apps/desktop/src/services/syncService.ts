@@ -17,13 +17,13 @@ class SyncManager {
       useStore.getState().setSyncStatus('OFFLINE');
     });
 
-    // High-frequency local SQLite auto-sync poll interval (every 3 seconds)
+    // High-frequency live cloud auto-sync poll interval (every 3 seconds)
     if (this.syncTimer) clearInterval(this.syncTimer);
     this.syncTimer = setInterval(() => {
       this.triggerSync();
     }, 3000);
 
-    // Immediate initial sync trigger on boot (0ms delay) to populate SQLite data into state
+    // Immediate initial sync trigger on boot (0ms delay) to populate Neon PostgreSQL data into state
     this.triggerSync();
   }
 
@@ -37,7 +37,7 @@ class SyncManager {
     this.isSyncing = true;
 
     try {
-      // 1. PUSH: Push pending outbox transactions to local NestJS SQLite & central server
+      // 1. PUSH: Push pending outbox transactions to Neon Cloud PostgreSQL via Render API
       const pendingOutbox = store.outboxQueue.filter((item) => item.status === 'PENDING');
       const branchId = store.currentBranchId || '';
       const deviceId = (import.meta.env.VITE_DEVICE_ID as string) || 'web-admin-01';
@@ -64,7 +64,7 @@ class SyncManager {
         }
       }
 
-      // 2. PULL: Pull latest master data and inventory directly from SQLite database
+      // 2. PULL: Pull latest master data and inventory directly from Neon Cloud PostgreSQL
       const sinceParam = store.lastSyncedAt ? `&since=${encodeURIComponent(store.lastSyncedAt)}` : '';
       const pullUrl = branchId ? `/api/v1/sync/pull?branchId=${branchId}${sinceParam}` : `/api/v1/sync/pull${sinceParam ? `?${sinceParam.slice(1)}` : ''}`;
       const pullRes = await apiClient.get(pullUrl);
@@ -80,7 +80,7 @@ class SyncManager {
 
       return {
         success: true,
-        message: `Synchronized successfully with SQLite database! (${pendingOutbox.length} pushed).`,
+        message: `Synchronized successfully with Neon Cloud PostgreSQL! (${pendingOutbox.length} pushed).`,
       };
     } catch (err: any) {
       const remainingPending = store.outboxQueue.filter((o) => o.status === 'PENDING').length;
@@ -88,7 +88,7 @@ class SyncManager {
       this.isSyncing = false;
       return {
         success: false,
-        message: `Sync delayed: ${err?.message || 'Server unreachable'}. Working in local mode.`,
+        message: `Sync delayed: ${err?.message || 'Server unreachable'}. Retrying connection...`,
       };
     }
   }
