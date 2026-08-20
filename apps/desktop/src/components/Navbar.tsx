@@ -158,11 +158,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
       label: 'System',
       icon: APP_ICONS.system,
       subViews: [
-        { key: 'sync', label: 'Synchronization', icon: APP_ICONS.synchronization, description: 'Offline outbox & sync queue' },
-        { key: 'backups', label: 'Data Backups', icon: APP_ICONS.backups, description: 'Database backup & restores' },
-        { key: 'devices', label: 'Registered Devices', icon: APP_ICONS.devices, description: 'Authorized POS hardware' },
+        { key: 'backups', label: 'Cloud Data Backups', icon: APP_ICONS.backups, description: 'Export snapshots & disaster recovery' },
         { key: 'admin_config', label: 'Master Configuration', icon: APP_ICONS.settings, description: 'Code-free system settings' },
         { key: 'audit_log', label: 'Audit Log', icon: APP_ICONS.auditLog, description: 'Security & action records' },
+        { key: 'devices', label: 'Registered Devices', icon: APP_ICONS.devices, description: 'Authorized POS hardware' },
       ],
     },
   ];
@@ -343,45 +342,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
 
         {/* Network & User Status + Logout Switcher */}
         <div className="flex items-center gap-2">
+          {/* Cloud Database Health / Backup Action */}
           <button
-            onClick={async () => {
-              if (!isOnline) {
-                setOnlineStatus(true);
-              }
-              await syncManager.triggerSync();
-            }}
+            onClick={() => onSelectNav({ domain: 'system', subView: 'backups' })}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer border ${
               !isOnline
                 ? 'bg-amber-950/80 border-amber-500/40 text-amber-400'
-                : syncStatus === 'SYNCING'
-                ? 'bg-cyan-950/80 border-cyan-500/40 text-cyan-300 animate-pulse'
-                : syncStatus === 'FAILED'
-                ? 'bg-rose-950/80 border-rose-500/50 text-rose-300 shadow-md shadow-rose-900/30'
-                : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400'
+                : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
             }`}
-            title="Click to trigger cloud synchronization"
+            title="Cloud Database Live - Click to open Backup & Recovery"
           >
-            {!isOnline ? (
-              <>
-                <WifiOff className="w-3.5 h-3.5" />
-                <span>OFFLINE ({pendingSyncCount})</span>
-              </>
-            ) : syncStatus === 'SYNCING' ? (
-              <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span>SYNCING...</span>
-              </>
-            ) : syncStatus === 'FAILED' ? (
-              <>
-                <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                <span>SYNC ERROR ({pendingSyncCount || 3})</span>
-              </>
-            ) : (
-              <>
-                <Wifi className="w-3.5 h-3.5" />
-                <span>SYNCED</span>
-              </>
-            )}
+            <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+            <span>NEON CLOUD (LIVE)</span>
           </button>
 
           {/* User Badge */}

@@ -9,6 +9,7 @@ import { FieldSalesView } from './components/FieldSalesView';
 import { StockView } from './components/StockView';
 import { FinanceView } from './components/FinanceView';
 import { SyncAuditView } from './components/SyncAuditView';
+import { BackupView } from './components/BackupView';
 import { AdminConfigView } from './components/AdminConfigView';
 import { LoginView } from './components/LoginView';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -76,10 +77,9 @@ export const App: React.FC = () => {
           
           {currentNav.domain === 'system' && (
             <>
-              {currentNav.subView === 'sync' && <SyncAuditView />}
+              {currentNav.subView === 'backups' && <BackupView />}
               {currentNav.subView === 'admin_config' && <AdminConfigView />}
               {currentNav.subView === 'audit_log' && <SyncAuditView />}
-              {currentNav.subView === 'backups' && <SyncAuditView />}
               {currentNav.subView === 'devices' && <SyncAuditView />}
             </>
           )}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, Request, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards, Request, Req, SetMetadata } from '@nestjs/common';
 import { DatabaseService } from './database/database.service.js';
 import { AuthService } from './auth/auth.service.js';
 import { StockService } from './stock/stock.service.js';
@@ -239,8 +239,10 @@ export class AppController {
   // Backups & Auditing
   @Roles(UserRole.SUPER_ADMIN, UserRole.BRANCH_MANAGER)
   @Post('backup/create')
-  async createBackup() {
-    return this.backupService.createLocalBackup();
+  async createBackup(@Req() req: any) {
+    const userId = req.user?.id || 'u-admin-ismael';
+    const username = req.user?.username || 'ismael';
+    return this.backupService.generateFullBackup(userId, username);
   }
 
   @Roles(UserRole.SUPER_ADMIN, UserRole.BRANCH_MANAGER, UserRole.AUDITOR)

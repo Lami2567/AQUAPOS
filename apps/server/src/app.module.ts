@@ -12,6 +12,7 @@ import { AuditService } from './audit/audit.service.js';
 import { AdminService } from './admin/admin.service.js';
 import { AppController } from './app.controller.js';
 import { AdminController } from './admin/admin.controller.js';
+import { BackupController } from './backup/backup.controller.js';
 import { AuthGuard } from './auth/auth.guard.js';
 
 @Module({
@@ -21,7 +22,7 @@ import { AuthGuard } from './auth/auth.guard.js';
       signOptions: { expiresIn: '12h' },
     }),
   ],
-  controllers: [AppController, AdminController],
+  controllers: [AppController, AdminController, BackupController],
   providers: [
     DatabaseService,
     AuthService,
