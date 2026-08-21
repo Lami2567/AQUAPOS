@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { apiClient } from '../utils/api';
 import { syncManager } from '../services/syncService';
@@ -105,9 +105,17 @@ export const AdminConfigView: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [isResetConfirmModalOpen, setIsResetConfirmModalOpen] = useState(false);
   const [clearDemoMaster, setClearDemoMaster] = useState(false);
-  const [adminUsernameInput, setAdminUsernameInput] = useState('admin');
+  const [adminUsernameInput, setAdminUsernameInput] = useState(() => user?.username || 'ismael');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [adminConfirmPasswordInput, setAdminConfirmPasswordInput] = useState('');
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.username) {
+      setAdminUsernameInput(user.username);
+    }
+  }, [user?.username]);
 
   const notify = (msg: string) => {
     setNotification(msg);
@@ -1062,11 +1070,24 @@ export const AdminConfigView: React.FC = () => {
                       e.preventDefault();
                       const targetUser = adminUsernameInput.trim() || user?.username || 'ismael';
                       const newPass = adminPasswordInput.trim();
+                      const confirmPass = adminConfirmPasswordInput.trim();
 
                       if (!newPass) {
                         alert('Please enter a new password.');
                         return;
                       }
+
+                      if (newPass !== confirmPass) {
+                        alert('New passwords do not match. Please re-enter.');
+                        return;
+                      }
+
+                      if (newPass.length < 3) {
+                        alert('Password must be at least 3 characters long.');
+                        return;
+                      }
+
+                      setIsUpdatingPassword(true);
 
                       try {
                         // 1. Send direct password change to Neon PostgreSQL
@@ -1089,21 +1110,28 @@ export const AdminConfigView: React.FC = () => {
 
                         notify(res.data?.message || `Password for "${targetUser}" updated successfully in Neon Cloud!`);
                         setAdminPasswordInput('');
+                        setAdminConfirmPasswordInput('');
                       } catch (err: any) {
                         alert(`Password update failed: ${err?.response?.data?.message || err?.message || 'Server error'}`);
+                      } finally {
+                        setIsUpdatingPassword(false);
                       }
                     }}
-                    className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs"
+                    className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs"
                   >
                     <div>
-                      <label className="block text-slate-400 mb-1">Admin Username</label>
-                      <input
-                        type="text"
+                      <label className="block text-slate-400 mb-1">Select Account</label>
+                      <select
                         value={adminUsernameInput}
                         onChange={(e) => setAdminUsernameInput(e.target.value)}
-                        required
                         className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
-                      />
+                      >
+                        {usersList.map((u) => (
+                          <option key={u.id} value={u.username}>
+                            {u.username} ({u.role})
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-slate-400 mb-1">New Password</label>
@@ -1116,13 +1144,25 @@ export const AdminConfigView: React.FC = () => {
                         className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
                       />
                     </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1">Confirm New Password</label>
+                      <input
+                        type="password"
+                        placeholder="Re-enter new password"
+                        value={adminConfirmPasswordInput}
+                        onChange={(e) => setAdminConfirmPasswordInput(e.target.value)}
+                        required
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      />
+                    </div>
                     <div className="flex items-end">
                       <button
                         type="submit"
-                        className="w-full flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-md shadow-cyan-900/40 cursor-pointer"
+                        disabled={isUpdatingPassword}
+                        className="w-full flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-md shadow-cyan-900/40 cursor-pointer"
                       >
                         <Save className="w-4 h-4" />
-                        <span>Update Credentials</span>
+                        <span>{isUpdatingPassword ? 'Saving...' : 'Update Password'}</span>
                       </button>
                     </div>
                   </form>
