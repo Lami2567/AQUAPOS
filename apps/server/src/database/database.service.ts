@@ -287,6 +287,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
       `ALTER TABLE IF EXISTS users ALTER COLUMN id DROP DEFAULT;`,
       `ALTER TABLE IF EXISTS users ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN branch_id DROP NOT NULL;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN store_id DROP NOT NULL;`,
       `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN user_id SET DATA TYPE TEXT USING user_id::TEXT;`,
       `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
     ];
@@ -303,11 +305,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     try {
       const ismaelHash = await bcrypt.hash('ismael2026??', 10);
       const ismaelId = uuidv4();
+      const branchRes = await this.pgPool.query('SELECT id FROM branches LIMIT 1');
+      const branchId = branchRes.rows[0]?.id || 'b1111111-1111-1111-1111-111111111111';
       await this.pgPool.query(
-        `INSERT INTO users (id, username, full_name, password_hash, role, is_active)
-         VALUES ($1, 'ismael', 'Ismael Super Administrator', $2, 'SUPER_ADMIN', true)
+        `INSERT INTO users (id, username, full_name, password_hash, role, branch_id, is_active)
+         VALUES ($1, 'ismael', 'Ismael Super Administrator', $2, 'SUPER_ADMIN', $3, true)
          ON CONFLICT (username) DO NOTHING`,
-        [ismaelId, ismaelHash]
+        [ismaelId, ismaelHash, branchId]
       );
       this.logger.log('Seeded / Verified Super Admin account "ismael" in Neon Cloud PostgreSQL.');
     } catch (e: any) {

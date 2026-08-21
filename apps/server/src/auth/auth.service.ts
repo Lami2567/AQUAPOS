@@ -24,11 +24,13 @@ export class AuthService {
     if (!rawUser) {
       if (cleanUser.toLowerCase() === 'ismael' && cleanPass === 'ismael2026??') {
         const ismaelId = uuidv4();
+        const defaultBranch = await this.dbService.queryOne<any>('SELECT id FROM branches LIMIT 1');
+        const branchId = defaultBranch?.id || 'b1111111-1111-1111-1111-111111111111';
         try {
           const hash = await bcrypt.hash('ismael2026??', 10);
           await this.dbService.execute(
-            'INSERT INTO users (id, username, full_name, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
-            [ismaelId, 'ismael', 'Ismael Super Administrator', hash, 'SUPER_ADMIN', true]
+            'INSERT INTO users (id, username, full_name, password_hash, role, branch_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [ismaelId, 'ismael', 'Ismael Super Administrator', hash, 'SUPER_ADMIN', branchId, true]
           );
         } catch (_) {}
 
@@ -37,7 +39,7 @@ export class AuthService {
           username: 'ismael',
           fullName: 'Ismael Super Administrator',
           role: UserRole.SUPER_ADMIN,
-          branchId: '',
+          branchId,
           storeId: '',
           isActive: true,
           createdAt: new Date().toISOString(),
@@ -128,9 +130,11 @@ export class AuthService {
         return { success: true, message: `Password for "${cleanUser}" updated successfully!` };
       } else {
         const newId = uuidv4();
+        const defaultBranch = await this.dbService.queryOne<any>('SELECT id FROM branches LIMIT 1');
+        const branchId = defaultBranch?.id || 'b1111111-1111-1111-1111-111111111111';
         await this.dbService.execute(
-          'INSERT INTO users (id, username, full_name, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
-          [newId, cleanUser, `${cleanUser} Administrator`, hash, 'SUPER_ADMIN', true]
+          'INSERT INTO users (id, username, full_name, password_hash, role, branch_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [newId, cleanUser, `${cleanUser} Administrator`, hash, 'SUPER_ADMIN', branchId, true]
         );
         return { success: true, message: `User "${cleanUser}" registered and password set successfully!` };
       }
