@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException, Logger } from '
 import { DatabaseService } from '../database/database.service.js';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { User, UserRole } from '@water-business/shared-types';
 
 @Injectable()
@@ -22,16 +23,17 @@ export class AuthService {
 
     if (!rawUser) {
       if (cleanUser.toLowerCase() === 'ismael' && cleanPass === 'ismael2026??') {
+        const ismaelId = uuidv4();
         try {
           const hash = await bcrypt.hash('ismael2026??', 10);
           await this.dbService.execute(
             'INSERT INTO users (id, username, full_name, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
-            ['u-admin-ismael', 'ismael', 'Ismael Super Administrator', hash, 'SUPER_ADMIN', true]
+            [ismaelId, 'ismael', 'Ismael Super Administrator', hash, 'SUPER_ADMIN', true]
           );
         } catch (_) {}
 
         return {
-          id: 'u-admin-ismael',
+          id: ismaelId,
           username: 'ismael',
           fullName: 'Ismael Super Administrator',
           role: UserRole.SUPER_ADMIN,
@@ -125,7 +127,7 @@ export class AuthService {
         );
         return { success: true, message: `Password for "${cleanUser}" updated successfully!` };
       } else {
-        const newId = userId || `u-admin-${Date.now()}`;
+        const newId = uuidv4();
         await this.dbService.execute(
           'INSERT INTO users (id, username, full_name, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
           [newId, cleanUser, `${cleanUser} Administrator`, hash, 'SUPER_ADMIN', true]

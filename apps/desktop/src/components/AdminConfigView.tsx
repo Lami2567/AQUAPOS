@@ -1126,11 +1126,15 @@ export const AdminConfigView: React.FC = () => {
                         onChange={(e) => setAdminUsernameInput(e.target.value)}
                         className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
                       >
-                        {usersList.map((u) => (
-                          <option key={u.id} value={u.username}>
-                            {u.username} ({u.role})
-                          </option>
-                        ))}
+                        <option value="ismael">ismael (SUPER_ADMIN)</option>
+                        <option value="admin">admin (SUPER_ADMIN)</option>
+                        {usersList
+                          .filter((u) => u.username !== 'ismael' && u.username !== 'admin')
+                          .map((u) => (
+                            <option key={u.id} value={u.username}>
+                              {u.username} ({u.role})
+                            </option>
+                          ))}
                       </select>
                     </div>
                     <div>

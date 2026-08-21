@@ -4,6 +4,7 @@ import pg from 'pg';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -284,6 +285,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN id DROP DEFAULT;`,
       `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
       `ALTER TABLE IF EXISTS deleted_records ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS users ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN user_id SET DATA TYPE TEXT USING user_id::TEXT;`,
+      `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
     ];
 
     for (const stmt of migrationStatements) {
@@ -297,11 +302,12 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     // Seed default Super Admin accounts into Neon Cloud PostgreSQL
     try {
       const ismaelHash = await bcrypt.hash('ismael2026??', 10);
+      const ismaelId = uuidv4();
       await this.pgPool.query(
         `INSERT INTO users (id, username, full_name, password_hash, role, is_active)
-         VALUES ('u-admin-ismael', 'ismael', 'Ismael Super Administrator', $1, 'SUPER_ADMIN', true)
-         ON CONFLICT (username) DO UPDATE SET password_hash = $1, role = 'SUPER_ADMIN', is_active = true`,
-        [ismaelHash]
+         VALUES ($1, 'ismael', 'Ismael Super Administrator', $2, 'SUPER_ADMIN', true)
+         ON CONFLICT (username) DO NOTHING`,
+        [ismaelId, ismaelHash]
       );
       this.logger.log('Seeded / Verified Super Admin account "ismael" in Neon Cloud PostgreSQL.');
     } catch (e: any) {
