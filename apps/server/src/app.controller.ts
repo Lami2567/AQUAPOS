@@ -48,6 +48,14 @@ export class AppController {
     return this.authService.login(body.username, body.password);
   }
 
+  @Public()
+  @Post('auth/change-password')
+  async changePassword(@Body() body: { username?: string; newPassword?: string; password?: string }, @Req() req: any) {
+    const targetUser = body.username || req.user?.username || 'ismael';
+    const newPass = body.newPassword || body.password;
+    return this.authService.changePassword(targetUser, newPass || '', req.user?.sub);
+  }
+
   // Inventory & Stock
   @Get('stock/inventory/:storeId')
   async getInventory(@Param('storeId') storeId: string) {

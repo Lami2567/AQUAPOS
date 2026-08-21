@@ -50,6 +50,7 @@ type AdminTab =
 
 export const AdminConfigView: React.FC = () => {
   const {
+    user,
     branches,
     stores,
     departments,
@@ -1057,19 +1058,39 @@ export const AdminConfigView: React.FC = () => {
                   </div>
 
                   <form
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                       e.preventDefault();
-                      const existingAdmin = usersList.find(
-                        (u) => u.role === 'SUPER_ADMIN' || u.username.toLowerCase() === 'admin'
-                      ) || usersList[0];
-                      if (existingAdmin) {
-                        saveUserInStore({
-                          ...existingAdmin,
-                          username: adminUsernameInput.trim(),
-                          password: adminPasswordInput.trim(),
-                        } as any);
-                        notify(`Admin credentials updated: Username '${adminUsernameInput.trim()}' and new password saved!`);
+                      const targetUser = adminUsernameInput.trim() || user?.username || 'ismael';
+                      const newPass = adminPasswordInput.trim();
+
+                      if (!newPass) {
+                        alert('Please enter a new password.');
+                        return;
+                      }
+
+                      try {
+                        // 1. Send direct password change to Neon PostgreSQL
+                        const res = await apiClient.post('/api/v1/auth/change-password', {
+                          username: targetUser,
+                          newPassword: newPass,
+                        });
+
+                        const existingAdmin = usersList.find(
+                          (u) => u.username.toLowerCase() === targetUser.toLowerCase()
+                        ) || usersList[0];
+
+                        if (existingAdmin) {
+                          saveUserInStore({
+                            ...existingAdmin,
+                            username: targetUser,
+                            password: newPass,
+                          } as any);
+                        }
+
+                        notify(res.data?.message || `Password for "${targetUser}" updated successfully in Neon Cloud!`);
                         setAdminPasswordInput('');
+                      } catch (err: any) {
+                        alert(`Password update failed: ${err?.response?.data?.message || err?.message || 'Server error'}`);
                       }
                     }}
                     className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs"

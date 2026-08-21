@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service.js';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -101,5 +101,34 @@ export class AuthService {
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
       user,
     };
+  }
+
+  async changePassword(username: string, newPass: string, userId?: string) {
+    if (!newPass || newPass.trim().length < 3) {
+      throw new BadRequestException('Password must be at least 3 characters long.');
+    }
+    const cleanUser = username.trim();
+    const cleanPass = newPass.trim();
+    const hash = await bcrypt.hash(cleanPass, 10);
+
+    const user = await this.dbService.queryOne<any>(
+      'SELECT * FROM users WHERE LOWER(username) = LOWER(?)',
+      [cleanUser]
+    );
+
+    if (user) {
+      await this.dbService.execute(
+        'UPDATE users SET password_hash = ? WHERE id = ?',
+        [hash, user.id]
+      );
+      return { success: true, message: `Password for "${cleanUser}" updated successfully in Neon Cloud PostgreSQL!` };
+    } else {
+      const newId = userId || `u-admin-${Date.now()}`;
+      await this.dbService.execute(
+        'INSERT INTO users (id, username, full_name, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
+        [newId, cleanUser, `${cleanUser} Administrator`, hash, 'SUPER_ADMIN', true]
+      );
+      return { success: true, message: `User "${cleanUser}" created and password saved successfully in Neon Cloud PostgreSQL!` };
+    }
   }
 }

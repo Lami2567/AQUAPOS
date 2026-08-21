@@ -139,7 +139,13 @@ export class AdminService {
   async saveUser(data: { id?: string; username: string; fullName: string; role: string; branchId: string; storeId?: string; password?: string; passwordHash?: string; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
     const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
-    const existing = await this.dbService.queryOne('SELECT * FROM users WHERE id = ?', [id]);
+    const cleanUser = data.username ? data.username.trim() : '';
+
+    // Check by ID or by matching username (case-insensitive)
+    const existing = await this.dbService.queryOne<any>(
+      'SELECT * FROM users WHERE id = ? OR LOWER(username) = LOWER(?)',
+      [id, cleanUser]
+    );
 
     let finalHash = data.passwordHash;
     if (!finalHash && data.password && data.password.trim()) {
@@ -150,28 +156,30 @@ export class AdminService {
       }
     }
 
+    const targetId = existing ? existing.id : id;
+
     if (existing) {
       if (finalHash) {
         await this.dbService.execute(
           'UPDATE users SET username = ?, full_name = ?, role = ?, branch_id = ?, store_id = ?, password_hash = ?, is_active = ? WHERE id = ?',
-          [data.username, data.fullName, data.role, data.branchId, data.storeId || null, finalHash, isActive, id]
+          [cleanUser, data.fullName, data.role, data.branchId || null, data.storeId || null, finalHash, isActive, targetId]
         );
       } else {
         await this.dbService.execute(
           'UPDATE users SET username = ?, full_name = ?, role = ?, branch_id = ?, store_id = ?, is_active = ? WHERE id = ?',
-          [data.username, data.fullName, data.role, data.branchId, data.storeId || null, isActive, id]
+          [cleanUser, data.fullName, data.role, data.branchId || null, data.storeId || null, isActive, targetId]
         );
       }
-      this.auditService.logAction(userId, 'System Admin', data.branchId, 'SERVER-01', 'UPDATE', 'User', id, existing, data);
+      this.auditService.logAction(userId, 'System Admin', data.branchId || '', 'SERVER-01', 'UPDATE', 'User', targetId, existing, data);
     } else {
       const defaultHash = finalHash || await bcrypt.hash('password123', 10);
       await this.dbService.execute(
         'INSERT INTO users (id, username, full_name, password_hash, role, branch_id, store_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, data.username, data.fullName, defaultHash, data.role, data.branchId, data.storeId || null, isActive]
+        [targetId, cleanUser, data.fullName, defaultHash, data.role, data.branchId || null, data.storeId || null, isActive]
       );
-      this.auditService.logAction(userId, 'System Admin', data.branchId, 'SERVER-01', 'CREATE', 'User', id, undefined, data);
+      this.auditService.logAction(userId, 'System Admin', data.branchId || '', 'SERVER-01', 'CREATE', 'User', targetId, undefined, data);
     }
-    return await this.dbService.queryOne('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE id = ?', [id]);
+    return await this.dbService.queryOne('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE id = ?', [targetId]);
   }
 
   // 6. Roles

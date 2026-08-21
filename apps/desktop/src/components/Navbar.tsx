@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { apiClient } from '../utils/api';
 import { syncManager } from '../services/syncService';
 import { BRAND_ASSETS, APP_ICONS } from '../config/assets.config';
 import { UserRole, User } from '@water-business/shared-types';
@@ -56,6 +57,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
   } = useStore();
   const [openDropdown, setOpenDropdown] = useState<NavDomain | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPass, setNewPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+  const [passError, setPassError] = useState<string | null>(null);
+  const [passSuccess, setPassSuccess] = useState<string | null>(null);
+  const [isUpdatingPass, setIsUpdatingPass] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -365,10 +372,26 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
             </div>
           </div>
 
+          {/* Change Password Button */}
+          <button
+            onClick={() => {
+              setNewPass('');
+              setConfirmPass('');
+              setPassError(null);
+              setPassSuccess(null);
+              setShowPasswordModal(true);
+            }}
+            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer"
+            title="Change Account Password"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Password</span>
+          </button>
+
           {/* Logout Button */}
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="flex items-center gap-1.5 bg-rose-950/80 hover:bg-rose-900/90 border border-rose-800/50 text-rose-300 px-3 py-1 rounded-xl text-[11px] font-bold transition-all shadow-sm shadow-rose-950"
+            className="flex items-center gap-1.5 bg-rose-950/80 hover:bg-rose-900/90 border border-rose-800/50 text-rose-300 px-3 py-1 rounded-xl text-[11px] font-bold transition-all shadow-sm shadow-rose-950 cursor-pointer"
             title="Sign out of current user account"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -377,6 +400,127 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
         </div>
 
       </div>
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+                <KeyRound className="w-4 h-4 text-amber-400" />
+                <span>Update Account Password</span>
+              </div>
+              <button
+                onClick={() => setShowPasswordModal(false)}
+                className="text-slate-400 hover:text-slate-200 text-xs font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="bg-slate-950/80 border border-slate-800 p-3 rounded-xl space-y-1 text-xs">
+              <div className="text-slate-400">Account: <span className="text-slate-200 font-bold">{user?.fullName}</span></div>
+              <div className="text-slate-400">Username: <span className="text-cyan-400 font-mono font-semibold">{user?.username}</span></div>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setPassError(null);
+                setPassSuccess(null);
+
+                if (!newPass.trim()) {
+                  setPassError('Please enter a new password.');
+                  return;
+                }
+                if (newPass !== confirmPass) {
+                  setPassError('New passwords do not match. Please re-type.');
+                  return;
+                }
+                if (newPass.trim().length < 3) {
+                  setPassError('Password must be at least 3 characters long.');
+                  return;
+                }
+
+                setIsUpdatingPass(true);
+
+                try {
+                  const res = await apiClient.post('/api/v1/auth/change-password', {
+                    username: user?.username || 'ismael',
+                    newPassword: newPass.trim(),
+                  });
+
+                  setPassSuccess(res.data?.message || 'Password updated successfully in Neon Cloud PostgreSQL!');
+                  setTimeout(() => {
+                    setShowPasswordModal(false);
+                  }, 1500);
+                } catch (err: any) {
+                  setPassError(err?.response?.data?.message || err?.message || 'Failed to update password.');
+                } finally {
+                  setIsUpdatingPass(false);
+                }
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block text-slate-400 mb-1">New Password</label>
+                <input
+                  type="password"
+                  placeholder="Enter new password"
+                  value={newPass}
+                  onChange={(e) => setNewPass(e.target.value)}
+                  required
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Confirm New Password</label>
+                <input
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={confirmPass}
+                  onChange={(e) => setConfirmPass(e.target.value)}
+                  required
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              {passError && (
+                <div className="bg-red-950/80 border border-red-500/40 text-red-300 p-2.5 rounded-xl text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>{passError}</span>
+                </div>
+              )}
+
+              {passSuccess && (
+                <div className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 p-2.5 rounded-xl text-xs flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>{passSuccess}</span>
+                </div>
+              )}
+
+              <div className="border-t border-slate-800 pt-3 flex items-center justify-end gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(false)}
+                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdatingPass}
+                  className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl transition-all shadow-md shadow-cyan-900/30 flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  {isUpdatingPass ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <KeyRound className="w-3.5 h-3.5" />}
+                  <span>{isUpdatingPass ? 'Saving...' : 'Save Password'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
