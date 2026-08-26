@@ -181,7 +181,7 @@ export function DataTable<T extends Record<string, any>>({
   };
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xl space-y-3 sm:space-y-4">
       {/* Title & Top Bar */}
       {(title || description) && (
         <div className="border-b border-slate-800 pb-3">
@@ -191,12 +191,12 @@ export function DataTable<T extends Record<string, any>>({
       )}
 
       {/* Control Toolbar: Search, Filters, Column Toggle & Export */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         
         {/* Left Toolbar: Search & Date Range */}
-        <div className="flex flex-wrap items-center gap-2.5 flex-1">
+        <div className="flex flex-wrap items-center gap-2 flex-1">
           {/* Search Box */}
-          <div className="relative flex-1 min-w-[200px] max-w-xs">
+          <div className="relative flex-1 min-w-[160px] sm:min-w-[200px] max-w-full sm:max-w-xs">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
@@ -211,8 +211,8 @@ export function DataTable<T extends Record<string, any>>({
           </div>
 
           {/* Date Range Filters */}
-          <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
-            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
+            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <input
               type="date"
               value={startDate}
@@ -220,7 +220,7 @@ export function DataTable<T extends Record<string, any>>({
                 setStartDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer text-xs"
             />
             <span className="text-slate-500">to</span>
             <input
@@ -230,21 +230,21 @@ export function DataTable<T extends Record<string, any>>({
                 setEndDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer text-xs"
             />
           </div>
 
           {/* Branch Filter */}
           {branchOptions.length > 0 && (
             <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
+              <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <select
                 value={selectedBranch}
                 onChange={(e) => {
                   setSelectedBranch(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-transparent text-slate-300 focus:outline-none cursor-pointer font-medium"
+                className="bg-transparent text-slate-300 focus:outline-none cursor-pointer font-medium text-xs"
               >
                 <option value="ALL" className="bg-slate-900">All Branches</option>
                 {branchOptions.map((b) => (
@@ -259,14 +259,14 @@ export function DataTable<T extends Record<string, any>>({
           {/* Status Filter */}
           {statusOptions.length > 0 && (
             <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
+              <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <select
                 value={selectedStatus}
                 onChange={(e) => {
                   setSelectedStatus(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-transparent text-slate-300 focus:outline-none cursor-pointer font-medium"
+                className="bg-transparent text-slate-300 focus:outline-none cursor-pointer font-medium text-xs"
               >
                 <option value="ALL" className="bg-slate-900">All Statuses</option>
                 {statusOptions.map((s) => (
@@ -280,12 +280,12 @@ export function DataTable<T extends Record<string, any>>({
         </div>
 
         {/* Right Toolbar: Column Visibility & CSV Export */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
           {/* Column Visibility Menu */}
           <div className="relative">
             <button
               onClick={() => setShowColumnToggle(!showColumnToggle)}
-              className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+              className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Columns</span>
@@ -300,7 +300,7 @@ export function DataTable<T extends Record<string, any>>({
                   <button
                     key={col.key}
                     onClick={() => toggleColumn(col.key)}
-                    className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-300 hover:bg-slate-800 rounded-lg transition-all"
+                    className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-300 hover:bg-slate-800 rounded-lg transition-all cursor-pointer"
                   >
                     <span>{col.header}</span>
                     {visibleColumns[col.key] && <Check className="w-3.5 h-3.5 text-cyan-400" />}
@@ -313,7 +313,7 @@ export function DataTable<T extends Record<string, any>>({
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-md shadow-cyan-900/30 transition-all"
+            className="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-md shadow-cyan-900/30 transition-all cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -381,23 +381,23 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Bottom Pagination Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
-        <div>
+        <div className="text-center sm:text-left">
           Showing <span className="font-semibold text-slate-200">{sortedData.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}</span> to{' '}
           <span className="font-semibold text-slate-200">{Math.min(currentPage * pageSize, sortedData.length)}</span> of{' '}
           <span className="font-semibold text-slate-200">{sortedData.length}</span> entries
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           {/* Rows Per Page Selector */}
-          <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px]">Per page:</span>
             <select
               value={pageSize}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-200 font-semibold focus:outline-none"
+              className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-200 font-semibold focus:outline-none text-xs"
             >
               <option value={10}>10</option>
               <option value={25}>25</option>
@@ -411,17 +411,19 @@ export function DataTable<T extends Record<string, any>>({
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300"
+              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 cursor-pointer"
+              aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="px-2 font-semibold text-slate-300">
+            <span className="px-2 font-semibold text-slate-300 whitespace-nowrap">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300"
+              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 cursor-pointer"
+              aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

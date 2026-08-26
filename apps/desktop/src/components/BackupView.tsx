@@ -233,16 +233,16 @@ export const BackupView: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 select-none">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-cyan-950/80 rounded-xl border border-cyan-500/30 text-cyan-400">
-            <Database className="w-7 h-7" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xl">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="p-2.5 sm:p-3 bg-cyan-950/80 rounded-xl border border-cyan-500/30 text-cyan-400 shrink-0">
+            <Database className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              Cloud Database Backup & Disaster Recovery
+            <h1 className="text-base sm:text-xl font-bold text-slate-100 flex flex-wrap items-center gap-2">
+              <span>Cloud Database Backup & Disaster Recovery</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-emerald-950 border border-emerald-500/30 text-emerald-400 rounded-full">
                 Neon Cloud Live
               </span>
@@ -253,70 +253,70 @@ export const BackupView: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
           <button
             onClick={handleExportBackup}
             disabled={isExporting}
-            className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-cyan-900/30 transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-cyan-900/30 transition-all cursor-pointer disabled:opacity-50"
           >
             {isExporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            <span>{isExporting ? 'Exporting Cloud Data...' : 'Export Full Backup (.json)'}</span>
+            <span>{isExporting ? 'Exporting...' : 'Export Backup (.json)'}</span>
           </button>
         </div>
       </div>
 
       {/* Live Cloud Database Health & Statistics Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-        <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
-          <div className="text-[11px] text-slate-400 uppercase font-semibold">Total Records</div>
-          <div className="text-xl font-extrabold text-cyan-400 mt-1 font-mono">{totalLocalRecords}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
+        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Total Records</div>
+          <div className="text-lg sm:text-xl font-extrabold text-cyan-400 mt-1 font-mono">{totalLocalRecords}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">Across all tables</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
-          <div className="text-[11px] text-slate-400 uppercase font-semibold">Sales History</div>
-          <div className="text-xl font-extrabold text-emerald-400 mt-1 font-mono">{salesHistory.length}</div>
+        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Sales History</div>
+          <div className="text-lg sm:text-xl font-extrabold text-emerald-400 mt-1 font-mono">{salesHistory.length}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">Recorded orders</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
-          <div className="text-[11px] text-slate-400 uppercase font-semibold">Products Catalog</div>
-          <div className="text-xl font-extrabold text-slate-200 mt-1 font-mono">{products.length}</div>
+        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Products Catalog</div>
+          <div className="text-lg sm:text-xl font-extrabold text-slate-200 mt-1 font-mono">{products.length}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">{categories.length} categories</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
-          <div className="text-[11px] text-slate-400 uppercase font-semibold">Branches & Stores</div>
-          <div className="text-xl font-extrabold text-slate-200 mt-1 font-mono">{branches.length} / {stores.length}</div>
+        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Branches & Stores</div>
+          <div className="text-lg sm:text-xl font-extrabold text-slate-200 mt-1 font-mono">{branches.length} / {stores.length}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">Multi-branch network</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
-          <div className="text-[11px] text-slate-400 uppercase font-semibold">Expenses & Debts</div>
-          <div className="text-xl font-extrabold text-amber-400 mt-1 font-mono">{expensesList.length + debtsList.length}</div>
+        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Expenses & Debts</div>
+          <div className="text-lg sm:text-xl font-extrabold text-amber-400 mt-1 font-mono">{expensesList.length + debtsList.length}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">Financial ledgers</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
-          <div className="text-[11px] text-slate-400 uppercase font-semibold">Staff & Users</div>
-          <div className="text-xl font-extrabold text-cyan-300 mt-1 font-mono">{usersList.length + workers.length}</div>
+        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Staff & Users</div>
+          <div className="text-lg sm:text-xl font-extrabold text-cyan-300 mt-1 font-mono">{usersList.length + workers.length}</div>
           <div className="text-[10px] text-slate-500 mt-0.5">Active accounts</div>
         </div>
       </div>
 
       {exportSuccessMsg && (
-        <div className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 p-4 rounded-xl text-xs flex items-center gap-3 animate-fade-in">
+        <div className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 p-3 sm:p-4 rounded-xl text-xs flex items-center gap-3 animate-fade-in">
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           <span>{exportSuccessMsg}</span>
         </div>
       )}
 
       {/* Main Grid: Export and Restore Portals */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         
         {/* Left Card: Backup Generator */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-lg flex flex-col justify-between">
-          <div className="space-y-4">
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-lg flex flex-col justify-between">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
               <div className="p-2.5 bg-cyan-950 rounded-xl text-cyan-400 border border-cyan-800/40">
                 <ArrowDownToLine className="w-5 h-5" />

@@ -9,6 +9,7 @@ import {
   Building2,
   Store,
   ChevronDown,
+  ChevronRight,
   Wifi,
   WifiOff,
   UserCheck,
@@ -18,6 +19,9 @@ import {
   KeyRound,
   ShieldAlert,
   CheckCircle,
+  Menu,
+  X,
+  Database,
 } from 'lucide-react';
 
 export type NavDomain =
@@ -56,13 +60,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     usersList,
   } = useStore();
   const [openDropdown, setOpenDropdown] = useState<NavDomain | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileExpandedDomain, setMobileExpandedDomain] = useState<NavDomain | null>(currentNav.domain);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [newPass, setNewPass] = useState('');
-  const [confirmPass, setConfirmPass] = useState('');
-  const [passError, setPassError] = useState<string | null>(null);
-  const [passSuccess, setPassSuccess] = useState<string | null>(null);
-  const [isUpdatingPass, setIsUpdatingPass] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -75,6 +75,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Sync mobile expanded domain with active domain
+  useEffect(() => {
+    setMobileExpandedDomain(currentNav.domain);
+  }, [currentNav.domain]);
 
   const LogoIcon = BRAND_ASSETS.LogoIcon;
 
@@ -173,52 +178,36 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     },
   ];
 
-  // Predefined role profile switcher options
-  const roleProfiles: { role: UserRole; username: string; name: string }[] = [
-    { role: UserRole.SUPER_ADMIN, username: 'admin', name: 'System Super Administrator' },
-    { role: UserRole.BRANCH_MANAGER, username: 'mgr_lwengo', name: 'Lwengo Branch Manager' },
-    { role: UserRole.STOREKEEPER, username: 'storekeeper_a', name: 'Lwengo Storekeeper C' },
-    { role: UserRole.CASHIER, username: 'cashier_isingiro', name: 'Isingiro Cashier B' },
-    { role: UserRole.FIELD_SALESPERSON, username: 'sales_worker_a', name: 'Lwengo Field Representative A' },
-    { role: UserRole.ACCOUNTANT, username: 'accountant_01', name: 'Lead Finance Accountant' },
-    { role: UserRole.AUDITOR, username: 'auditor_01', name: 'Internal Auditor' },
-  ];
-
-  const handleSwitchUserRole = (profile: { role: UserRole; username: string; name: string }) => {
-    const existing = usersList.find((u) => u.username === profile.username);
-    const selectedUser: User = existing || {
-      id: `u-${profile.username}`,
-      username: profile.username,
-      fullName: profile.name,
-      role: profile.role,
-      branchId: 'b1111111-1111-1111-1111-111111111111',
-      storeId: 's1111111-1111-1111-1111-111111111111',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setUser(selectedUser, 'mock-jwt-token-2026');
-    setShowLogoutModal(false);
+  const handleSelectSubView = (domain: NavDomain, subView: string) => {
+    onSelectNav({ domain, subView });
+    setOpenDropdown(null);
+    setIsMobileMenuOpen(false);
   };
+
+  const currentBranch = branches.find((b) => b.id === currentBranchId);
+  const currentStore = stores.find((s) => s.id === currentStoreId);
 
   return (
     <header className="bg-slate-950 border-b border-slate-800 text-slate-100 select-none sticky top-0 z-50 shadow-md">
-      <div className="max-w-[1500px] mx-auto px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
         
         {/* Brand & Store Selector */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-cyan-400 font-extrabold text-lg tracking-tight">
-            <div className="p-1.5 bg-cyan-950/90 rounded-xl border border-cyan-500/30 text-cyan-400">
-              <LogoIcon className="w-5 h-5 animate-pulse" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div
+            onClick={() => onSelectNav({ domain: 'dashboard', subView: 'overview' })}
+            className="flex items-center gap-2 text-cyan-400 font-extrabold text-base sm:text-lg tracking-tight cursor-pointer"
+          >
+            <div className="p-1 sm:p-1.5 bg-cyan-950/90 rounded-xl border border-cyan-500/30 text-cyan-400">
+              <LogoIcon className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
             </div>
             <span>AQUA<span className="text-slate-300">POS</span></span>
           </div>
 
-          <div className="h-5 w-px bg-slate-800 hidden sm:block" />
+          <div className="h-5 w-px bg-slate-800 hidden md:block" />
 
-          {/* Dynamic Branch Picker */}
-          <div className="flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
-            <Building2 className="w-3.5 h-3.5 text-cyan-400" />
+          {/* Dynamic Branch Picker (Desktop/Tablet) */}
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
+            <Building2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <span className="text-slate-400 font-medium">Branch:</span>
             <select
               value={currentBranchId}
@@ -228,7 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 const firstStoreId = branchStores[0]?.id || '';
                 setStore(newBranchId, firstStoreId);
               }}
-              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px]"
+              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] max-w-[120px] lg:max-w-none truncate"
             >
               {branches.map((b) => (
                 <option key={b.id} value={b.id} className="bg-slate-900 text-slate-200">
@@ -243,9 +232,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
             </select>
           </div>
 
-          {/* Dynamic Store Picker */}
-          <div className="flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
-            <Store className="w-3.5 h-3.5 text-emerald-400" />
+          {/* Dynamic Store Picker (Desktop/Tablet) */}
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
+            <Store className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="text-slate-400 font-medium">Store:</span>
             <select
               value={currentStoreId}
@@ -254,7 +243,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 const selectedStore = stores.find((s) => s.id === newStoreId);
                 setStore(selectedStore?.branchId || currentBranchId, newStoreId);
               }}
-              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px]"
+              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] max-w-[120px] lg:max-w-none truncate"
             >
               {stores
                 .filter((s) => !currentBranchId || s.branchId === currentBranchId)
@@ -272,8 +261,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
           </div>
         </div>
 
-        {/* 8 Business Domain Navigation Tabs - Role Based Access Control Filtered */}
-        <nav className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800/80 relative" ref={dropdownRef}>
+        {/* 8 Business Domain Navigation Tabs (Desktop screens >= 1024px) */}
+        <nav className="hidden xl:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800/80 relative" ref={dropdownRef}>
           {domainConfigs
             .filter((domain) => canAccessDomain(user?.role, domain.key))
             .map((domain) => {
@@ -286,13 +275,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 <button
                   onClick={() => {
                     if (isSingleView) {
-                      onSelectNav({ domain: domain.key, subView: domain.subViews[0].key });
-                      setOpenDropdown(null);
+                      handleSelectSubView(domain.key, domain.subViews[0].key);
                     } else {
                       setOpenDropdown(openDropdown === domain.key ? null : domain.key);
                     }
                   }}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     isDomainActive
                       ? 'bg-cyan-600 text-white shadow-sm shadow-cyan-900/40'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -320,11 +308,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                       return (
                         <button
                           key={sub.key}
-                          onClick={() => {
-                            onSelectNav({ domain: domain.key, subView: sub.key });
-                            setOpenDropdown(null);
-                          }}
-                          className={`w-full flex items-start gap-2 p-1.5 rounded-xl text-left transition-all ${
+                          onClick={() => handleSelectSubView(domain.key, sub.key)}
+                          className={`w-full flex items-start gap-2 p-1.5 rounded-xl text-left transition-all cursor-pointer ${
                             isSubActive
                               ? 'bg-cyan-950/80 border border-cyan-500/40 text-cyan-300'
                               : 'hover:bg-slate-800/60 text-slate-300'
@@ -347,48 +332,238 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
           })}
         </nav>
 
-        {/* Network & User Status + Logout Switcher */}
-        <div className="flex items-center gap-2">
-          {/* Cloud Database Health / Backup Action */}
+        {/* Right Action Bar (Network Status, User Profile, Mobile Hamburger) */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Cloud Database Health Status */}
           <button
             onClick={() => onSelectNav({ domain: 'system', subView: 'backups' })}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer border ${
+            className={`hidden sm:flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer border ${
               !isOnline
                 ? 'bg-amber-950/80 border-amber-500/40 text-amber-400'
                 : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
             }`}
             title="Cloud Database Live - Click to open Backup & Recovery"
           >
-            <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-            <span>NEON CLOUD (LIVE)</span>
+            <Wifi className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="hidden md:inline">NEON CLOUD (LIVE)</span>
+            <span className="md:hidden">LIVE</span>
           </button>
 
-          {/* User Badge */}
-          <div className="flex items-center gap-2 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
-            <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+          {/* User Badge (Desktop) */}
+          <div className="hidden lg:flex items-center gap-2 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
+            <UserCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <div className="leading-tight">
-              <div className="font-semibold text-slate-200 truncate max-w-[110px]">{user?.fullName}</div>
+              <div className="font-semibold text-slate-200 truncate max-w-[100px]">{user?.fullName}</div>
               <div className="text-[9px] text-slate-400">{user?.role}</div>
             </div>
           </div>
 
-          {/* Logout Button */}
+          {/* Desktop Logout Button */}
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="flex items-center gap-1.5 bg-rose-950/80 hover:bg-rose-900/90 border border-rose-800/50 text-rose-300 px-3 py-1 rounded-xl text-[11px] font-bold transition-all shadow-sm shadow-rose-950 cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 bg-rose-950/80 hover:bg-rose-900/90 border border-rose-800/50 text-rose-300 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] font-bold transition-all shadow-sm shadow-rose-950 cursor-pointer"
             title="Sign out of current user account"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="hidden md:inline">Logout</span>
+          </button>
+
+          {/* Mobile/Tablet Hamburger Menu Toggle Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="xl:hidden p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition-all flex items-center justify-center cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5 text-slate-200" />}
           </button>
         </div>
 
       </div>
 
+      {/* Mobile Navigation Drawer / Off-Canvas Sheet */}
+      {isMobileMenuOpen && (
+        <div className="xl:hidden fixed inset-0 top-[53px] z-50 bg-slate-950/90 backdrop-blur-md flex flex-col justify-between animate-fade-in border-t border-slate-800 overflow-y-auto">
+          <div className="p-4 space-y-4 max-w-lg mx-auto w-full">
+            
+            {/* User Account & Status Card */}
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-cyan-950 rounded-xl border border-cyan-500/30 text-cyan-400">
+                  <UserCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-slate-100 text-sm">{user?.fullName}</div>
+                  <div className="text-[11px] text-cyan-400 font-mono">
+                    @{user?.username} • <span className="text-amber-300">{user?.role}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setShowLogoutModal(true);
+                }}
+                className="p-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-800/50 text-rose-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Mobile Branch & Store Selectors */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+              <div>
+                <label className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-1 flex items-center gap-1">
+                  <Building2 className="w-3 h-3 text-cyan-400" /> Active Branch
+                </label>
+                <select
+                  value={currentBranchId}
+                  onChange={(e) => {
+                    const newBranchId = e.target.value;
+                    const branchStores = stores.filter((s) => s.branchId === newBranchId);
+                    const firstStoreId = branchStores[0]?.id || '';
+                    setStore(newBranchId, firstStoreId);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none"
+                >
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name} ({b.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-1 flex items-center gap-1">
+                  <Store className="w-3 h-3 text-emerald-400" /> Active Store
+                </label>
+                <select
+                  value={currentStoreId}
+                  onChange={(e) => {
+                    const newStoreId = e.target.value;
+                    const selectedStore = stores.find((s) => s.id === newStoreId);
+                    setStore(selectedStore?.branchId || currentBranchId, newStoreId);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none"
+                >
+                  {stores
+                    .filter((s) => !currentBranchId || s.branchId === currentBranchId)
+                    .map((st) => (
+                      <option key={st.id} value={st.id}>
+                        {st.name} ({st.type})
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Business Domain Menu Accordions */}
+            <div className="space-y-1.5 pt-1">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
+                Business Navigation
+              </div>
+
+              {domainConfigs
+                .filter((domain) => canAccessDomain(user?.role, domain.key))
+                .map((domain) => {
+                  const DomainIcon = domain.icon;
+                  const isDomainActive = currentNav.domain === domain.key;
+                  const isExpanded = mobileExpandedDomain === domain.key;
+                  const isSingleView = domain.subViews.length === 1;
+
+                  return (
+                    <div key={domain.key} className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden">
+                      <button
+                        onClick={() => {
+                          if (isSingleView) {
+                            handleSelectSubView(domain.key, domain.subViews[0].key);
+                          } else {
+                            setMobileExpandedDomain(isExpanded ? null : domain.key);
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between p-3 text-xs font-bold transition-all cursor-pointer ${
+                          isDomainActive
+                            ? 'bg-cyan-950/60 text-cyan-300'
+                            : 'text-slate-300 hover:bg-slate-800/50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className={`p-1.5 rounded-lg ${isDomainActive ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                            <DomainIcon className="w-4 h-4" />
+                          </div>
+                          <span>{domain.label}</span>
+                        </div>
+                        {!isSingleView && (
+                          <ChevronDown
+                            className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-180 text-cyan-400' : ''}`}
+                          />
+                        )}
+                      </button>
+
+                      {/* Sub-items */}
+                      {isExpanded && !isSingleView && (
+                        <div className="p-2 pt-0 space-y-1 bg-slate-950/50 border-t border-slate-800/60">
+                          {domain.subViews.map((sub) => {
+                            const SubIcon = sub.icon;
+                            const isSubActive = currentNav.domain === domain.key && currentNav.subView === sub.key;
+
+                            return (
+                              <button
+                                key={sub.key}
+                                onClick={() => handleSelectSubView(domain.key, sub.key)}
+                                className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-left text-xs transition-all cursor-pointer ${
+                                  isSubActive
+                                    ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-950'
+                                    : 'text-slate-300 hover:bg-slate-800/60 font-medium'
+                                }`}
+                              >
+                                <SubIcon className="w-3.5 h-3.5 shrink-0" />
+                                <div className="flex-1">
+                                  <div>{sub.label}</div>
+                                  {sub.description && (
+                                    <div className={`text-[10px] ${isSubActive ? 'text-cyan-100' : 'text-slate-400'}`}>
+                                      {sub.description}
+                                    </div>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* Quick Actions Footer in Drawer */}
+            <div className="pt-2">
+              <button
+                onClick={() => handleSelectSubView('system', 'backups')}
+                className="w-full flex items-center justify-between p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-semibold cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Wifi className="w-4 h-4 text-emerald-400" />
+                  <span>Neon Cloud PostgreSQL Database (Live)</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-emerald-400" />
+              </button>
+            </div>
+
+          </div>
+
+          <div className="p-4 border-t border-slate-900 bg-slate-950 text-center text-[10px] text-slate-500">
+            AQUAPOS Mobile • Offline First Engine
+          </div>
+        </div>
+      )}
+
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 max-w-sm w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
                 <ShieldAlert className="w-4 h-4" />
@@ -396,7 +571,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
               </div>
               <button
                 onClick={() => setShowLogoutModal(false)}
-                className="text-slate-400 hover:text-slate-200 text-xs font-bold"
+                className="text-slate-400 hover:text-slate-200 text-xs font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -416,7 +591,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
             <div className="border-t border-slate-800 pt-3 flex items-center justify-end gap-2 text-xs">
               <button
                 onClick={() => setShowLogoutModal(false)}
-                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition-all"
+                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -425,7 +600,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                   setUser(null, null);
                   setShowLogoutModal(false);
                 }}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md shadow-rose-950"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md shadow-rose-950 cursor-pointer"
               >
                 Sign Out Now
               </button>
@@ -436,3 +611,4 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     </header>
   );
 };
+

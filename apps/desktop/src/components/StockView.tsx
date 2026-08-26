@@ -133,13 +133,13 @@ export const StockView: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 select-none">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-100 flex items-center gap-2">
-            <Package className="w-7 h-7 text-cyan-400" />
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+            <Package className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Stock Ledger & Transfers</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -147,7 +147,7 @@ export const StockView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
           <button
             onClick={() => {
               if (!canReceiveStock) {
@@ -157,7 +157,7 @@ export const StockView: React.FC = () => {
               setPermissionError(null);
               setIsReceiptModalOpen(true);
             }}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               canReceiveStock
                 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950 cursor-pointer'
                 : 'bg-slate-900 text-slate-500 border border-slate-800 opacity-60 cursor-not-allowed'
@@ -165,35 +165,35 @@ export const StockView: React.FC = () => {
             title={canReceiveStock ? 'Record new goods intake receipt' : 'Restricted to STOREKEEPER & ADMIN'}
           >
             {canReceiveStock ? <Plus className="w-4 h-4" /> : <Lock className="w-3.5 h-3.5" />}
-            <span>Receive Goods / Intake</span>
+            <span>Receive Goods</span>
           </button>
 
           <button
             onClick={() => setActiveTab('inventory')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'inventory'
                 ? 'bg-cyan-600 text-white shadow-md'
                 : 'bg-slate-900 text-slate-400 border border-slate-800'
             }`}
           >
-            Inventory Balances
+            Balances
           </button>
           <button
             onClick={() => setActiveTab('transfers')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'transfers'
                 ? 'bg-cyan-600 text-white shadow-md'
                 : 'bg-slate-900 text-slate-400 border border-slate-800'
             }`}
           >
-            Stock Transfers ({stockTransfersList.length})
+            Transfers ({stockTransfersList.length})
           </button>
         </div>
       </div>
 
       {notification && (
         <div className="bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
-          <CheckCircle className="w-4 h-4 text-emerald-400" />
+          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
@@ -412,16 +412,16 @@ export const StockView: React.FC = () => {
 
       {/* Goods Intake Modal */}
       {isReceiptModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-slate-100">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 font-bold text-emerald-400 text-base">
-                <Inbox className="w-5 h-5" />
+              <div className="flex items-center gap-2 font-bold text-emerald-400 text-sm sm:text-base">
+                <Inbox className="w-5 h-5 shrink-0" />
                 <span>Receive Goods / Production Intake</span>
               </div>
               <button
                 onClick={() => setIsReceiptModalOpen(false)}
-                className="text-slate-400 hover:text-white text-sm"
+                className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -434,7 +434,7 @@ export const StockView: React.FC = () => {
                   <select
                     value={intakeStoreId}
                     onChange={(e) => setIntakeStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
                     required
                   >
                     {stores.map((s) => (
@@ -454,7 +454,7 @@ export const StockView: React.FC = () => {
                       const prod = products.find((p) => p.id === e.target.value);
                       if (prod) setIntakeUnitCost(prod.costPriceUgx);
                     }}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
                     required
                   >
                     {products.map((p) => (
@@ -475,7 +475,7 @@ export const StockView: React.FC = () => {
                     required
                     value={intakeQty}
                     onChange={(e) => setIntakeQty(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono font-bold text-emerald-400"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono font-bold text-emerald-400 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -486,7 +486,7 @@ export const StockView: React.FC = () => {
                     required
                     value={intakeUnitCost}
                     onChange={(e) => setIntakeUnitCost(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono focus:outline-none"
                   />
                 </div>
               </div>
@@ -498,7 +498,7 @@ export const StockView: React.FC = () => {
                   required
                   value={intakeBatchRef}
                   onChange={(e) => setIntakeBatchRef(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono focus:outline-none"
                 />
               </div>
 
@@ -508,7 +508,7 @@ export const StockView: React.FC = () => {
                   type="text"
                   value={intakeNotes}
                   onChange={(e) => setIntakeNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none"
                 />
               </div>
 
@@ -516,7 +516,7 @@ export const StockView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsReceiptModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl"
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -524,7 +524,7 @@ export const StockView: React.FC = () => {
                   type="submit"
                   className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-emerald-950 cursor-pointer"
                 >
-                  Record Goods Intake & Credit Ledger
+                  Record Goods Intake
                 </button>
               </div>
             </form>
@@ -534,16 +534,16 @@ export const StockView: React.FC = () => {
 
       {/* Create Draft Transfer Modal */}
       {isTransferModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-slate-100">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 font-bold text-cyan-400 text-base">
-                <ArrowRightLeft className="w-5 h-5" />
+              <div className="flex items-center gap-2 font-bold text-cyan-400 text-sm sm:text-base">
+                <ArrowRightLeft className="w-5 h-5 shrink-0" />
                 <span>Create Draft Branch Stock Transfer</span>
               </div>
               <button
                 onClick={() => setIsTransferModalOpen(false)}
-                className="text-slate-400 hover:text-white text-sm"
+                className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -556,7 +556,7 @@ export const StockView: React.FC = () => {
                   <select
                     value={transferSourceStoreId}
                     onChange={(e) => setTransferSourceStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
                     required
                   >
                     {stores.map((s) => (
@@ -572,7 +572,7 @@ export const StockView: React.FC = () => {
                   <select
                     value={transferDestStoreId}
                     onChange={(e) => setTransferDestStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
                     required
                   >
                     {stores.map((s) => (
@@ -590,7 +590,7 @@ export const StockView: React.FC = () => {
                   <select
                     value={transferProductId}
                     onChange={(e) => setTransferProductId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
                     required
                   >
                     {products.map((p) => (
@@ -609,7 +609,7 @@ export const StockView: React.FC = () => {
                     required
                     value={transferQty}
                     onChange={(e) => setTransferQty(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono font-bold text-cyan-400"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono font-bold text-cyan-400 focus:outline-none"
                   />
                   <span className="text-[10px] text-slate-500">
                     Avail in source: {inventoryStock[transferSourceStoreId]?.[transferProductId] || 0} units
@@ -622,7 +622,7 @@ export const StockView: React.FC = () => {
                 <select
                   value={transferVehicleName}
                   onChange={(e) => setTransferVehicleName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
                   required
                 >
                   {vehicles.map((v) => (
@@ -637,7 +637,7 @@ export const StockView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsTransferModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl"
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>

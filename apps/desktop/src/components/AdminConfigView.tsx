@@ -339,34 +339,63 @@ export const AdminConfigView: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Top Banner */}
-      <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-cyan-950/80 rounded-xl border border-cyan-500/30 text-cyan-400">
-            <Settings className="w-7 h-7" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xl">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="p-2.5 sm:p-3 bg-cyan-950/80 rounded-xl border border-cyan-500/30 text-cyan-400 shrink-0">
+            <Settings className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-100">System Administration & Master Configuration</h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-100">System Administration & Master Configuration</h1>
+            <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
               Configure system parameters, branches, roles, pricing, workers, products, and operational rules dynamically.
             </p>
           </div>
         </div>
 
         {notification && (
-          <div className="flex items-center gap-2 bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-4 py-2 rounded-xl text-xs font-semibold animate-fade-in">
+          <div className="flex items-center gap-2 bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-3.5 py-1.5 rounded-xl text-xs font-semibold animate-fade-in shrink-0">
             <CheckCircle className="w-4 h-4" />
             <span>{notification}</span>
           </div>
         )}
       </div>
 
+      {/* Mobile Module Selector (< lg) */}
+      <div className="lg:hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-3 space-y-2 shadow-lg">
+        <label className="text-[11px] font-bold tracking-wider text-slate-400 uppercase block">
+          Select Configuration Module:
+        </label>
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key);
+                setSearchQuery('');
+              }}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === tab.key
+                  ? 'bg-cyan-600 text-white shadow-md shadow-cyan-900/40'
+                  : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${activeTab === tab.key ? 'bg-cyan-800 text-cyan-100' : 'bg-slate-800 text-slate-400'}`}>
+                {tab.count}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Main Grid: Sidebar Navigation & Content Portal */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         
-        {/* Left Sub-Nav Tabs */}
-        <div className="lg:col-span-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-3 space-y-1 shadow-lg h-fit">
+        {/* Desktop Left Sub-Nav Tabs (hidden on < lg) */}
+        <div className="hidden lg:block lg:col-span-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-3 space-y-1 shadow-lg h-fit">
           <div className="text-[11px] font-bold tracking-wider text-slate-400 px-3 py-2 uppercase">
             Configuration Modules ({tabs.length})
           </div>
@@ -378,7 +407,7 @@ export const AdminConfigView: React.FC = () => {
                   setActiveTab(tab.key);
                   setSearchQuery('');
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === tab.key
                     ? 'bg-cyan-600 text-white shadow-md shadow-cyan-900/40'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -401,12 +430,12 @@ export const AdminConfigView: React.FC = () => {
         </div>
 
         {/* Right Content Area */}
-        <div className="lg:col-span-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-lg space-y-6">
+        <div className="lg:col-span-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-lg space-y-4 sm:space-y-6">
           
           {/* Header Action Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-800 pb-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-100 capitalize">
+              <h2 className="text-base sm:text-lg font-bold text-slate-100 capitalize">
                 {tabs.find((t) => t.key === activeTab)?.label} Management
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -414,7 +443,7 @@ export const AdminConfigView: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <div className="relative flex-1 sm:w-64">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                 <input
@@ -428,7 +457,7 @@ export const AdminConfigView: React.FC = () => {
 
               <button
                 onClick={openAddModal}
-                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-md shadow-cyan-900/30 whitespace-nowrap"
+                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-xl transition-all shadow-md shadow-cyan-900/30 whitespace-nowrap cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Entry</span>
@@ -437,7 +466,7 @@ export const AdminConfigView: React.FC = () => {
           </div>
 
           {/* Dynamic Data Table Render */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-slate-800/80">
             {activeTab === 'branches' && (
               <table className="w-full text-left text-xs text-slate-300">
                 <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
@@ -1249,15 +1278,15 @@ export const AdminConfigView: React.FC = () => {
 
       {/* Edit / Add Modal */}
       {showModal && editingItem && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 capitalize">
+              <h3 className="text-sm sm:text-base font-bold text-slate-100 capitalize">
                 Configure {activeTab.replace('_', ' ')} Entry
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200"
+                className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 cursor-pointer"
               >
                 <XCircle className="w-5 h-5" />
               </button>

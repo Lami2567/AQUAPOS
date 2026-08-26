@@ -160,27 +160,27 @@ export const FinanceView: React.FC = () => {
   const totalSalariesPaidUgx = salaryPaymentsList.reduce((sum, s) => sum + s.netPaidUgx, 0);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 select-none">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-100 flex items-center gap-2">
-            <DollarSign className="w-7 h-7 text-emerald-400" />
-            <span>Finance, Expenses & Payroll Management</span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+            <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400 shrink-0" />
+            <span>Finance, Expenses & Payroll</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Track business operating expenses, route staff debt recoveries, and calculate monthly worker payrolls.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
           {activeTab === 'expenses' && (
             <button
               onClick={() => setIsExpenseModalOpen(true)}
               className="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-950 cursor-pointer"
             >
-              <Plus className="w-4 h-4" /> Record New Expense
+              <Plus className="w-4 h-4" /> Record Expense
             </button>
           )}
 
@@ -189,7 +189,7 @@ export const FinanceView: React.FC = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
                   activeTab === tab
                     ? 'bg-emerald-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-slate-200'
@@ -204,13 +204,13 @@ export const FinanceView: React.FC = () => {
 
       {notification && (
         <div className="bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
-          <CheckCircle className="w-4 h-4 text-emerald-400" />
+          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
           <div>
             <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Expenses Recorded</div>
@@ -219,8 +219,8 @@ export const FinanceView: React.FC = () => {
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">{expensesList.length} Vouchers Filed</div>
           </div>
-          <div className="p-3 bg-rose-950/60 text-rose-400 rounded-xl border border-rose-500/30">
-            <TrendingDown className="w-6 h-6" />
+          <div className="p-3 bg-rose-950/60 text-rose-400 rounded-xl border border-rose-500/30 shrink-0">
+            <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
         </div>
 
@@ -232,7 +232,7 @@ export const FinanceView: React.FC = () => {
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">{salaryPaymentsList.length} Payslips Disbursed</div>
           </div>
-          <div className="p-3 bg-emerald-950/60 text-emerald-400 rounded-xl border border-emerald-500/30">
+          <div className="p-3 bg-emerald-950/60 text-emerald-400 rounded-xl border border-emerald-500/30 shrink-0">
             <Wallet className="w-6 h-6" />
           </div>
         </div>
@@ -525,17 +525,17 @@ export const FinanceView: React.FC = () => {
                   placeholder="e.g. 50 Litres Diesel for Isuzu Lorry"
                   value={expenseDesc}
                   onChange={(e) => setExpenseDesc(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-400 mb-1 font-semibold">Store / Branch</label>
                   <select
                     value={expenseStoreId}
                     onChange={(e) => setExpenseStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none"
                   >
                     {stores.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -550,7 +550,7 @@ export const FinanceView: React.FC = () => {
                   <select
                     value={expensePaymentMethod}
                     onChange={(e) => setExpensePaymentMethod(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none"
                   >
                     {paymentMethodsList.map((pm) => (
                       <option key={pm.id} value={pm.code}>
@@ -565,7 +565,7 @@ export const FinanceView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsExpenseModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl"
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -583,23 +583,23 @@ export const FinanceView: React.FC = () => {
 
       {/* Salary Payslip Modal */}
       {selectedWorkerForSalary && salaryCalc && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-slate-100">
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
             <div className="text-center border-b border-slate-800 pb-3">
-              <h3 className="font-extrabold text-lg text-emerald-400">Worker Payslip Calculation</h3>
+              <h3 className="font-extrabold text-base sm:text-lg text-emerald-400">Worker Payslip Calculation</h3>
               <div className="text-xs text-slate-300 font-bold">{selectedWorkerForSalary.fullName}</div>
               <div className="text-[11px] text-slate-500">{selectedWorkerForSalary.department} Department</div>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
                   <label className="block text-[10px] text-slate-400 mb-1">Route Commission (UGX)</label>
                   <input
                     type="number"
                     value={salaryCommission}
                     onChange={(e) => setSalaryCommission(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-emerald-300 font-bold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-emerald-300 font-bold focus:outline-none"
                   />
                 </div>
                 <div>
@@ -608,7 +608,7 @@ export const FinanceView: React.FC = () => {
                     type="number"
                     value={salaryAllowances}
                     onChange={(e) => setSalaryAllowances(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-emerald-300 font-bold"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-emerald-300 font-bold focus:outline-none"
                   />
                 </div>
               </div>
@@ -641,7 +641,7 @@ export const FinanceView: React.FC = () => {
                 <select
                   value={salaryPaymentMethod}
                   onChange={(e) => setSalaryPaymentMethod(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none"
                 >
                   <option value="MOBILE_MONEY">Mobile Money (MTN / Airtel)</option>
                   <option value="CASH">Physical Cash</option>
@@ -653,7 +653,7 @@ export const FinanceView: React.FC = () => {
             <div className="flex gap-2 border-t border-slate-800 pt-4">
               <button
                 onClick={() => setSelectedWorkerForSalary(null)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-xs"
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -670,14 +670,14 @@ export const FinanceView: React.FC = () => {
 
       {/* Settle Debt Modal */}
       {settleDebtModalTarget && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-slate-100">
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 font-bold text-cyan-400 text-base">
-                <CreditCard className="w-5 h-5" />
+              <div className="flex items-center gap-2 font-bold text-cyan-400 text-sm sm:text-base">
+                <CreditCard className="w-5 h-5 shrink-0" />
                 <span>Settle Debt / Record Cash Payment</span>
               </div>
-              <button onClick={() => setSettleDebtModalTarget(null)} className="text-slate-400 hover:text-white text-sm">
+              <button onClick={() => setSettleDebtModalTarget(null)} className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer">
                 ✕
               </button>
             </div>
@@ -703,7 +703,7 @@ export const FinanceView: React.FC = () => {
                   required
                   value={settleAmount}
                   onChange={(e) => setSettleAmount(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-emerald-400 font-bold text-base"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-emerald-400 font-bold text-base focus:outline-none"
                 />
               </div>
 
@@ -711,7 +711,7 @@ export const FinanceView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSettleDebtModalTarget(null)}
-                  className="px-4 py-2.5 bg-slate-800 text-slate-300 font-bold rounded-xl"
+                  className="px-4 py-2.5 bg-slate-800 text-slate-300 font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>

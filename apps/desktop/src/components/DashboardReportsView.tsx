@@ -166,48 +166,48 @@ export const DashboardReportsView: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 select-none">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       
       {/* Header & Tabs */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-100 flex items-center gap-2">
-            <BarChart3 className="w-7 h-7 text-cyan-400" />
-            <span>Business Reports & Financial Analytics</span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
+            <span>Business Reports & Analytics</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Real-time business performance analytics, expense tracking, and net profit calculations after expenses & debts.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'dashboard'
                 ? 'bg-cyan-600 text-white shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Executive Dashboard
+            Dashboard
           </button>
           <button
             onClick={() => setActiveTab('reports')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'reports'
                 ? 'bg-cyan-600 text-white shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Business Reports
+            Reports Center
           </button>
         </div>
       </div>
 
       {activeTab === 'dashboard' ? (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Financial Summary Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
             {/* 1. Total Sales / Revenue */}
             <div className="glass-card rounded-2xl p-4 border border-slate-800 bg-slate-900/80">
@@ -340,10 +340,10 @@ export const DashboardReportsView: React.FC = () => {
         </div>
       ) : (
         /* Professional Reports Center */
-        <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-6">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-slate-800 space-y-4 sm:space-y-6">
           
           {/* Report Filtering Controls */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 bg-slate-950 p-3 sm:p-4 rounded-xl border border-slate-800">
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Report Type</label>
               <select
@@ -397,13 +397,13 @@ export const DashboardReportsView: React.FC = () => {
           </div>
 
           {/* Prominent Profitability & Expense Financial Summary Banner */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 bg-slate-950 p-3 sm:p-4 rounded-xl border border-slate-800">
             <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
               <div className="text-slate-400 text-xs font-semibold flex items-center gap-1.5">
                 <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Gross Revenue (Sales)</span>
               </div>
-              <div className="text-xl font-extrabold text-cyan-400 mt-1 font-mono">
+              <div className="text-lg sm:text-xl font-extrabold text-cyan-400 mt-1 font-mono">
                 UGX {totalSalesUgx.toLocaleString()}
               </div>
             </div>
@@ -413,7 +413,7 @@ export const DashboardReportsView: React.FC = () => {
                 <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
                 <span>Total Expenses</span>
               </div>
-              <div className="text-xl font-extrabold text-rose-400 mt-1 font-mono">
+              <div className="text-lg sm:text-xl font-extrabold text-rose-400 mt-1 font-mono">
                 UGX {expensesUgx.toLocaleString()}
               </div>
             </div>
@@ -423,7 +423,7 @@ export const DashboardReportsView: React.FC = () => {
                 <DollarSign className="w-3.5 h-3.5 text-amber-400" />
                 <span>Outstanding Debts</span>
               </div>
-              <div className="text-xl font-extrabold text-amber-400 mt-1 font-mono">
+              <div className="text-lg sm:text-xl font-extrabold text-amber-400 mt-1 font-mono">
                 UGX {outstandingDebtsUgx.toLocaleString()}
               </div>
             </div>
@@ -435,7 +435,7 @@ export const DashboardReportsView: React.FC = () => {
                   {netProfitUgx >= 0 ? 'PROFIT ✓' : 'LOSS'}
                 </span>
               </div>
-              <div className={`text-xl font-extrabold mt-1 font-mono ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <div className={`text-lg sm:text-xl font-extrabold mt-1 font-mono ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                 UGX {netProfitUgx.toLocaleString()}
               </div>
               <div className="text-[10px] text-slate-400 mt-0.5">
@@ -444,12 +444,12 @@ export const DashboardReportsView: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
             <div>
-              <h2 className="text-base font-bold text-cyan-400">
+              <h2 className="text-sm sm:text-base font-bold text-cyan-400">
                 {reportsList.find((r) => r.id === selectedReportType)?.title}
               </h2>
-              <span className="text-xs text-slate-400">
+              <span className="text-[11px] sm:text-xs text-slate-400">
                 Period: {startDate} to {endDate} • Scope: {selectedBranch === 'ALL' ? 'Consolidated All Branches' : 'Filtered Branch'}
               </span>
             </div>
@@ -465,7 +465,7 @@ export const DashboardReportsView: React.FC = () => {
           </div>
 
           {/* Dynamic Report Data Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-slate-800/80">
             {selectedReportType === 'EXPENSES' ? (
               <table className="w-full text-left text-xs text-slate-300">
                 <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">

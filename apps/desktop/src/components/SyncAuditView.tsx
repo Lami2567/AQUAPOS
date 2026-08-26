@@ -25,12 +25,12 @@ export const SyncAuditView: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 select-none">
+    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-100 flex items-center gap-2">
-            <Database className="w-7 h-7 text-cyan-400" />
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+            <Database className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Offline Sync & Audit Dashboard</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -38,23 +38,23 @@ export const SyncAuditView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
           <button
             onClick={handleManualSync}
             disabled={!isOnline || syncStatus === 'SYNCING'}
-            className="btn-touch bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer"
+            className="btn-touch bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
           >
             <RefreshCw className={`w-4 h-4 ${syncStatus === 'SYNCING' ? 'animate-spin' : ''}`} />
-            <span>{syncStatus === 'SYNCING' ? 'Syncing Outbox...' : 'Trigger Cloud Sync'}</span>
+            <span>{syncStatus === 'SYNCING' ? 'Syncing...' : 'Cloud Sync'}</span>
           </button>
 
           <button
             onClick={handleCreateBackup}
             disabled={isBackingUp}
-            className="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer"
+            className="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
           >
             <HardDrive className="w-4 h-4" />
-            <span>{isBackingUp ? 'Encrypting Backup...' : 'Create Local Backup'}</span>
+            <span>{isBackingUp ? 'Encrypting...' : 'Local Backup'}</span>
           </button>
         </div>
       </div>

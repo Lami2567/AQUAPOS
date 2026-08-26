@@ -83,12 +83,12 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4 select-none relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-3 sm:p-4 select-none relative overflow-hidden">
       {/* Ambient background glows */}
-      <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/3 right-1/3 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/3 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/3 right-1/3 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl p-8 relative z-10 space-y-6">
+      <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-8 relative z-10 space-y-5 sm:space-y-6 my-auto">
         
         {/* Brand Header */}
         <div className="text-center space-y-2">

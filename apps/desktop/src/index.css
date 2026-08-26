@@ -4,30 +4,47 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 /* Custom Glassmorphism UI tokens */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(30, 41, 59, 0.65);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Touch-friendly buttons */
+/* Touch-friendly buttons & inputs */
 .btn-touch {
-  @apply px-4 py-3 rounded-lg font-semibold transition-all duration-150 active:scale-95 flex items-center justify-center gap-2 text-sm shadow-md;
+  @apply px-4 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-150 active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm shadow-md min-h-[38px] sm:min-h-[44px];
+}
+
+/* Responsive Table Wrapper with Touch Momentum */
+.table-responsive {
+  @apply overflow-x-auto rounded-xl border border-slate-800/80;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar for clean chip/pill lists while keeping scroll functional */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.5);
@@ -38,4 +55,19 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(71, 85, 105, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
