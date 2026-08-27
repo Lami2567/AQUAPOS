@@ -82,7 +82,7 @@ export const StockView: React.FC = () => {
 
   const handleOpenAdjustModal = (storeId?: string, productId?: string) => {
     if (!canAdjustStock) {
-      setPermissionError(`Access Denied: Stock level adjustments are restricted exclusively to SUPER_ADMIN. Your current role is "${user?.role}".`);
+      setPermissionError('Only administrators can change stock quantities.');
       return;
     }
     setPermissionError(null);
@@ -93,7 +93,7 @@ export const StockView: React.FC = () => {
     setAdjustStoreId(targetStore);
     setAdjustProductId(targetProduct);
     setAdjustNewQty(currentQty);
-    setAdjustReason('Data Entry Mistake / Correction');
+    setAdjustReason('Correction of entry mistake');
     setAdjustNotes('');
     setIsAdjustModalOpen(true);
   };
@@ -101,11 +101,11 @@ export const StockView: React.FC = () => {
   const handleStockAdjustmentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canAdjustStock) {
-      alert('Access Denied: Only Super Admin can adjust stock levels.');
+      alert('Only administrators can change stock quantities.');
       return;
     }
     if (adjustNewQty < 0) {
-      alert('Stock quantity cannot be negative.');
+      alert('Quantity cannot be negative.');
       return;
     }
 
@@ -119,12 +119,12 @@ export const StockView: React.FC = () => {
       productId: adjustProductId,
       newQuantity: Number(adjustNewQty),
       reason: adjustReason,
-      notes: adjustNotes || `Admin stock adjustment from ${currentQty} to ${adjustNewQty}`,
+      notes: adjustNotes || `Stock update from ${currentQty} to ${adjustNewQty}`,
     });
 
     setIsAdjustModalOpen(false);
     notify(
-      `Stock adjusted for ${prodName} in ${storeName}: from ${currentQty.toLocaleString()} to ${Number(adjustNewQty).toLocaleString()} (${delta >= 0 ? `+${delta.toLocaleString()}` : delta.toLocaleString()} units). Calculation records updated.`
+      `Stock updated for ${prodName} in ${storeName}: new quantity is ${Number(adjustNewQty).toLocaleString()} (${delta >= 0 ? `+${delta.toLocaleString()}` : delta.toLocaleString()}).`
     );
   };
 
@@ -209,15 +209,15 @@ export const StockView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          {/* Super Admin Stock Adjustment Action */}
+          {/* Admin Stock Adjustment Action */}
           {canAdjustStock && (
             <button
               onClick={() => handleOpenAdjustModal()}
-              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-md shadow-amber-950 cursor-pointer"
-              title="Super Admin Only: Correct / Adjust Stock Level Count"
+              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 shadow-sm cursor-pointer"
+              title="Change or correct stock quantity"
             >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span>Adjust Stock (Admin)</span>
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Adjust Stock</span>
             </button>
           )}
 
@@ -346,10 +346,10 @@ export const StockView: React.FC = () => {
                           {canAdjustStock && (
                             <button
                               onClick={() => handleOpenAdjustModal(store.id, prod.id)}
-                              className="text-[10px] text-amber-400 hover:text-amber-300 font-bold bg-amber-950/80 hover:bg-amber-900/90 border border-amber-500/40 px-1.5 py-0.5 rounded transition-all cursor-pointer inline-flex items-center gap-0.5"
-                              title="Super Admin: Correct or Adjust Stock Count"
+                              className="text-[10px] text-slate-300 hover:text-cyan-300 font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2 py-0.5 rounded-lg transition-all cursor-pointer inline-flex items-center gap-1"
+                              title="Update stock count"
                             >
-                              <SlidersHorizontal className="w-2.5 h-2.5" />
+                              <SlidersHorizontal className="w-2.5 h-2.5 text-cyan-400" />
                               <span>Adjust</span>
                             </button>
                           )}
@@ -738,24 +738,21 @@ export const StockView: React.FC = () => {
         </div>
       )}
 
-      {/* Admin Stock Level Adjustment & Audit Correction Modal */}
+      {/* Stock Level Adjustment Modal */}
       {isAdjustModalOpen && canAdjustStock && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-slate-900 border border-amber-500/40 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto my-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto my-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm sm:text-base">
-                <div className="p-2 bg-amber-950/90 rounded-xl border border-amber-500/40">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-slate-800 rounded-xl border border-slate-700 text-cyan-400">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span>Admin Stock Level Adjustment</span>
-                    <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-950 border border-amber-500/40 text-amber-300 rounded-full">
-                      Admin Only
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 font-normal mt-0.5">
-                    Correct data entry mistakes and reconcile physical warehouse counts.
+                  <h3 className="font-bold text-slate-100 text-sm sm:text-base">
+                    Update Stock Quantity
+                  </h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Correct stock counts for products in the selected store.
                   </p>
                 </div>
               </div>
@@ -779,7 +776,7 @@ export const StockView: React.FC = () => {
                     setAdjustStoreId(newStore);
                     setAdjustNewQty(inventoryStock[newStore]?.[adjustProductId] || 0);
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
                   required
                 >
                   {stores.map((s) => (
@@ -800,7 +797,7 @@ export const StockView: React.FC = () => {
                     setAdjustProductId(newProd);
                     setAdjustNewQty(inventoryStock[adjustStoreId]?.[newProd] || 0);
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
                   required
                 >
                   {products.map((p) => (
@@ -820,7 +817,7 @@ export const StockView: React.FC = () => {
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3 bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
                       <div>
-                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Current Recorded Stock</div>
+                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Current Stock in Store</div>
                         <div className="text-lg sm:text-xl font-extrabold font-mono text-slate-200 mt-0.5">
                           {currentRecordedQty.toLocaleString()}{' '}
                           <span className="text-xs text-slate-400 font-normal">units</span>
@@ -828,8 +825,8 @@ export const StockView: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-[10px] text-amber-400 font-bold uppercase mb-0.5">
-                          New Correct Stock Level *
+                        <label className="block text-[10px] text-cyan-400 font-bold uppercase mb-0.5">
+                          New Correct Quantity *
                         </label>
                         <input
                           type="number"
@@ -837,27 +834,19 @@ export const StockView: React.FC = () => {
                           required
                           value={adjustNewQty}
                           onChange={(e) => setAdjustNewQty(parseInt(e.target.value) || 0)}
-                          className="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-3 py-1.5 text-slate-100 font-mono font-extrabold text-base focus:outline-none focus:border-amber-400"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-100 font-mono font-extrabold text-base focus:outline-none focus:border-cyan-500"
                           autoFocus
                         />
                       </div>
                     </div>
 
-                    {/* Calculated Delta / Variance Badge */}
-                    <div
-                      className={`p-2.5 rounded-xl border flex items-center justify-between text-xs ${
-                        delta < 0
-                          ? 'bg-rose-950/60 border-rose-500/40 text-rose-300'
-                          : delta > 0
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
-                          : 'bg-slate-950 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      <div className="font-semibold flex items-center gap-1.5">
-                        <AlertOctagon className="w-3.5 h-3.5" />
-                        <span>Calculated Ledger Adjustment (Delta):</span>
+                    {/* Calculated Change Badge */}
+                    <div className="p-2.5 rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-between text-xs text-slate-300">
+                      <div className="font-semibold flex items-center gap-1.5 text-slate-400">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Quantity Change:</span>
                       </div>
-                      <div className="font-mono font-extrabold text-sm">
+                      <div className="font-mono font-extrabold text-sm text-cyan-300">
                         {delta > 0 ? `+${delta.toLocaleString()}` : delta.toLocaleString()} units
                       </div>
                     </div>
@@ -867,43 +856,33 @@ export const StockView: React.FC = () => {
 
               {/* Adjustment Reason */}
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Adjustment Reason *</label>
+                <label className="block text-slate-400 mb-1 font-semibold">Reason for Change *</label>
                 <select
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
                   required
                 >
-                  <option value="Data Entry Mistake / Correction">Data Entry Mistake / Typo Correction</option>
-                  <option value="Physical Stock Count Variance">Physical Stock Count Variance</option>
-                  <option value="Audit Rectification / Inventory Reconciliation">Audit Rectification / Inventory Reconciliation</option>
-                  <option value="Damaged / Expired Goods Write-off">Damaged / Expired Goods Write-off</option>
-                  <option value="Inventory Shrinkage Correction">Inventory Shrinkage Correction</option>
-                  <option value="Other Audit Rectification">Other Audit Rectification</option>
+                  <option value="Correction of entry mistake">Correction of entry mistake</option>
+                  <option value="Physical stock count difference">Physical stock count difference</option>
+                  <option value="Damaged or expired stock">Damaged or expired stock</option>
+                  <option value="Routine stock reconciliation">Routine stock reconciliation</option>
+                  <option value="Other reason">Other reason</option>
                 </select>
               </div>
 
-              {/* Audit Notes */}
+              {/* Notes */}
               <div>
                 <label className="block text-slate-400 mb-1 font-semibold">
-                  Admin Audit Notes & Justification <span className="text-slate-500 font-normal">(Required)</span>
+                  Additional Notes <span className="text-slate-500 font-normal">(Optional)</span>
                 </label>
                 <textarea
                   rows={2}
-                  required
-                  placeholder="e.g. Corrected stock from 5000 to 500 due to keying mistake during yesterday's intake."
+                  placeholder="e.g. Corrected quantity after counting warehouse items."
                   value={adjustNotes}
                   onChange={(e) => setAdjustNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-amber-500 text-xs"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-cyan-500 text-xs"
                 />
-              </div>
-
-              {/* Audit Integrity Notice */}
-              <div className="bg-slate-950 border border-slate-800/80 p-3 rounded-xl flex items-start gap-2.5 text-[11px] text-slate-400">
-                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <p>
-                  This adjustment will log an immutable <strong className="text-slate-200">STOCK_ADJUSTMENT</strong> ledger entry with admin authorization, preserving accurate inventory valuations and net profit reports.
-                </p>
               </div>
 
               {/* Action Buttons */}
@@ -917,10 +896,10 @@ export const StockView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-amber-950 cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Authorize & Save Stock Adjustment</span>
+                  <span>Save Stock Quantity</span>
                 </button>
               </div>
             </form>
