@@ -40,7 +40,6 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'MANAGE_PRODUCTS',
     'RECEIVE_STOCK',
     'TRANSFER_STOCK',
-    'ADJUST_STOCK',
     'POS_SALES',
     'FIELD_SALES',
     'MANAGE_EXPENSES',
@@ -51,7 +50,6 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   STOREKEEPER: [
     'RECEIVE_STOCK',
     'TRANSFER_STOCK',
-    'ADJUST_STOCK',
     'VIEW_REPORTS',
   ],
   CASHIER: [

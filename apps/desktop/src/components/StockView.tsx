@@ -13,6 +13,9 @@ import {
   CheckCircle,
   XCircle,
   Inbox,
+  SlidersHorizontal,
+  Edit3,
+  AlertOctagon,
 } from 'lucide-react';
 import { useStore, StockTransferRecord } from '../store/useStore';
 import { hasPermission } from '../utils/rbac';
@@ -30,6 +33,7 @@ export const StockView: React.FC = () => {
     inventoryStock,
     stockTransfersList,
     addStockIntake,
+    adjustStock,
     createStockTransfer,
     advanceTransferStatus,
   } = useStore();
@@ -38,6 +42,7 @@ export const StockView: React.FC = () => {
   const [storeFilterMode, setStoreFilterMode] = useState<'BRANCH' | 'ALL'>('BRANCH');
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -52,6 +57,13 @@ export const StockView: React.FC = () => {
   const [intakeBatchRef, setIntakeBatchRef] = useState(`BATCH-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-01`);
   const [intakeNotes, setIntakeNotes] = useState('Bottling Plant Production Intake');
 
+  // Admin Stock Adjustment Form State
+  const [adjustStoreId, setAdjustStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
+  const [adjustProductId, setAdjustProductId] = useState(products[0]?.id || '');
+  const [adjustNewQty, setAdjustNewQty] = useState<number>(0);
+  const [adjustReason, setAdjustReason] = useState('Data Entry Mistake / Correction');
+  const [adjustNotes, setAdjustNotes] = useState('');
+
   // Draft Transfer Form State
   const [transferSourceStoreId, setTransferSourceStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [transferDestStoreId, setTransferDestStoreId] = useState(stores[1]?.id || stores[0]?.id || '');
@@ -61,10 +73,59 @@ export const StockView: React.FC = () => {
 
   const canReceiveStock = hasPermission(user?.role, 'RECEIVE_STOCK');
   const canTransferStock = hasPermission(user?.role, 'TRANSFER_STOCK');
+  const canAdjustStock = user?.role === 'SUPER_ADMIN' || hasPermission(user?.role, 'ADJUST_STOCK');
 
   const notify = (msg: string) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handleOpenAdjustModal = (storeId?: string, productId?: string) => {
+    if (!canAdjustStock) {
+      setPermissionError(`Access Denied: Stock level adjustments are restricted exclusively to SUPER_ADMIN. Your current role is "${user?.role}".`);
+      return;
+    }
+    setPermissionError(null);
+    const targetStore = storeId || currentStoreId || branchStores[0]?.id || stores[0]?.id || '';
+    const targetProduct = productId || products[0]?.id || '';
+    const currentQty = inventoryStock[targetStore]?.[targetProduct] || 0;
+
+    setAdjustStoreId(targetStore);
+    setAdjustProductId(targetProduct);
+    setAdjustNewQty(currentQty);
+    setAdjustReason('Data Entry Mistake / Correction');
+    setAdjustNotes('');
+    setIsAdjustModalOpen(true);
+  };
+
+  const handleStockAdjustmentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canAdjustStock) {
+      alert('Access Denied: Only Super Admin can adjust stock levels.');
+      return;
+    }
+    if (adjustNewQty < 0) {
+      alert('Stock quantity cannot be negative.');
+      return;
+    }
+
+    const currentQty = inventoryStock[adjustStoreId]?.[adjustProductId] || 0;
+    const delta = Number(adjustNewQty) - currentQty;
+    const storeName = stores.find((s) => s.id === adjustStoreId)?.name || 'Store';
+    const prodName = products.find((p) => p.id === adjustProductId)?.name || 'Product';
+
+    adjustStock({
+      storeId: adjustStoreId,
+      productId: adjustProductId,
+      newQuantity: Number(adjustNewQty),
+      reason: adjustReason,
+      notes: adjustNotes || `Admin stock adjustment from ${currentQty} to ${adjustNewQty}`,
+    });
+
+    setIsAdjustModalOpen(false);
+    notify(
+      `Stock adjusted for ${prodName} in ${storeName}: from ${currentQty.toLocaleString()} to ${Number(adjustNewQty).toLocaleString()} (${delta >= 0 ? `+${delta.toLocaleString()}` : delta.toLocaleString()} units). Calculation records updated.`
+    );
   };
 
   const handleGoodsIntakeSubmit = (e: React.FormEvent) => {
@@ -148,6 +209,18 @@ export const StockView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          {/* Super Admin Stock Adjustment Action */}
+          {canAdjustStock && (
+            <button
+              onClick={() => handleOpenAdjustModal()}
+              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-md shadow-amber-950 cursor-pointer"
+              title="Super Admin Only: Correct / Adjust Stock Level Count"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              <span>Adjust Stock (Admin)</span>
+            </button>
+          )}
+
           <button
             onClick={() => {
               if (!canReceiveStock) {
@@ -207,7 +280,7 @@ export const StockView: React.FC = () => {
               <div>{permissionError}</div>
             </div>
           </div>
-          <button onClick={() => setPermissionError(null)} className="text-slate-400 hover:text-white text-xs font-bold">
+          <button onClick={() => setPermissionError(null)} className="text-slate-400 hover:text-white text-xs font-bold cursor-pointer">
             Dismiss
           </button>
         </div>
@@ -222,13 +295,13 @@ export const StockView: React.FC = () => {
             <div className="flex gap-1">
               <button
                 onClick={() => setStoreFilterMode('BRANCH')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold ${storeFilterMode === 'BRANCH' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'BRANCH' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 Current Branch Only
               </button>
               <button
                 onClick={() => setStoreFilterMode('ALL')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold ${storeFilterMode === 'ALL' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'ALL' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 All Branches
               </button>
@@ -256,18 +329,30 @@ export const StockView: React.FC = () => {
                   return (
                     <div
                       key={prod.id}
-                      className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center"
+                      className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center gap-2"
                     >
-                      <div>
-                        <div className="font-bold text-slate-200">{prod.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">{prod.unitOfMeasure} • SKU: {prod.sku}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-slate-200 truncate">{prod.name}</div>
+                        <div className="text-[10px] text-slate-400 font-mono truncate">{prod.unitOfMeasure} • SKU: {prod.sku}</div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right shrink-0">
                         <div className={`font-extrabold text-base font-mono ${isLowStock ? 'text-amber-400' : 'text-cyan-400'}`}>
                           {qty.toLocaleString()}
                         </div>
-                        <div className={`text-[10px] font-semibold ${isLowStock ? 'text-amber-400' : 'text-emerald-400'}`}>
-                          {isLowStock ? 'Low Stock Alert' : 'In Stock'}
+                        <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                          <span className={`text-[10px] font-semibold ${isLowStock ? 'text-amber-400' : 'text-emerald-400'}`}>
+                            {isLowStock ? 'Low Stock' : 'In Stock'}
+                          </span>
+                          {canAdjustStock && (
+                            <button
+                              onClick={() => handleOpenAdjustModal(store.id, prod.id)}
+                              className="text-[10px] text-amber-400 hover:text-amber-300 font-bold bg-amber-950/80 hover:bg-amber-900/90 border border-amber-500/40 px-1.5 py-0.5 rounded transition-all cursor-pointer inline-flex items-center gap-0.5"
+                              title="Super Admin: Correct or Adjust Stock Count"
+                            >
+                              <SlidersHorizontal className="w-2.5 h-2.5" />
+                              <span>Adjust</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -646,6 +731,196 @@ export const StockView: React.FC = () => {
                   className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer"
                 >
                   Create & Save Draft Transfer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Stock Level Adjustment & Audit Correction Modal */}
+      {isAdjustModalOpen && canAdjustStock && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
+          <div className="bg-slate-900 border border-amber-500/40 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto my-auto">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm sm:text-base">
+                <div className="p-2 bg-amber-950/90 rounded-xl border border-amber-500/40">
+                  <SlidersHorizontal className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span>Admin Stock Level Adjustment</span>
+                    <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 bg-amber-950 border border-amber-500/40 text-amber-300 rounded-full">
+                      Admin Only
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-normal mt-0.5">
+                    Correct data entry mistakes and reconcile physical warehouse counts.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsAdjustModalOpen(false)}
+                className="text-slate-500 hover:text-slate-300 cursor-pointer p-1"
+                aria-label="Close modal"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleStockAdjustmentSubmit} className="space-y-3.5 text-xs">
+              {/* Store Selector */}
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Store / Warehouse</label>
+                <select
+                  value={adjustStoreId}
+                  onChange={(e) => {
+                    const newStore = e.target.value;
+                    setAdjustStoreId(newStore);
+                    setAdjustNewQty(inventoryStock[newStore]?.[adjustProductId] || 0);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-amber-500"
+                  required
+                >
+                  {stores.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.code}) - {s.type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Product Selector */}
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Product</label>
+                <select
+                  value={adjustProductId}
+                  onChange={(e) => {
+                    const newProd = e.target.value;
+                    setAdjustProductId(newProd);
+                    setAdjustNewQty(inventoryStock[adjustStoreId]?.[newProd] || 0);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-amber-500"
+                  required
+                >
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.sku}) • {p.unitOfMeasure}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Comparison Grid: Current Stock vs New Stock Level */}
+              {(() => {
+                const currentRecordedQty = inventoryStock[adjustStoreId]?.[adjustProductId] || 0;
+                const delta = (Number(adjustNewQty) || 0) - currentRecordedQty;
+
+                return (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3 bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
+                      <div>
+                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Current Recorded Stock</div>
+                        <div className="text-lg sm:text-xl font-extrabold font-mono text-slate-200 mt-0.5">
+                          {currentRecordedQty.toLocaleString()}{' '}
+                          <span className="text-xs text-slate-400 font-normal">units</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] text-amber-400 font-bold uppercase mb-0.5">
+                          New Correct Stock Level *
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          required
+                          value={adjustNewQty}
+                          onChange={(e) => setAdjustNewQty(parseInt(e.target.value) || 0)}
+                          className="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-3 py-1.5 text-slate-100 font-mono font-extrabold text-base focus:outline-none focus:border-amber-400"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+
+                    {/* Calculated Delta / Variance Badge */}
+                    <div
+                      className={`p-2.5 rounded-xl border flex items-center justify-between text-xs ${
+                        delta < 0
+                          ? 'bg-rose-950/60 border-rose-500/40 text-rose-300'
+                          : delta > 0
+                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
+                          : 'bg-slate-950 border-slate-800 text-slate-400'
+                      }`}
+                    >
+                      <div className="font-semibold flex items-center gap-1.5">
+                        <AlertOctagon className="w-3.5 h-3.5" />
+                        <span>Calculated Ledger Adjustment (Delta):</span>
+                      </div>
+                      <div className="font-mono font-extrabold text-sm">
+                        {delta > 0 ? `+${delta.toLocaleString()}` : delta.toLocaleString()} units
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Adjustment Reason */}
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Adjustment Reason *</label>
+                <select
+                  value={adjustReason}
+                  onChange={(e) => setAdjustReason(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-amber-500"
+                  required
+                >
+                  <option value="Data Entry Mistake / Correction">Data Entry Mistake / Typo Correction</option>
+                  <option value="Physical Stock Count Variance">Physical Stock Count Variance</option>
+                  <option value="Audit Rectification / Inventory Reconciliation">Audit Rectification / Inventory Reconciliation</option>
+                  <option value="Damaged / Expired Goods Write-off">Damaged / Expired Goods Write-off</option>
+                  <option value="Inventory Shrinkage Correction">Inventory Shrinkage Correction</option>
+                  <option value="Other Audit Rectification">Other Audit Rectification</option>
+                </select>
+              </div>
+
+              {/* Audit Notes */}
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">
+                  Admin Audit Notes & Justification <span className="text-slate-500 font-normal">(Required)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="e.g. Corrected stock from 5000 to 500 due to keying mistake during yesterday's intake."
+                  value={adjustNotes}
+                  onChange={(e) => setAdjustNotes(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-amber-500 text-xs"
+                />
+              </div>
+
+              {/* Audit Integrity Notice */}
+              <div className="bg-slate-950 border border-slate-800/80 p-3 rounded-xl flex items-start gap-2.5 text-[11px] text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <p>
+                  This adjustment will log an immutable <strong className="text-slate-200">STOCK_ADJUSTMENT</strong> ledger entry with admin authorization, preserving accurate inventory valuations and net profit reports.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 border-t border-slate-800 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAdjustModalOpen(false)}
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-amber-950 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Authorize & Save Stock Adjustment</span>
                 </button>
               </div>
             </form>

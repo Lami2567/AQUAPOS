@@ -334,21 +334,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
 
         {/* Right Action Bar (Network Status, User Profile, Mobile Hamburger) */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Cloud Database Health Status */}
-          <button
-            onClick={() => onSelectNav({ domain: 'system', subView: 'backups' })}
-            className={`hidden sm:flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer border ${
-              !isOnline
-                ? 'bg-amber-950/80 border-amber-500/40 text-amber-400'
-                : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-            }`}
-            title="Cloud Database Live - Click to open Backup & Recovery"
-          >
-            <Wifi className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="hidden md:inline">NEON CLOUD (LIVE)</span>
-            <span className="md:hidden">LIVE</span>
-          </button>
-
           {/* User Badge (Desktop) */}
           <div className="hidden lg:flex items-center gap-2 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
             <UserCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
@@ -537,21 +522,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                   );
                 })}
             </div>
-
-            {/* Quick Actions Footer in Drawer */}
-            <div className="pt-2">
-              <button
-                onClick={() => handleSelectSubView('system', 'backups')}
-                className="w-full flex items-center justify-between p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-semibold cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <Wifi className="w-4 h-4 text-emerald-400" />
-                  <span>Neon Cloud PostgreSQL Database (Live)</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-emerald-400" />
-              </button>
-            </div>
-
           </div>
 
           <div className="p-4 border-t border-slate-900 bg-slate-950 text-center text-[10px] text-slate-500">

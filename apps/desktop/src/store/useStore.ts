@@ -233,9 +233,9 @@ export interface AppState {
   saveSystemSettingInStore: (sys: SystemSetting) => void;
   deleteSystemSettingFromStore: (id: string) => void;
 
-  // Operational Mutators
   addSaleRecord: (sale: SaleRecord) => void;
   addStockIntake: (intake: { storeId: string; productId: string; quantity: number; unitCostUgx: number; batchRef: string; notes?: string }) => void;
+  adjustStock: (adjustment: { storeId: string; productId: string; newQuantity: number; reason: string; notes?: string }) => void;
   addExpense: (expense: ExpenseRecord) => void;
   addDebt: (debt: DebtRecord) => void;
   settleDebt: (debtId: string, amountPaidUgx: number) => void;
@@ -1337,6 +1337,56 @@ export const useStore = create<AppState>((set) => ({
               [storeId]: {
                 ...storeStock,
                 [productId]: currentQty + quantity,
+              },
+            },
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
+            auditLogs: [newAudit, ...state.auditLogs],
+          };
+        }),
+
+      adjustStock: ({ storeId, productId, newQuantity, reason, notes }) =>
+        set((state) => {
+          const storeStock = state.inventoryStock[storeId] || {};
+          const currentQty = storeStock[productId] || 0;
+          const delta = newQuantity - currentQty;
+
+          const prodName = state.products.find((p) => p.id === productId)?.name || 'Product';
+          const storeName = state.stores.find((s) => s.id === storeId)?.name || 'Store';
+
+          const outboxItem: OutboxRecord = {
+            id: `outbox-adj-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            type: 'STOCK_ADJUSTMENT',
+            receiptNumber: `ADJ-${Date.now().toString().slice(-6)}`,
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: {
+              storeId,
+              productId,
+              previousQuantity: currentQty,
+              newQuantity: Math.max(0, newQuantity),
+              adjustmentDelta: delta,
+              reason,
+              notes,
+              adjustedBy: state.user?.fullName || 'Super Administrator',
+            },
+          };
+
+          const newAudit: AuditRecord = {
+            id: `audit-${Date.now()}`,
+            user: state.user?.fullName || 'Super Administrator',
+            action: 'STOCK_LEVEL_ADJUSTED',
+            entity: 'StockLedger',
+            details: `Adjusted ${prodName} in ${storeName} from ${currentQty} to ${newQuantity} (Delta: ${delta >= 0 ? `+${delta}` : delta}, Reason: ${reason})`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+
+          return {
+            inventoryStock: {
+              ...state.inventoryStock,
+              [storeId]: {
+                ...storeStock,
+                [productId]: Math.max(0, newQuantity),
               },
             },
             outboxQueue: [outboxItem, ...state.outboxQueue],

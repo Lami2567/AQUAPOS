@@ -437,6 +437,22 @@ export class SyncService {
                 p.notes || 'Stock Intake',
               ]
             );
+          } else if (tx.transactionType === 'STOCK_ADJUSTMENT' && p.storeId && p.productId) {
+            const deltaQty = typeof p.adjustmentDelta === 'number' ? p.adjustmentDelta : ((p.newQuantity || 0) - (p.previousQuantity || 0));
+            await this.dbService.execute(
+              `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
+               VALUES (?, ?, ?, 'ADJUSTMENT', ?, 0, 'AUDIT_ADJUSTMENT', ?, ?, ?, ?)`,
+              [
+                tx.id,
+                p.storeId,
+                p.productId,
+                deltaQty,
+                p.receiptNumber || tx.id,
+                p.adjustedBy || 'u-admin',
+                deviceId,
+                `Stock Adjustment: ${p.reason || 'Audit Correction'}${p.notes ? ` - ${p.notes}` : ''}`,
+              ]
+            );
           } else if (tx.transactionType === 'EXPENSE' && (p.voucherNumber || p.category)) {
             await this.dbService.execute(
               `INSERT OR REPLACE INTO expenses (id, branch_id, store_id, category, amount_ugx, description, approved_by, created_at)
