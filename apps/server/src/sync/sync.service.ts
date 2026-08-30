@@ -206,7 +206,7 @@ export class SyncService {
                src.name as source_store_name, 
                dst.name as dest_store_name, 
                sti.product_id, 
-               sti.quantity_requested,
+               COALESCE(sti.quantity_requested, sti.quantity_dispatched, sti.quantity_received, 0) as quantity_requested,
                p.name as product_name,
                v.model as vehicle_model,
                v.registration_number as vehicle_reg

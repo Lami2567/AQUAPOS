@@ -435,85 +435,59 @@ export const StockView: React.FC = () => {
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                        {trf.status === 'DRAFT' && (
-                          <>
-                            <button
-                              onClick={() => {
-                                advanceTransferStatus(trf.id, 'APPROVED');
-                                notify(`Transfer ${trf.transferNumber} Approved! Ready for dispatch.`);
-                              }}
-                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md cursor-pointer"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => {
-                                advanceTransferStatus(trf.id, 'CONFIRMED');
-                                notify(`Transfer ${trf.transferNumber} Instant Transfer Completed! ${trf.quantity} units moved from ${trf.sourceStoreName} to ${trf.destStoreName}.`);
-                              }}
-                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
-                              title="Instant Transfer: Immediately deduct from source and credit to destination branch"
-                            >
-                              ⚡ Direct Transfer
-                            </button>
-                          </>
-                        )}
+                      {trf.status === 'DRAFT' && (
+                        <button
+                          onClick={() => {
+                            advanceTransferStatus(trf.id, 'APPROVED');
+                            notify(`Transfer ${trf.transferNumber} Approved! Ready for dispatch.`);
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md cursor-pointer"
+                        >
+                          Approve Transfer
+                        </button>
+                      )}
 
-                        {trf.status === 'APPROVED' && (
-                          <>
-                            <button
-                              onClick={() => {
-                                advanceTransferStatus(trf.id, 'IN_TRANSIT');
-                                notify(`Transfer ${trf.transferNumber} Dispatched! Stock deducted from ${trf.sourceStoreName}.`);
-                              }}
-                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-md cursor-pointer"
-                            >
-                              Dispatch (In Transit)
-                            </button>
-                            <button
-                              onClick={() => {
-                                advanceTransferStatus(trf.id, 'CONFIRMED');
-                                notify(`Transfer ${trf.transferNumber} Completed! Stock credited to ${trf.destStoreName}.`);
-                              }}
-                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
-                              title="Immediately complete transfer and credit destination"
-                            >
-                              ⚡ Complete Now
-                            </button>
-                          </>
-                        )}
+                      {trf.status === 'APPROVED' && (
+                        <button
+                          onClick={() => {
+                            advanceTransferStatus(trf.id, 'IN_TRANSIT');
+                            notify(`Transfer ${trf.transferNumber} Dispatched! Stock deducted from ${trf.sourceStoreName}.`);
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-md cursor-pointer"
+                        >
+                          Dispatch (In Transit)
+                        </button>
+                      )}
 
-                        {(trf.status === 'IN_TRANSIT' || trf.status === 'DISPATCHED') && (
-                          <button
-                            onClick={() => {
-                              advanceTransferStatus(trf.id, 'CONFIRMED');
-                              notify(`Transfer ${trf.transferNumber} Received & Confirmed! Stock credited to ${trf.destStoreName}.`);
-                            }}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
-                          >
-                            Receive & Credit Stock
-                          </button>
-                        )}
+                      {(trf.status === 'IN_TRANSIT' || trf.status === 'DISPATCHED') && (
+                        <button
+                          onClick={() => {
+                            advanceTransferStatus(trf.id, 'CONFIRMED');
+                            notify(`Transfer ${trf.transferNumber} Received & Confirmed! Stock credited to ${trf.destStoreName}.`);
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
+                        >
+                          Receive & Credit Stock
+                        </button>
+                      )}
 
-                        {trf.status === 'RECEIVED' && (
-                          <button
-                            onClick={() => {
-                              advanceTransferStatus(trf.id, 'CONFIRMED');
-                              notify(`Transfer ${trf.transferNumber} Confirmed! Stock credited to ${trf.destStoreName}.`);
-                            }}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
-                          >
-                            Confirm Final Receive
-                          </button>
-                        )}
+                      {trf.status === 'RECEIVED' && (
+                        <button
+                          onClick={() => {
+                            advanceTransferStatus(trf.id, 'CONFIRMED');
+                            notify(`Transfer ${trf.transferNumber} Confirmed! Stock credited to ${trf.destStoreName}.`);
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
+                        >
+                          Confirm Final Receive
+                        </button>
+                      )}
 
-                        {trf.status === 'CONFIRMED' && (
-                          <span className="text-xs text-emerald-400 font-bold flex items-center justify-end gap-1">
-                            <CheckCircle2 className="w-4 h-4" /> Transferred & Credited
-                          </span>
-                        )}
-                      </div>
+                      {trf.status === 'CONFIRMED' && (
+                        <span className="text-xs text-emerald-400 font-bold flex items-center justify-end gap-1">
+                          <CheckCircle2 className="w-4 h-4" /> Transferred & Credited
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

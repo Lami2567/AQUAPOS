@@ -601,20 +601,26 @@ export const useStore = create<AppState>((set) => ({
             items: Array.isArray(fs.items) ? fs.items : (typeof fs.items === 'string' ? (() => { try { return JSON.parse(fs.items); } catch(e) { return []; } })() : []),
           }));
 
-          const mergedTransfers = upsertEntities(state.stockTransfersList, centralData.stockTransfers, (t: any) => ({
-            id: t.id,
-            transferNumber: t.transferNumber || t.transfer_number || `TRF-${t.id.slice(-6)}`,
-            sourceStoreId: t.sourceStoreId || t.source_store_id || '',
-            sourceStoreName: t.sourceStoreName || t.source_store_name || 'Source Store',
-            destStoreId: t.destStoreId || t.destination_store_id || '',
-            destStoreName: t.destStoreName || t.dest_store_name || 'Destination Store',
-            productId: t.productId || t.product_id || '',
-            productName: t.productName || t.product_name || 'Product',
-            quantity: Number(t.quantity ?? t.quantity_requested ?? 0),
-            vehicleName: t.vehicleName || t.vehicle_name || 'Delivery Vehicle',
-            status: t.status || 'DRAFT',
-            date: t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString() : new Date().toLocaleDateString()),
-          }));
+          const mergedTransfers = upsertEntities(state.stockTransfersList, centralData.stockTransfers, (t: any) => {
+            const local = state.stockTransfersList.find((l) => l.id === t.id);
+            const remoteQty = Number(t.quantity ?? t.quantityRequested ?? t.quantity_requested ?? 0);
+            const quantity = remoteQty > 0 ? remoteQty : (local?.quantity || 0);
+
+            return {
+              id: t.id,
+              transferNumber: t.transferNumber || t.transfer_number || local?.transferNumber || `TRF-${t.id.slice(-6)}`,
+              sourceStoreId: t.sourceStoreId || t.source_store_id || local?.sourceStoreId || '',
+              sourceStoreName: t.sourceStoreName || t.source_store_name || local?.sourceStoreName || 'Source Store',
+              destStoreId: t.destStoreId || t.destination_store_id || local?.destStoreId || '',
+              destStoreName: t.destStoreName || t.dest_store_name || local?.destStoreName || 'Destination Store',
+              productId: t.productId || t.product_id || local?.productId || '',
+              productName: t.productName || t.product_name || local?.productName || 'Product',
+              quantity,
+              vehicleName: t.vehicleName || t.vehicle_name || local?.vehicleName || 'Delivery Vehicle',
+              status: t.status || local?.status || 'DRAFT',
+              date: t.date || local?.date || (t.created_at ? new Date(t.created_at).toLocaleDateString() : new Date().toLocaleDateString()),
+            };
+          });
 
           // Merge live central inventory levels
           const mergedStock = { ...state.inventoryStock };
