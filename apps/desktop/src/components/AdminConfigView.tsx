@@ -207,7 +207,7 @@ export const AdminConfigView: React.FC = () => {
     } else if (activeTab === 'users') {
       defaults = { ...defaults, username: '', fullName: '', role: 'CASHIER', branchId: branches[0]?.id || '', storeId: '', password: '123' };
     } else if (activeTab === 'workers') {
-      defaults = { ...defaults, fullName: '', phone: '', department: departments[0]?.code || 'SALES', basicSalaryUgx: 350000 };
+      defaults = { ...defaults, fullName: '', phone: '', department: departments[0]?.code || 'SALES', branchId: branches[0]?.id || '', role: 'FIELD_SALESPERSON', basicSalaryUgx: 350000 };
     } else if (activeTab === 'roles') {
       defaults = { ...defaults, code: '', displayName: '', description: '', permissions: [] };
     } else if (activeTab === 'vehicles') {
@@ -1517,6 +1517,39 @@ export const AdminConfigView: React.FC = () => {
                       onChange={(e) => setEditingItem({ ...editingItem, phone: e.target.value })}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-400 mb-1">Branch</label>
+                      <select
+                        value={editingItem.branchId || branches[0]?.id}
+                        onChange={(e) => setEditingItem({ ...editingItem, branchId: e.target.value })}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      >
+                        {branches.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {b.name} ({b.code})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1">Role / Designation</label>
+                      <select
+                        value={editingItem.role || 'FIELD_SALESPERSON'}
+                        onChange={(e) => setEditingItem({ ...editingItem, role: e.target.value })}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      >
+                        <option value="FIELD_SALESPERSON">Field Sales / Driver</option>
+                        <option value="CASHIER">Cashier</option>
+                        <option value="STOREKEEPER">Storekeeper</option>
+                        <option value="BRANCH_MANAGER">Branch Manager</option>
+                        <option value="ACCOUNTANT">Accountant</option>
+                        <option value="SECURITY">Security</option>
+                        <option value="LOADER">Loader / Porter</option>
+                        <option value="TECHNICIAN">Technician</option>
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-slate-400 mb-1">Department</label>

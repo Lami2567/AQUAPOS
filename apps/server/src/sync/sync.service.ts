@@ -18,82 +18,82 @@ export class SyncService {
    * @param since - optional ISO timestamp; when provided returns only tombstones newer than this
    */
   public async pullCentralData(branchId?: string, since?: string) {
-    const rawBranches = await this.dbService.query<any>('SELECT * FROM branches WHERE is_active = 1 ORDER BY name ASC');
+    const rawBranches = await this.dbService.query<any>('SELECT * FROM branches ORDER BY name ASC');
     const branches = rawBranches.map((b) => ({
       id: b.id,
       code: b.code,
       name: b.name,
       location: b.location || '',
-      isActive: Boolean(b.is_active),
+      isActive: b.is_active !== undefined ? Boolean(b.is_active) : true,
       createdAt: b.created_at,
     }));
 
-    const rawStores = await this.dbService.query<any>('SELECT * FROM stores WHERE is_active = 1 ORDER BY name ASC');
+    const rawStores = await this.dbService.query<any>('SELECT * FROM stores ORDER BY name ASC');
     const stores = rawStores.map((s) => ({
       id: s.id,
       branchId: s.branch_id,
       code: s.code,
       name: s.name,
       type: s.type,
-      isActive: Boolean(s.is_active),
+      isActive: s.is_active !== undefined ? Boolean(s.is_active) : true,
     }));
 
-    const rawDepartments = await this.dbService.query<any>('SELECT * FROM departments WHERE is_active = 1 ORDER BY name ASC');
+    const rawDepartments = await this.dbService.query<any>('SELECT * FROM departments ORDER BY name ASC');
     const departments = rawDepartments.map((d) => ({
       id: d.id,
       code: d.code,
       name: d.name,
       description: d.description || '',
-      isActive: Boolean(d.is_active),
+      isActive: d.is_active !== undefined ? Boolean(d.is_active) : true,
       createdAt: d.created_at,
     }));
 
-    const rawWorkers = await this.dbService.query<any>('SELECT * FROM workers WHERE is_active = 1 ORDER BY full_name ASC');
+    const rawWorkers = await this.dbService.query<any>('SELECT * FROM workers ORDER BY full_name ASC');
     const workers = rawWorkers.map((w) => ({
       id: w.id,
-      branchId: w.branch_id,
-      department: w.department,
-      fullName: w.full_name,
+      branchId: w.branch_id || '',
+      department: w.department || '',
+      fullName: w.full_name || '',
       phone: w.phone || '',
-      role: w.role,
+      role: w.role || 'FIELD_SALESPERSON',
       basicSalaryUgx: Number(w.basic_salary_ugx || 0),
-      isActive: Boolean(w.is_active),
+      isActive: w.is_active !== undefined ? Boolean(w.is_active) : true,
     }));
 
-    const rawUsers = await this.dbService.query<any>('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users WHERE is_active = 1 ORDER BY username ASC');
+    const rawUsers = await this.dbService.query<any>('SELECT id, username, full_name, role, branch_id, store_id, is_active, created_at FROM users ORDER BY username ASC');
     const users = rawUsers.map((u) => ({
       id: u.id,
       username: u.username,
       fullName: u.full_name,
       role: u.role,
-      branchId: u.branch_id,
+      branchId: u.branch_id || '',
       storeId: u.store_id || '',
-      isActive: Boolean(u.is_active),
+      isActive: u.is_active !== undefined ? Boolean(u.is_active) : true,
       createdAt: u.created_at,
       updatedAt: u.created_at,
     }));
 
-    const rawRoles = await this.dbService.query<any>('SELECT * FROM roles WHERE is_active = 1 ORDER BY display_name ASC');
+    const rawRoles = await this.dbService.query<any>('SELECT * FROM roles ORDER BY display_name ASC');
     const roles = rawRoles.map((r) => ({
       id: r.id,
       code: r.code,
       displayName: r.display_name,
       description: r.description || '',
       permissions: typeof r.permissions === 'string' ? (() => { try { return JSON.parse(r.permissions); } catch(e) { return []; } })() : (r.permissions || []),
-      isActive: Boolean(r.is_active),
+      isActive: r.is_active !== undefined ? Boolean(r.is_active) : true,
     }));
 
-    const rawVehicles = await this.dbService.query<any>('SELECT * FROM vehicles WHERE is_active = 1 ORDER BY registration_number ASC');
+    const rawVehicles = await this.dbService.query<any>('SELECT * FROM vehicles ORDER BY registration_number ASC');
     const vehicles = rawVehicles.map((v) => ({
       id: v.id,
-      branchId: v.branch_id,
+      branchId: v.branch_id || '',
       registrationNumber: v.registration_number,
       type: v.type,
       model: v.model,
-      isActive: Boolean(v.is_active),
+      isActive: v.is_active !== undefined ? Boolean(v.is_active) : true,
     }));
 
-    const rawProducts = await this.dbService.query<any>('SELECT * FROM products WHERE is_active = 1 ORDER BY name ASC');
+    const rawProducts = await this.dbService.query<any>('SELECT * FROM products ORDER BY name ASC');
     const products = rawProducts.map((p) => ({
       id: p.id,
       sku: p.sku,
@@ -107,16 +107,16 @@ export class SyncService {
       sellingPriceUgx: Number(p.selling_price_ugx || 0),
       minStockAlert: Number(p.min_stock_alert || 10),
       maxStockLevel: Number(p.max_stock_level || 5000),
-      isActive: Boolean(p.is_active),
+      isActive: p.is_active !== undefined ? Boolean(p.is_active) : true,
     }));
 
-    const rawCategories = await this.dbService.query<any>('SELECT * FROM categories WHERE is_active = 1 ORDER BY name ASC');
+    const rawCategories = await this.dbService.query<any>('SELECT * FROM categories ORDER BY name ASC');
     const categories = rawCategories.map((c) => ({
       id: c.id,
       code: c.code,
       name: c.name,
       description: c.description || '',
-      isActive: Boolean(c.is_active),
+      isActive: c.is_active !== undefined ? Boolean(c.is_active) : true,
     }));
 
     const rawPrices = await this.dbService.query<any>('SELECT * FROM branch_product_prices');

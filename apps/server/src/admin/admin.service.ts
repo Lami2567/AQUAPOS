@@ -104,23 +104,35 @@ export class AdminService {
     `);
   }
 
-  async saveWorker(data: { id?: string; branchId: string; department: string; fullName: string; phone: string; role: string; basicSalaryUgx: number; isActive?: boolean }, userId: string) {
+  async saveWorker(data: { id?: string; branchId?: string; department?: string; fullName: string; phone?: string; role?: string; basicSalaryUgx?: number; isActive?: boolean }, userId: string) {
     const id = data.id || uuidv4();
     const isActive = data.isActive !== undefined ? Boolean(data.isActive) : true;
+
+    // Resolve fallback branch if branchId is missing
+    let branchId = data.branchId;
+    if (!branchId) {
+      const defaultBranch = await this.dbService.queryOne<any>('SELECT id FROM branches LIMIT 1');
+      branchId = defaultBranch?.id || 'b1111111-1111-1111-1111-111111111111';
+    }
+    const department = data.department || 'SALES';
+    const role = data.role || department || 'FIELD_SALESPERSON';
+    const phone = data.phone || '';
+    const basicSalaryUgx = Number(data.basicSalaryUgx || 0);
+
     const existing = await this.dbService.queryOne('SELECT * FROM workers WHERE id = ?', [id]);
 
     if (existing) {
       await this.dbService.execute(
         'UPDATE workers SET branch_id = ?, department = ?, full_name = ?, phone = ?, role = ?, basic_salary_ugx = ?, is_active = ? WHERE id = ?',
-        [data.branchId, data.department, data.fullName, data.phone, data.role, data.basicSalaryUgx, isActive, id]
+        [branchId, department, data.fullName, phone, role, basicSalaryUgx, isActive, id]
       );
-      this.auditService.logAction(userId, 'System Admin', data.branchId, 'SERVER-01', 'UPDATE', 'Worker', id, existing, data);
+      this.auditService.logAction(userId, 'System Admin', branchId || '', 'SERVER-01', 'UPDATE', 'Worker', id, existing, data);
     } else {
       await this.dbService.execute(
         'INSERT INTO workers (id, branch_id, department, full_name, phone, role, basic_salary_ugx, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, data.branchId, data.department, data.fullName, data.phone, data.role, data.basicSalaryUgx, isActive]
+        [id, branchId, department, data.fullName, phone, role, basicSalaryUgx, isActive]
       );
-      this.auditService.logAction(userId, 'System Admin', data.branchId, 'SERVER-01', 'CREATE', 'Worker', id, undefined, data);
+      this.auditService.logAction(userId, 'System Admin', branchId || '', 'SERVER-01', 'CREATE', 'Worker', id, undefined, data);
     }
     return await this.dbService.queryOne('SELECT * FROM workers WHERE id = ?', [id]);
   }

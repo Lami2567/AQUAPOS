@@ -22,6 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const FieldSalesView: React.FC = () => {
   const {
+    user,
     currentBranchId,
     currentStoreId,
     branches,
@@ -48,8 +49,8 @@ export const FieldSalesView: React.FC = () => {
   );
 
   // New Session Form State
-  const [selectedVehicleId, setSelectedVehicleId] = useState(branchVehicles[0]?.id || vehicles[0]?.id || '');
-  const [selectedWorkerId, setSelectedWorkerId] = useState(branchWorkers[0]?.id || workers[0]?.id || '');
+  const [selectedVehicleId, setSelectedVehicleId] = useState(branchVehicles[0]?.id || vehicles[0]?.id || 'default-van');
+  const [selectedWorkerId, setSelectedWorkerId] = useState('self');
   const [selectedStoreId, setSelectedStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [issuedQuantities, setIssuedQuantities] = useState<Record<string, number>>({});
 
@@ -79,8 +80,25 @@ export const FieldSalesView: React.FC = () => {
 
   const handleStartSessionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const vehicle = vehicles.find((v) => v.id === selectedVehicleId) || vehicles[0];
-    const worker = workers.find((w) => w.id === selectedWorkerId) || workers[0];
+    const vehicle = vehicles.find((v) => v.id === selectedVehicleId) || vehicles[0] || {
+      id: uuidv4(),
+      model: 'Field Route Vehicle',
+      registrationNumber: 'DIRECT-SALES',
+      type: 'LORRY',
+    };
+
+    let workerId = selectedWorkerId;
+    let workerName = user?.fullName || user?.username || 'Field Salesperson';
+
+    if (selectedWorkerId && selectedWorkerId !== 'self') {
+      const foundWorker = workers.find((w) => w.id === selectedWorkerId);
+      if (foundWorker) {
+        workerId = foundWorker.id;
+        workerName = foundWorker.fullName;
+      }
+    } else {
+      workerId = user?.id || uuidv4();
+    }
 
     const sessionItems: FieldSessionItem[] = [];
     Object.entries(issuedQuantities).forEach(([prodId, qty]) => {
@@ -108,9 +126,9 @@ export const FieldSalesView: React.FC = () => {
       sessionNumber,
       vehicleId: vehicle.id,
       vehicleName: `${vehicle.model} (${vehicle.registrationNumber})`,
-      workerId: worker.id,
-      workerName: worker.fullName,
-      storeId: selectedStoreId,
+      workerId,
+      workerName,
+      storeId: selectedStoreId || stores[0]?.id || 'main-store',
       status: 'OPEN',
       startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       items: sessionItems,
@@ -322,27 +340,37 @@ export const FieldSalesView: React.FC = () => {
                     value={selectedVehicleId}
                     onChange={(e) => setSelectedVehicleId(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
-                    required
                   >
-                    {vehicles.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.model} ({v.registrationNumber}) - {v.type}
-                      </option>
-                    ))}
+                    {vehicles.length === 0 ? (
+                      <option value="default-van">Direct Route Vehicle (Default Van / Tricycle)</option>
+                    ) : (
+                      vehicles.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.model} ({v.registrationNumber}) - {v.type}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Lead Salesperson / Driver</label>
+                  <label className="block text-slate-400 mb-1 font-semibold">Lead Salesperson & Driver</label>
                   <select
                     value={selectedWorkerId}
                     onChange={(e) => setSelectedWorkerId(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
-                    required
                   >
-                    {workers.map((w) => (
+                    <option value="self">
+                      {user?.fullName || user?.username || 'Current User'} (Self - Salesperson & Driver)
+                    </option>
+                    {branchWorkers.map((w) => (
                       <option key={w.id} value={w.id}>
-                        {w.fullName} ({w.department})
+                        {w.fullName} ({w.role || w.department})
+                      </option>
+                    ))}
+                    {branchWorkers.length === 0 && workers.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.fullName} ({w.role || w.department})
                       </option>
                     ))}
                   </select>
@@ -355,13 +383,16 @@ export const FieldSalesView: React.FC = () => {
                   value={selectedStoreId}
                   onChange={(e) => setSelectedStoreId(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
-                  required
                 >
-                  {stores.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.code})
-                    </option>
-                  ))}
+                  {stores.length === 0 ? (
+                    <option value="main-store">Main Store</option>
+                  ) : (
+                    stores.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.code})
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 

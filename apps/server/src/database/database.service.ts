@@ -289,6 +289,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       `ALTER TABLE IF EXISTS users ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
       `ALTER TABLE IF EXISTS users ALTER COLUMN branch_id DROP NOT NULL;`,
       `ALTER TABLE IF EXISTS users ALTER COLUMN store_id DROP NOT NULL;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN id DROP DEFAULT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN id SET DATA TYPE TEXT USING id::TEXT;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN branch_id DROP NOT NULL;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN role DROP NOT NULL;`,
+      `ALTER TABLE IF EXISTS workers ALTER COLUMN department DROP NOT NULL;`,
       `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN user_id SET DATA TYPE TEXT USING user_id::TEXT;`,
       `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
     ];
