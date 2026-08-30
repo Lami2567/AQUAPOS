@@ -182,8 +182,9 @@ export class SyncService {
     const ledger = await this.dbService.query<any>('SELECT store_id, product_id, SUM(quantity_change) as total_qty FROM stock_ledger GROUP BY store_id, product_id');
     const inventoryStock: Record<string, Record<string, number>> = {};
     for (const entry of ledger) {
+      if (!entry.store_id || !entry.product_id) continue;
       if (!inventoryStock[entry.store_id]) inventoryStock[entry.store_id] = {};
-      inventoryStock[entry.store_id][entry.product_id] = Math.max(0, entry.total_qty || 0);
+      inventoryStock[entry.store_id][entry.product_id] = Math.max(0, Number(entry.total_qty || 0));
     }
 
     // Recent sales, expenses, debts, field sessions, transfers
@@ -197,7 +198,43 @@ export class SyncService {
       salaryPayments = [];
     }
     const fieldSessions = await this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
-    const stockTransfers = await this.dbService.query<any>('SELECT * FROM stock_transfers ORDER BY created_at DESC LIMIT 100');
+
+    let stockTransfers: any[] = [];
+    try {
+      const rawTransfers = await this.dbService.query<any>(`
+        SELECT st.*, 
+               src.name as source_store_name, 
+               dst.name as dest_store_name, 
+               sti.product_id, 
+               sti.quantity_requested,
+               p.name as product_name,
+               v.model as vehicle_model,
+               v.registration_number as vehicle_reg
+        FROM stock_transfers st
+        LEFT JOIN stores src ON st.source_store_id = src.id
+        LEFT JOIN stores dst ON st.destination_store_id = dst.id
+        LEFT JOIN stock_transfer_items sti ON st.id = sti.transfer_id
+        LEFT JOIN products p ON sti.product_id = p.id
+        LEFT JOIN vehicles v ON st.vehicle_id = v.id
+        ORDER BY st.created_at DESC LIMIT 100
+      `);
+      stockTransfers = rawTransfers.map((t: any) => ({
+        id: t.id,
+        transferNumber: t.transfer_number || `TRF-${t.id.slice(-6)}`,
+        sourceStoreId: t.source_store_id,
+        sourceStoreName: t.source_store_name || 'Source Store',
+        destStoreId: t.destination_store_id,
+        destStoreName: t.dest_store_name || 'Destination Store',
+        productId: t.product_id || '',
+        productName: t.product_name || 'Product',
+        quantity: Number(t.quantity_requested || 0),
+        vehicleName: t.vehicle_model ? `${t.vehicle_model} (${t.vehicle_reg})` : (t.notes || 'Delivery Vehicle'),
+        status: t.status,
+        date: t.created_at ? new Date(t.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+      }));
+    } catch (e) {
+      stockTransfers = [];
+    }
 
     // ── Tombstone list: deletions since last sync ────────────────────────────
     // Offline clients use this to remove locally cached records that were
@@ -502,21 +539,108 @@ export class SyncService {
                 p.workerName || 'Salesperson',
               ]
             );
-          } else if (tx.transactionType === 'SALARY_PAYMENT' && (p.workerId || p.workerName)) {
-            try {
+          } else if ((tx.transactionType === 'CREATE_STOCK_TRANSFER' || tx.transactionType === 'STOCK_TRANSFER') && (p.sourceStoreId || p.source_store_id)) {
+            const trfId = p.id || tx.id;
+            const trfNumber = p.transferNumber || p.transfer_number || `TRF-${trfId.slice(-6)}`;
+            const srcStore = p.sourceStoreId || p.source_store_id;
+            const dstStore = p.destStoreId || p.destination_store_id;
+            const prodId = p.productId || p.product_id;
+            const qty = Number(p.quantity || p.quantityRequested || 0);
+            const status = p.status || 'DRAFT';
+
+            await this.dbService.execute(
+              `INSERT OR REPLACE INTO stock_transfers (id, transfer_number, source_store_id, destination_store_id, vehicle_id, driver_worker_id, status, created_by, notes, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                trfId,
+                trfNumber,
+                srcStore,
+                dstStore,
+                p.vehicleId || null,
+                p.driverWorkerId || null,
+                status,
+                p.createdBy || opUser,
+                p.vehicleName || p.notes || null,
+                p.createdAt || new Date().toISOString(),
+              ]
+            );
+
+            if (prodId && qty > 0) {
               await this.dbService.execute(
-                `INSERT OR REPLACE INTO salaries (id, worker_id, month_year, gross_salary_ugx, net_salary_ugx, status, paid_at)
-                 VALUES (?, ?, ?, ?, ?, 'PAID', ?)`,
+                `INSERT OR REPLACE INTO stock_transfer_items (id, transfer_id, product_id, unit_of_measure, quantity_requested, quantity_dispatched, quantity_received, unit_price_ugx)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
-                  p.id || tx.id,
-                  p.workerId || tx.id,
-                  p.month || new Date().toISOString().slice(0, 7),
-                  p.basicSalaryUgx || 0,
-                  p.netPaidUgx || p.basicSalaryUgx || 0,
-                  p.paymentDate || p.createdAt || new Date().toISOString(),
+                  `${trfId}-${prodId}`,
+                  trfId,
+                  prodId,
+                  'Carton',
+                  qty,
+                  status === 'CONFIRMED' || status === 'IN_TRANSIT' ? qty : 0,
+                  status === 'CONFIRMED' ? qty : 0,
+                  0,
                 ]
               );
-            } catch (_) {}
+            }
+          } else if (tx.transactionType === 'ADVANCE_STOCK_TRANSFER' && (p.transferId || p.id)) {
+            const trfId = p.transferId || p.id;
+            const nextStatus = p.nextStatus || p.status;
+            const srcStore = p.sourceStoreId || p.source_store_id;
+            const dstStore = p.destStoreId || p.destination_store_id;
+            const prodId = p.productId || p.product_id;
+            const qty = Number(p.quantity || 0);
+
+            await this.dbService.execute(
+              `UPDATE stock_transfers SET status = ? WHERE id = ?`,
+              [nextStatus, trfId]
+            );
+
+            // Deduct stock from source store on DISPATCH / IN_TRANSIT / CONFIRMED
+            if ((nextStatus === 'IN_TRANSIT' || nextStatus === 'DISPATCHED' || nextStatus === 'CONFIRMED') && srcStore && prodId && qty > 0) {
+              const existingOut = await this.dbService.queryOne<any>(
+                `SELECT id FROM stock_ledger WHERE reference_id = ? AND store_id = ? AND movement_type = 'TRANSFER_OUT'`,
+                [trfId, srcStore]
+              );
+              if (!existingOut) {
+                await this.dbService.execute(
+                  `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
+                   VALUES (?, ?, ?, 'TRANSFER_OUT', ?, 0, 'STOCK_TRANSFER', ?, ?, ?, ?)`,
+                  [
+                    `${trfId}-out`,
+                    srcStore,
+                    prodId,
+                    -Math.abs(qty),
+                    trfId,
+                    opUser,
+                    deviceId,
+                    `Stock Transfer Out (${trfId}) to Store ${dstStore}`,
+                  ]
+                );
+              }
+            }
+
+            // Credit stock to destination store on CONFIRMED
+            if (nextStatus === 'CONFIRMED' && dstStore && prodId && qty > 0) {
+              const existingIn = await this.dbService.queryOne<any>(
+                `SELECT id FROM stock_ledger WHERE reference_id = ? AND store_id = ? AND movement_type = 'TRANSFER_IN'`,
+                [trfId, dstStore]
+              );
+              if (!existingIn) {
+                await this.dbService.execute(
+                  `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
+                   VALUES (?, ?, ?, 'TRANSFER_IN', ?, 0, 'STOCK_TRANSFER', ?, ?, ?, ?)`,
+                  [
+                    `${trfId}-in`,
+                    dstStore,
+                    prodId,
+                    Math.abs(qty),
+                    trfId,
+                    opUser,
+                    deviceId,
+                    `Stock Transfer In (${trfId}) from Store ${srcStore}`,
+                  ]
+                );
+              }
+            }
           }
         });
 

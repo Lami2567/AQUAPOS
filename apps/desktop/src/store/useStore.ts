@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { v4 as uuidv4 } from 'uuid';
 import {
   User,
   UserRole,
@@ -600,6 +601,21 @@ export const useStore = create<AppState>((set) => ({
             items: Array.isArray(fs.items) ? fs.items : (typeof fs.items === 'string' ? (() => { try { return JSON.parse(fs.items); } catch(e) { return []; } })() : []),
           }));
 
+          const mergedTransfers = upsertEntities(state.stockTransfersList, centralData.stockTransfers, (t: any) => ({
+            id: t.id,
+            transferNumber: t.transferNumber || t.transfer_number || `TRF-${t.id.slice(-6)}`,
+            sourceStoreId: t.sourceStoreId || t.source_store_id || '',
+            sourceStoreName: t.sourceStoreName || t.source_store_name || 'Source Store',
+            destStoreId: t.destStoreId || t.destination_store_id || '',
+            destStoreName: t.destStoreName || t.dest_store_name || 'Destination Store',
+            productId: t.productId || t.product_id || '',
+            productName: t.productName || t.product_name || 'Product',
+            quantity: Number(t.quantity ?? t.quantity_requested ?? 0),
+            vehicleName: t.vehicleName || t.vehicle_name || 'Delivery Vehicle',
+            status: t.status || 'DRAFT',
+            date: t.date || (t.created_at ? new Date(t.created_at).toLocaleDateString() : new Date().toLocaleDateString()),
+          }));
+
           // Merge live central inventory levels
           const mergedStock = { ...state.inventoryStock };
           if (centralData.inventoryStock && typeof centralData.inventoryStock === 'object') {
@@ -715,6 +731,7 @@ export const useStore = create<AppState>((set) => ({
             debtsList: mergedDebts,
             salaryPaymentsList: mergedSalaries,
             fieldSessionsList: mergedFieldSessions,
+            stockTransfersList: mergedTransfers,
             inventoryStock: mergedStock,
             outboxQueue: updatedOutbox,
             pendingSyncCount: remainingPending,
@@ -1529,37 +1546,79 @@ export const useStore = create<AppState>((set) => ({
           };
         }),
 
-      createStockTransfer: (transfer) =>
+      createStockTransfer: (transfer) => {
+        const outboxItem: OutboxRecord = {
+          id: transfer.id || uuidv4(),
+          type: 'CREATE_STOCK_TRANSFER',
+          status: 'PENDING',
+          createdAt: new Date().toISOString(),
+          payload: {
+            ...transfer,
+            userId: useStore.getState().user?.id || 'u-admin',
+          },
+        };
+
         set((state) => ({
           stockTransfersList: [transfer, ...state.stockTransfersList],
-        })),
+          outboxQueue: [outboxItem, ...state.outboxQueue],
+          pendingSyncCount: state.pendingSyncCount + 1,
+        }));
+      },
 
-      advanceTransferStatus: (transferId, nextStatus) =>
+      advanceTransferStatus: (transferId, nextStatus) => {
         set((state) => {
           const trf = state.stockTransfersList.find((t) => t.id === transferId);
           if (!trf) return state;
 
+          const previousStatus = trf.status;
           const newStock = { ...state.inventoryStock };
 
-          if (nextStatus === 'IN_TRANSIT' || nextStatus === 'DISPATCHED') {
+          // If dispatching/in-transit from DRAFT/APPROVED: deduct from source store
+          if ((nextStatus === 'IN_TRANSIT' || nextStatus === 'DISPATCHED') && (previousStatus === 'DRAFT' || previousStatus === 'APPROVED')) {
             const srcStock = { ...(newStock[trf.sourceStoreId] || {}) };
             srcStock[trf.productId] = Math.max(0, (srcStock[trf.productId] || 0) - trf.quantity);
             newStock[trf.sourceStoreId] = srcStock;
           }
 
+          // If confirming final receive:
           if (nextStatus === 'CONFIRMED') {
+            // If source stock was not deducted yet (e.g. instant confirm from DRAFT/APPROVED)
+            if (previousStatus === 'DRAFT' || previousStatus === 'APPROVED') {
+              const srcStock = { ...(newStock[trf.sourceStoreId] || {}) };
+              srcStock[trf.productId] = Math.max(0, (srcStock[trf.productId] || 0) - trf.quantity);
+              newStock[trf.sourceStoreId] = srcStock;
+            }
             const dstStock = { ...(newStock[trf.destStoreId] || {}) };
             dstStock[trf.productId] = (dstStock[trf.productId] || 0) + trf.quantity;
             newStock[trf.destStoreId] = dstStock;
           }
+
+          const outboxItem: OutboxRecord = {
+            id: uuidv4(),
+            type: 'ADVANCE_STOCK_TRANSFER',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: {
+              transferId,
+              nextStatus,
+              sourceStoreId: trf.sourceStoreId,
+              destStoreId: trf.destStoreId,
+              productId: trf.productId,
+              quantity: trf.quantity,
+              userId: state.user?.id || 'u-admin',
+            },
+          };
 
           return {
             stockTransfersList: state.stockTransfersList.map((t) =>
               t.id === transferId ? { ...t, status: nextStatus } : t
             ),
             inventoryStock: newStock,
+            outboxQueue: [outboxItem, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + 1,
           };
-        }),
+        });
+      },
 
       resetProductionData: (clearDemoMaster = false) =>
         set((state) => {
