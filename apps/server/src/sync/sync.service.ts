@@ -753,7 +753,7 @@ export class SyncService {
                   storeId || null,
                   'FIELD_EXPENSE',
                   expAmount,
-                  `Approved Route Expenses (${sessionNum})`,
+                  p.expenseDescription || `Approved Route Expenses (${sessionNum})`,
                   workerName,
                   p.date || p.endTime || new Date().toISOString(),
                 ]

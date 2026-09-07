@@ -111,6 +111,8 @@ export interface FieldSessionRecord {
   startTime: string;
   endTime?: string;
   items: FieldSessionItem[];
+  approvedExpensesUgx?: number;
+  expenseDescription?: string;
 }
 
 export interface StockTransferRecord {
@@ -253,6 +255,7 @@ export interface AppState {
       bankDepositUgx: number;
       approvedExpensesUgx: number;
       cashRemainingUgx: number;
+      expenseDescription?: string;
     }
   ) => void;
   createStockTransfer: (transfer: StockTransferRecord) => void;
@@ -1619,13 +1622,17 @@ export const useStore = create<AppState>((set) => ({
 
           // 2. Create ExpenseRecord if route expenses were approved
           let updatedExpenses = [...state.expensesList];
+          const expenseDesc =
+            financials?.expenseDescription?.trim() ||
+            `Approved Field Route Expenses (${session.sessionNumber} - ${session.workerName})`;
+
           if (appExpenses > 0) {
             const expId = `exp-fs-${session.id}`;
             const fieldExpense: ExpenseRecord = {
               id: expId,
               voucherNumber: `EXP-${session.sessionNumber}`,
               category: 'FIELD_EXPENSE',
-              description: `Approved Field Route Expenses (${session.sessionNumber} - ${session.workerName})`,
+              description: expenseDesc,
               amountUgx: appExpenses,
               branchId: state.stores.find((s) => s.id === session.storeId)?.branchId || state.currentBranchId || 'b1111111-1111-1111-1111-111111111111',
               storeId: session.storeId,
@@ -1686,6 +1693,7 @@ export const useStore = create<AppState>((set) => ({
             mobileMoneyUgx: mmCollected,
             bankDepositUgx: bankCollected,
             approvedExpensesUgx: appExpenses,
+            expenseDescription: expenseDesc,
             cashRemainingUgx: remainingFloat,
             totalAccountedMoneyUgx: cashCollected + mmCollected + bankCollected + appExpenses + remainingFloat,
             moneyVarianceUgx: varianceUgx,
@@ -1715,7 +1723,16 @@ export const useStore = create<AppState>((set) => ({
 
           return {
             fieldSessionsList: state.fieldSessionsList.map((s) =>
-              s.id === sessionId ? { ...s, status: 'RECONCILED', endTime: new Date().toISOString(), items: reconciledItems } : s
+              s.id === sessionId
+                ? {
+                    ...s,
+                    status: 'RECONCILED',
+                    endTime: new Date().toISOString(),
+                    items: reconciledItems,
+                    approvedExpensesUgx: appExpenses,
+                    expenseDescription: expenseDesc,
+                  }
+                : s
             ),
             inventoryStock: {
               ...state.inventoryStock,

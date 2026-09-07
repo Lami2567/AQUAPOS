@@ -62,7 +62,18 @@ export const FieldSalesView: React.FC = () => {
   const [mobileMoney, setMobileMoney] = useState(0);
   const [bankDeposit, setBankDeposit] = useState(0);
   const [approvedExpenses, setApprovedExpenses] = useState(0);
+  const [expenseDescription, setExpenseDescription] = useState('');
   const [cashRemaining, setCashRemaining] = useState(0);
+
+  // Expense Description Popup Modal State
+  const [selectedExpensePopup, setSelectedExpensePopup] = useState<{
+    title: string;
+    subtitle?: string;
+    amountUgx: number;
+    description: string;
+    author?: string;
+    date?: string;
+  } | null>(null);
 
   const notify = (msg: string) => {
     setNotification(msg);
@@ -177,6 +188,7 @@ export const FieldSalesView: React.FC = () => {
     setMobileMoney(Math.floor(totalExpected * 0.3));
     setBankDeposit(0);
     setApprovedExpenses(0);
+    setExpenseDescription('');
     setCashRemaining(0);
   };
 
@@ -227,6 +239,7 @@ export const FieldSalesView: React.FC = () => {
         bankDepositUgx: Number(bankDeposit) || 0,
         approvedExpensesUgx: Number(approvedExpenses) || 0,
         cashRemainingUgx: Number(cashRemaining) || 0,
+        expenseDescription: expenseDescription.trim(),
       }
     );
 
@@ -290,6 +303,7 @@ export const FieldSalesView: React.FC = () => {
                   <th className="p-3">Vehicle</th>
                   <th className="p-3">Lead Worker</th>
                   <th className="p-3">Issued Items</th>
+                  <th className="p-3">Route Expenses</th>
                   <th className="p-3">Start Time</th>
                   <th className="p-3">Status</th>
                   <th className="p-3 text-right">Actions</th>
@@ -309,6 +323,34 @@ export const FieldSalesView: React.FC = () => {
                           </span>
                         ))}
                       </div>
+                    </td>
+                    <td className="p-3">
+                      {(session.approvedExpensesUgx && session.approvedExpensesUgx > 0) || session.expenseDescription ? (
+                        <div className="space-y-0.5">
+                          <div className="font-mono font-bold text-slate-200 text-xs">
+                            UGX {(session.approvedExpensesUgx || 0).toLocaleString()}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSelectedExpensePopup({
+                                title: `Route Expenses - ${session.sessionNumber}`,
+                                subtitle: `${session.vehicleName} • ${session.workerName}`,
+                                amountUgx: session.approvedExpensesUgx || 0,
+                                description: session.expenseDescription || 'No detailed description provided.',
+                                author: session.workerName,
+                                date: session.endTime ? session.endTime.split('T')[0] : session.startTime,
+                              })
+                            }
+                            className="text-left text-cyan-400 hover:text-cyan-300 text-[11px] underline underline-offset-2 max-w-[130px] truncate block cursor-pointer transition-colors"
+                            title="Click to view full description"
+                          >
+                            {session.expenseDescription || 'View Description'}
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-slate-600 font-mono text-[11px]">-</span>
+                      )}
                     </td>
                     <td className="p-3 text-slate-400">{session.startTime}</td>
                     <td className="p-3">
@@ -665,6 +707,28 @@ export const FieldSalesView: React.FC = () => {
                 </div>
               </div>
 
+              {/* Route Expenses Description Section */}
+              <div className="space-y-1.5 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
+                <label className="block text-[11px] text-slate-300 font-semibold flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <DollarSign className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Route Expenses Description & Justification</span>
+                  </span>
+                  {approvedExpenses > 0 && !expenseDescription.trim() && (
+                    <span className="text-[10px] text-cyan-400 font-normal">
+                      Detail expenses incurred (e.g. Fuel, Puncture, Meals)
+                    </span>
+                  )}
+                </label>
+                <textarea
+                  rows={2}
+                  value={expenseDescription}
+                  onChange={(e) => setExpenseDescription(e.target.value)}
+                  placeholder="Enter details of field route expenses (e.g., Vehicle fuel UGX 20,000, Tyre repair UGX 5,000, Driver & loader lunch UGX 10,000)..."
+                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
+                />
+              </div>
+
               {/* Real-time money reconciliation verdict */}
               <div
                 className={`p-3.5 sm:p-4 rounded-2xl text-xs font-semibold flex flex-col sm:flex-row sm:items-center justify-between gap-2 border ${
@@ -709,6 +773,80 @@ export const FieldSalesView: React.FC = () => {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Expense Description Details Popup Modal */}
+      {selectedExpensePopup && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in"
+          onClick={() => setSelectedExpensePopup(null)}
+        >
+          <div
+            className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="space-y-0.5">
+                <div className="text-cyan-400 font-bold text-sm sm:text-base">
+                  {selectedExpensePopup.title}
+                </div>
+                {selectedExpensePopup.subtitle && (
+                  <div className="text-slate-400 text-xs">
+                    {selectedExpensePopup.subtitle}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setSelectedExpensePopup(null)}
+                className="text-slate-400 hover:text-slate-100 text-base font-bold p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
+                <span className="text-slate-400 font-semibold">Expense Amount:</span>
+                <span className="font-mono font-bold text-slate-100 text-sm">
+                  UGX {selectedExpensePopup.amountUgx.toLocaleString()}
+                </span>
+              </div>
+
+              {(selectedExpensePopup.author || selectedExpensePopup.date) && (
+                <div className="flex justify-between text-slate-400 text-[11px] px-1">
+                  {selectedExpensePopup.author && (
+                    <span>
+                      Worker: <span className="text-slate-200 font-medium">{selectedExpensePopup.author}</span>
+                    </span>
+                  )}
+                  {selectedExpensePopup.date && (
+                    <span>
+                      Date: <span className="text-slate-200 font-medium">{selectedExpensePopup.date}</span>
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+                  Full Expense Description:
+                </label>
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-slate-200 text-xs leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto font-normal">
+                  {selectedExpensePopup.description}
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-800 pt-3 flex justify-end">
+              <button
+                onClick={() => setSelectedExpensePopup(null)}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -65,6 +65,9 @@ export const FinanceView: React.FC = () => {
   const [settleDebtModalTarget, setSettleDebtModalTarget] = useState<DebtRecord | null>(null);
   const [settleAmount, setSettleAmount] = useState(0);
 
+  // Expense Description Popup State
+  const [selectedExpensePopup, setSelectedExpensePopup] = useState<ExpenseRecord | null>(null);
+
   const notify = (msg: string) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 4000);
@@ -166,7 +169,7 @@ export const FinanceView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
-            <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400 shrink-0" />
+            <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Finance, Expenses & Payroll</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -178,7 +181,7 @@ export const FinanceView: React.FC = () => {
           {activeTab === 'expenses' && (
             <button
               onClick={() => setIsExpenseModalOpen(true)}
-              className="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-950 cursor-pointer"
+              className="btn-touch bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-950 cursor-pointer"
             >
               <Plus className="w-4 h-4" /> Record Expense
             </button>
@@ -191,7 +194,7 @@ export const FinanceView: React.FC = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
                   activeTab === tab
-                    ? 'bg-emerald-600 text-white shadow-md'
+                    ? 'bg-cyan-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -203,8 +206,8 @@ export const FinanceView: React.FC = () => {
       </div>
 
       {notification && (
-        <div className="bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
-          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="bg-slate-900 border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
+          <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
@@ -214,12 +217,12 @@ export const FinanceView: React.FC = () => {
         <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
           <div>
             <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Expenses Recorded</div>
-            <div className="text-xl font-extrabold text-rose-400 mt-1 font-mono">
+            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
               UGX {totalExpensesUgx.toLocaleString()}
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">{expensesList.length} Vouchers Filed</div>
           </div>
-          <div className="p-3 bg-rose-950/60 text-rose-400 rounded-xl border border-rose-500/30 shrink-0">
+          <div className="p-3 bg-slate-950 text-cyan-400 rounded-xl border border-slate-800 shrink-0">
             <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
         </div>
@@ -227,12 +230,12 @@ export const FinanceView: React.FC = () => {
         <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
           <div>
             <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Payroll Salaries Paid</div>
-            <div className="text-xl font-extrabold text-emerald-400 mt-1 font-mono">
+            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
               UGX {totalSalariesPaidUgx.toLocaleString()}
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">{salaryPaymentsList.length} Payslips Disbursed</div>
           </div>
-          <div className="p-3 bg-emerald-950/60 text-emerald-400 rounded-xl border border-emerald-500/30 shrink-0">
+          <div className="p-3 bg-slate-950 text-cyan-400 rounded-xl border border-slate-800 shrink-0">
             <Wallet className="w-6 h-6" />
           </div>
         </div>
@@ -240,12 +243,12 @@ export const FinanceView: React.FC = () => {
         <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
           <div>
             <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Outstanding Shortage Debts</div>
-            <div className="text-xl font-extrabold text-amber-400 mt-1 font-mono">
+            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
               UGX {totalDebtsOutstandingUgx.toLocaleString()}
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">Recoverable from payroll</div>
           </div>
-          <div className="p-3 bg-amber-950/60 text-amber-400 rounded-xl border border-amber-500/30">
+          <div className="p-3 bg-slate-950 text-cyan-400 rounded-xl border border-slate-800">
             <AlertCircle className="w-6 h-6" />
           </div>
         </div>
@@ -288,10 +291,19 @@ export const FinanceView: React.FC = () => {
                           {exp.category}
                         </span>
                       </td>
-                      <td className="p-3 font-semibold text-slate-200">{exp.description}</td>
+                      <td className="p-3">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedExpensePopup(exp)}
+                          className="text-left text-slate-200 hover:text-cyan-400 font-semibold max-w-[240px] truncate block cursor-pointer transition-colors underline underline-offset-2"
+                          title="Click to view full description"
+                        >
+                          {exp.description}
+                        </button>
+                      </td>
                       <td className="p-3 text-slate-400">{exp.paymentMethod}</td>
                       <td className="p-3 text-slate-400">{exp.approvedBy}</td>
-                      <td className="p-3 text-right font-mono font-bold text-rose-400">
+                      <td className="p-3 text-right font-mono font-bold text-slate-100">
                         UGX {exp.amountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -340,11 +352,11 @@ export const FinanceView: React.FC = () => {
                         </td>
                         <td className="p-3">
                           {activeDebt > 0 ? (
-                            <span className="font-mono text-rose-400 font-bold bg-rose-950/70 border border-rose-800/50 px-2 py-0.5 rounded text-[11px]">
+                            <span className="font-mono text-slate-200 font-bold bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-[11px]">
                               - UGX {activeDebt.toLocaleString()}
                             </span>
                           ) : (
-                            <span className="text-emerald-400 font-bold text-[11px]">No Outstanding Debt ✓</span>
+                            <span className="text-cyan-400 font-bold text-[11px]">No Outstanding Debt ✓</span>
                           )}
                         </td>
                         <td className="p-3 text-right">
@@ -354,7 +366,7 @@ export const FinanceView: React.FC = () => {
                               setSalaryCommission(50000);
                               setSalaryAllowances(20000);
                             }}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer"
+                            className="bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer"
                           >
                             Process Payslip & Disburse
                           </button>
@@ -396,11 +408,11 @@ export const FinanceView: React.FC = () => {
                         <td className="p-3 font-semibold text-slate-200">{sp.workerName}</td>
                         <td className="p-3 text-slate-400">{sp.month}</td>
                         <td className="p-3 font-mono">UGX {sp.basicSalaryUgx.toLocaleString()}</td>
-                        <td className="p-3 font-mono text-emerald-400">+ UGX {(sp.commissionUgx + sp.allowancesUgx).toLocaleString()}</td>
-                        <td className="p-3 font-mono text-rose-400">
+                        <td className="p-3 font-mono text-slate-200">+ UGX {(sp.commissionUgx + sp.allowancesUgx).toLocaleString()}</td>
+                        <td className="p-3 font-mono text-slate-400">
                           {sp.debtDeductedUgx > 0 ? `- UGX ${sp.debtDeductedUgx.toLocaleString()}` : '-'}
                         </td>
-                        <td className="p-3 text-right font-mono font-extrabold text-emerald-400">
+                        <td className="p-3 text-right font-mono font-extrabold text-slate-100">
                           UGX {sp.netPaidUgx.toLocaleString()}
                         </td>
                       </tr>
@@ -440,14 +452,14 @@ export const FinanceView: React.FC = () => {
                     <td className="p-3 font-bold text-slate-100">{debt.debtorName}</td>
                     <td className="p-3 text-slate-400">{debt.source}</td>
                     <td className="p-3 font-semibold text-slate-200 font-mono">UGX {debt.originalAmountUgx.toLocaleString()}</td>
-                    <td className="p-3 text-emerald-400 font-mono">UGX {debt.paidAmountUgx.toLocaleString()}</td>
-                    <td className="p-3 font-extrabold text-rose-400 font-mono">UGX {debt.balanceAmountUgx.toLocaleString()}</td>
+                    <td className="p-3 text-slate-300 font-mono">UGX {debt.paidAmountUgx.toLocaleString()}</td>
+                    <td className="p-3 font-extrabold text-slate-100 font-mono">UGX {debt.balanceAmountUgx.toLocaleString()}</td>
                     <td className="p-3">
                       <span
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                           debt.status === 'CLEARED'
-                            ? 'bg-emerald-950 border-emerald-500/40 text-emerald-400'
-                            : 'bg-rose-950 border-rose-500/40 text-rose-400'
+                            ? 'bg-slate-900 border-cyan-500/40 text-cyan-300'
+                            : 'bg-slate-900 border-slate-700 text-slate-300'
                         }`}
                       >
                         {debt.status}
@@ -479,7 +491,7 @@ export const FinanceView: React.FC = () => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 font-bold text-rose-400 text-base">
+              <div className="flex items-center gap-2 font-bold text-cyan-400 text-base">
                 <Receipt className="w-5 h-5" />
                 <span>Record New Business Expense</span>
               </div>
@@ -513,7 +525,7 @@ export const FinanceView: React.FC = () => {
                   required
                   value={expenseAmount}
                   onChange={(e) => setExpenseAmount(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-rose-400 font-bold text-base"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-slate-100 font-bold text-base focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -525,7 +537,7 @@ export const FinanceView: React.FC = () => {
                   placeholder="e.g. 50 Litres Diesel for Isuzu Lorry"
                   value={expenseDesc}
                   onChange={(e) => setExpenseDesc(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -535,7 +547,7 @@ export const FinanceView: React.FC = () => {
                   <select
                     value={expenseStoreId}
                     onChange={(e) => setExpenseStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
                   >
                     {stores.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -550,7 +562,7 @@ export const FinanceView: React.FC = () => {
                   <select
                     value={expensePaymentMethod}
                     onChange={(e) => setExpensePaymentMethod(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
                   >
                     {paymentMethodsList.map((pm) => (
                       <option key={pm.id} value={pm.code}>
@@ -571,7 +583,7 @@ export const FinanceView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-rose-950 cursor-pointer"
+                  className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer"
                 >
                   Authorize & Record Expense
                 </button>
@@ -586,7 +598,7 @@ export const FinanceView: React.FC = () => {
         <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
             <div className="text-center border-b border-slate-800 pb-3">
-              <h3 className="font-extrabold text-base sm:text-lg text-emerald-400">Worker Payslip Calculation</h3>
+              <h3 className="font-extrabold text-base sm:text-lg text-cyan-400">Worker Payslip Calculation</h3>
               <div className="text-xs text-slate-300 font-bold">{selectedWorkerForSalary.fullName}</div>
               <div className="text-[11px] text-slate-500">{selectedWorkerForSalary.department} Department</div>
             </div>
@@ -599,7 +611,7 @@ export const FinanceView: React.FC = () => {
                     type="number"
                     value={salaryCommission}
                     onChange={(e) => setSalaryCommission(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-emerald-300 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -608,7 +620,7 @@ export const FinanceView: React.FC = () => {
                     type="number"
                     value={salaryAllowances}
                     onChange={(e) => setSalaryAllowances(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-emerald-300 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -620,17 +632,17 @@ export const FinanceView: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-slate-300">
                   <span>Commissions + Allowances:</span>
-                  <span className="font-bold font-mono text-emerald-400">+ UGX {(salaryCalc.commissionUgx + salaryCalc.allowancesUgx).toLocaleString()}</span>
+                  <span className="font-bold font-mono text-slate-200">+ UGX {(salaryCalc.commissionUgx + salaryCalc.allowancesUgx).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-slate-100 font-extrabold border-t border-slate-800/80 pt-1">
                   <span>Gross Pay:</span>
                   <span className="font-mono">UGX {salaryCalc.grossSalaryUgx.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-rose-400 font-bold">
+                <div className="flex justify-between text-slate-400 font-bold">
                   <span>Auto Debt Recovery Deduction:</span>
                   <span className="font-mono">- UGX {salaryCalc.debtDeductionsUgx.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-emerald-400 font-extrabold text-sm border-t border-slate-800/80 pt-1.5">
+                <div className="flex justify-between text-cyan-400 font-extrabold text-sm border-t border-slate-800/80 pt-1.5">
                   <span>Net Salary Payable:</span>
                   <span className="font-mono text-base">UGX {salaryCalc.netSalaryUgx.toLocaleString()}</span>
                 </div>
@@ -641,7 +653,7 @@ export const FinanceView: React.FC = () => {
                 <select
                   value={salaryPaymentMethod}
                   onChange={(e) => setSalaryPaymentMethod(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
                 >
                   <option value="MOBILE_MONEY">Mobile Money (MTN / Airtel)</option>
                   <option value="CASH">Physical Cash</option>
@@ -659,9 +671,9 @@ export const FinanceView: React.FC = () => {
               </button>
               <button
                 onClick={handleAuthorizeSalaryPayment}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950 cursor-pointer"
+                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-950 cursor-pointer"
               >
-                <CheckCircle className="w-4 h-4" /> Authorize & Pay Salary
+                <CheckCircle className="w-4 h-4 text-cyan-200" /> Authorize & Pay Salary
               </button>
             </div>
           </div>
@@ -689,7 +701,7 @@ export const FinanceView: React.FC = () => {
               </div>
               <div>
                 <span className="text-slate-400">Total Outstanding Balance: </span>
-                <span className="text-rose-400 font-mono font-bold">
+                <span className="text-slate-200 font-mono font-bold">
                   UGX {settleDebtModalTarget.balanceAmountUgx.toLocaleString()}
                 </span>
               </div>
@@ -703,7 +715,7 @@ export const FinanceView: React.FC = () => {
                   required
                   value={settleAmount}
                   onChange={(e) => setSettleAmount(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-emerald-400 font-bold text-base focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-slate-100 font-bold text-base focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -723,6 +735,72 @@ export const FinanceView: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Expense Description Details Popup Modal */}
+      {selectedExpensePopup && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in"
+          onClick={() => setSelectedExpensePopup(null)}
+        >
+          <div
+            className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="space-y-0.5">
+                <div className="text-cyan-400 font-bold text-sm sm:text-base">
+                  {selectedExpensePopup.voucherNumber}
+                </div>
+                <div className="text-slate-400 text-xs">
+                  Category: <span className="text-slate-200 font-medium">{selectedExpensePopup.category}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedExpensePopup(null)}
+                className="text-slate-400 hover:text-slate-100 text-base font-bold p-1 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
+                <span className="text-slate-400 font-semibold">Expense Amount:</span>
+                <span className="font-mono font-bold text-slate-100 text-sm">
+                  UGX {selectedExpensePopup.amountUgx.toLocaleString()}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-slate-400 text-[11px] px-1">
+                <span>
+                  Approved By: <span className="text-slate-200 font-medium">{selectedExpensePopup.approvedBy}</span>
+                </span>
+                <span>
+                  Date: <span className="text-slate-200 font-medium">{selectedExpensePopup.date}</span>
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+                  Full Expense Description:
+                </label>
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-slate-200 text-xs leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto font-normal">
+                  {selectedExpensePopup.description}
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-800 pt-3 flex justify-end">
+              <button
+                onClick={() => setSelectedExpensePopup(null)}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
