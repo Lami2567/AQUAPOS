@@ -242,7 +242,19 @@ export interface AppState {
   settleDebt: (debtId: string, amountPaidUgx: number) => void;
   recordSalaryPayment: (payment: SalaryPaymentRecord) => void;
   startFieldSession: (session: FieldSessionRecord) => void;
-  closeFieldSession: (sessionId: string, reconciledItems: FieldSessionItem[], varianceUgx?: number) => void;
+  closeFieldSession: (
+    sessionId: string,
+    reconciledItems: FieldSessionItem[],
+    varianceUgx?: number,
+    financials?: {
+      expectedSalesUgx: number;
+      cashCollectedUgx: number;
+      mobileMoneyUgx: number;
+      bankDepositUgx: number;
+      approvedExpensesUgx: number;
+      cashRemainingUgx: number;
+    }
+  ) => void;
   createStockTransfer: (transfer: StockTransferRecord) => void;
   advanceTransferStatus: (transferId: string, nextStatus: StockTransferRecord['status']) => void;
   resetProductionData: (clearDemoMaster?: boolean) => void;
@@ -1488,9 +1500,11 @@ export const useStore = create<AppState>((set) => ({
       startFieldSession: (session) =>
         set((state) => {
           const storeStock = { ...(state.inventoryStock[session.storeId] || {}) };
+          let totalIssuedQty = 0;
           session.items.forEach((item) => {
             const cur = storeStock[item.productId] || 0;
             storeStock[item.productId] = Math.max(0, cur - item.issuedQty);
+            totalIssuedQty += item.issuedQty;
           });
 
           const outboxItem: OutboxRecord = {
@@ -1502,6 +1516,15 @@ export const useStore = create<AppState>((set) => ({
             payload: session,
           };
 
+          const newAudit: AuditRecord = {
+            id: `audit-${Date.now()}`,
+            user: state.user?.fullName || session.workerName || 'Salesperson',
+            action: 'FIELD_SESSION_DISPATCHED',
+            entity: 'StockLedger',
+            details: `Dispatched ${totalIssuedQty} units to vehicle ${session.vehicleName} for field session ${session.sessionNumber}. Store stock reduced.`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+
           return {
             fieldSessionsList: [session, ...state.fieldSessionsList],
             inventoryStock: {
@@ -1510,21 +1533,119 @@ export const useStore = create<AppState>((set) => ({
             },
             outboxQueue: [outboxItem, ...state.outboxQueue],
             pendingSyncCount: state.pendingSyncCount + 1,
+            auditLogs: [newAudit, ...state.auditLogs],
           };
         }),
 
-      closeFieldSession: (sessionId, reconciledItems, varianceUgx = 0) =>
+      closeFieldSession: (sessionId, reconciledItems, varianceUgx = 0, financials) =>
         set((state) => {
           const session = state.fieldSessionsList.find((s) => s.id === sessionId);
           if (!session) return state;
 
           const storeStock = { ...(state.inventoryStock[session.storeId] || {}) };
+          let totalReturned = 0;
+          let totalSold = 0;
+          let computedExpectedSales = 0;
+
+          const soldCartItems: CartItem[] = [];
+
           reconciledItems.forEach((item) => {
             const cur = storeStock[item.productId] || 0;
-            const returnBack = (item.returnedQty || 0);
+            const returnBack = Number(item.returnedQty || 0);
+            const soldCount = Number(item.soldQty || 0);
             storeStock[item.productId] = cur + returnBack;
+            totalReturned += returnBack;
+            totalSold += soldCount;
+
+            const lineRevenue = soldCount * item.unitPriceUgx;
+            computedExpectedSales += lineRevenue;
+
+            if (soldCount > 0) {
+              soldCartItems.push({
+                productId: item.productId,
+                sku: `SKU-${item.productId.slice(-4).toUpperCase()}`,
+                name: item.name,
+                unitPriceUgx: item.unitPriceUgx,
+                quantity: soldCount,
+                discountUgx: 0,
+              });
+            }
           });
 
+          const grossSalesUgx = financials?.expectedSalesUgx !== undefined ? financials.expectedSalesUgx : computedExpectedSales;
+          const cashCollected = financials?.cashCollectedUgx || 0;
+          const mmCollected = financials?.mobileMoneyUgx || 0;
+          const bankCollected = financials?.bankDepositUgx || 0;
+          const appExpenses = financials?.approvedExpensesUgx || 0;
+          const remainingFloat = financials?.cashRemainingUgx || 0;
+
+          const paymentMethod: PaymentMethod = mmCollected > cashCollected
+            ? PaymentMethod.MOBILE_MONEY
+            : (bankCollected > cashCollected ? PaymentMethod.BANK_TRANSFER : PaymentMethod.CASH);
+
+          const newOutboxItems: OutboxRecord[] = [];
+
+          // 1. Create SaleRecord if water was sold, immediately reflecting in revenue
+          let updatedSales = [...state.salesHistory];
+          if (grossSalesUgx > 0) {
+            const saleId = `sale-fs-${session.id}`;
+            const fieldSale: SaleRecord = {
+              id: saleId,
+              receiptNumber: session.sessionNumber,
+              storeId: session.storeId,
+              items: soldCartItems,
+              subtotalUgx: grossSalesUgx,
+              overallDiscountUgx: 0,
+              totalAmountUgx: grossSalesUgx,
+              paidAmountUgx: cashCollected + mmCollected + bankCollected,
+              changeAmountUgx: remainingFloat,
+              paymentMethod,
+              customerName: `Field Route Sales (${session.workerName})`,
+              cashierId: session.workerId,
+              date: new Date().toISOString().split('T')[0],
+              createdAt: new Date().toISOString(),
+            };
+            updatedSales = [fieldSale, ...updatedSales];
+
+            newOutboxItems.push({
+              id: `outbox-sale-${saleId}`,
+              type: 'SALE',
+              receiptNumber: session.sessionNumber,
+              status: 'PENDING',
+              createdAt: new Date().toISOString(),
+              payload: fieldSale,
+            });
+          }
+
+          // 2. Create ExpenseRecord if route expenses were approved
+          let updatedExpenses = [...state.expensesList];
+          if (appExpenses > 0) {
+            const expId = `exp-fs-${session.id}`;
+            const fieldExpense: ExpenseRecord = {
+              id: expId,
+              voucherNumber: `EXP-${session.sessionNumber}`,
+              category: 'FIELD_EXPENSE',
+              description: `Approved Field Route Expenses (${session.sessionNumber} - ${session.workerName})`,
+              amountUgx: appExpenses,
+              branchId: state.stores.find((s) => s.id === session.storeId)?.branchId || state.currentBranchId || 'b1111111-1111-1111-1111-111111111111',
+              storeId: session.storeId,
+              paymentMethod: 'CASH',
+              approvedBy: state.user?.fullName || 'Branch Manager',
+              date: new Date().toISOString().split('T')[0],
+            };
+            updatedExpenses = [fieldExpense, ...updatedExpenses];
+
+            newOutboxItems.push({
+              id: `outbox-exp-${expId}`,
+              type: 'EXPENSE',
+              receiptNumber: fieldExpense.voucherNumber,
+              status: 'PENDING',
+              createdAt: new Date().toISOString(),
+              payload: fieldExpense,
+            });
+          }
+
+          // 3. Create DebtRecord if shortage
           let updatedDebts = [...state.debtsList];
           if (varianceUgx < 0) {
             const shortageDebt: DebtRecord = {
@@ -1536,19 +1657,76 @@ export const useStore = create<AppState>((set) => ({
               balanceAmountUgx: Math.abs(varianceUgx),
               status: 'OUTSTANDING',
               date: new Date().toISOString().split('T')[0],
+              reason: `Route cash shortage on ${session.sessionNumber}`,
             };
             updatedDebts = [shortageDebt, ...updatedDebts];
+
+            newOutboxItems.push({
+              id: `outbox-debt-${shortageDebt.id}`,
+              type: 'DEBT',
+              status: 'PENDING',
+              createdAt: new Date().toISOString(),
+              payload: shortageDebt,
+            });
           }
+
+          // 4. Outbox item for reconciliation
+          const reconcilePayload = {
+            id: session.id,
+            sessionId: session.id,
+            sessionNumber: session.sessionNumber,
+            storeId: session.storeId,
+            vehicleId: session.vehicleId,
+            workerId: session.workerId,
+            workerName: session.workerName,
+            status: 'RECONCILED',
+            items: reconciledItems,
+            expectedSalesUgx: grossSalesUgx,
+            cashCollectedUgx: cashCollected,
+            mobileMoneyUgx: mmCollected,
+            bankDepositUgx: bankCollected,
+            approvedExpensesUgx: appExpenses,
+            cashRemainingUgx: remainingFloat,
+            totalAccountedMoneyUgx: cashCollected + mmCollected + bankCollected + appExpenses + remainingFloat,
+            moneyVarianceUgx: varianceUgx,
+            endTime: new Date().toISOString(),
+            date: new Date().toISOString().split('T')[0],
+            reconciledBy: state.user?.fullName || 'Branch Manager',
+          };
+
+          newOutboxItems.push({
+            id: `outbox-recon-${session.id}`,
+            type: 'RECONCILE_FIELD_SESSION',
+            receiptNumber: session.sessionNumber,
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            payload: reconcilePayload,
+          });
+
+          // 5. Audit Log
+          const auditLog: AuditRecord = {
+            id: `audit-${Date.now()}`,
+            user: state.user?.fullName || 'Branch Manager',
+            action: 'FIELD_SESSION_RECONCILED',
+            entity: 'FieldSession',
+            details: `Reconciled ${session.sessionNumber}: ${totalSold} sold (UGX ${grossSalesUgx.toLocaleString()} revenue), ${totalReturned} returned to store. Variance: ${varianceUgx >= 0 ? `+${varianceUgx}` : varianceUgx}`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
 
           return {
             fieldSessionsList: state.fieldSessionsList.map((s) =>
-              s.id === sessionId ? { ...s, status: 'RECONCILED', endTime: new Date().toISOString() } : s
+              s.id === sessionId ? { ...s, status: 'RECONCILED', endTime: new Date().toISOString(), items: reconciledItems } : s
             ),
             inventoryStock: {
               ...state.inventoryStock,
               [session.storeId]: storeStock,
             },
+            salesHistory: updatedSales,
+            expensesList: updatedExpenses,
             debtsList: updatedDebts,
+            outboxQueue: [...newOutboxItems, ...state.outboxQueue],
+            pendingSyncCount: state.pendingSyncCount + newOutboxItems.length,
+            auditLogs: [auditLog, ...state.auditLogs],
           };
         }),
 

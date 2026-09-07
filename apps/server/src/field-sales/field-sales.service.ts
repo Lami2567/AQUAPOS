@@ -222,6 +222,72 @@ export class FieldSalesService {
         ]
       );
 
+      // Record sale in sales table so revenue is captured centrally
+      if (totalExpectedSalesUgx > 0) {
+        const saleId = uuidv4();
+        const payMethod = mobileMoneyUgx > cashCollectedUgx ? 'MOBILE_MONEY' : (bankDepositUgx > cashCollectedUgx ? 'BANK_TRANSFER' : 'CASH');
+        const worker = await this.dbService.queryOne<any>(`SELECT full_name FROM workers WHERE id = ?`, [session.worker_id]);
+        const workerName = worker?.full_name || 'Field Salesperson';
+
+        await this.dbService.execute(
+          `INSERT INTO sales (id, receipt_number, store_id, cashier_id, customer_name, customer_phone, total_amount_ugx, discount_amount_ugx, net_amount_ugx, paid_amount_ugx, change_amount_ugx, payment_method, payment_reference, is_voided)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+          [
+            saleId,
+            session.session_number,
+            session.store_id,
+            session.worker_id,
+            `Field Route Sales (${workerName})`,
+            null,
+            totalExpectedSalesUgx,
+            0,
+            totalExpectedSalesUgx,
+            cashCollectedUgx + mobileMoneyUgx + bankDepositUgx,
+            cashRemainingUgx,
+            payMethod,
+            notes || null,
+          ]
+        );
+
+        for (const itemObj of sessionItems) {
+          const retInput = returnedItems.find((r) => r.productId === itemObj.product_id);
+          const soldQty = retInput ? Number(retInput.soldQty || 0) : 0;
+          if (soldQty > 0) {
+            await this.dbService.execute(
+              `INSERT INTO sale_items (id, sale_id, product_id, product_name, quantity, unit_price_ugx, discount_ugx, subtotal_ugx)
+               VALUES (?, ?, ?, ?, ?, ?, 0, ?)`,
+              [
+                uuidv4(),
+                saleId,
+                itemObj.product_id,
+                itemObj.product_name,
+                soldQty,
+                itemObj.unit_price_ugx,
+                soldQty * Number(itemObj.unit_price_ugx),
+              ]
+            );
+          }
+        }
+      }
+
+      // Record approved expenses in expenses table
+      if (approvedExpensesUgx > 0) {
+        const store = await this.dbService.queryOne<any>(`SELECT branch_id FROM stores WHERE id = ?`, [session.store_id]);
+        await this.dbService.execute(
+          `INSERT INTO expenses (id, branch_id, store_id, field_session_id, category, amount_ugx, description, approved_by)
+           VALUES (?, ?, ?, ?, 'FIELD_EXPENSE', ?, ?, ?)`,
+          [
+            uuidv4(),
+            store?.branch_id || 'BRANCH-01',
+            session.store_id,
+            fieldSessionId,
+            approvedExpensesUgx,
+            `Field Route Approved Expenses (${session.session_number})`,
+            reconciledBy,
+          ]
+        );
+      }
+
       // If there is a cash shortage, create a worker debt
       if (moneyRes.moneyVarianceUgx < 0) {
         const shortageAmount = Math.abs(moneyRes.moneyVarianceUgx);

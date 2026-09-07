@@ -75,6 +75,9 @@ export const FieldSalesView: React.FC = () => {
       initialQtys[p.id] = 0;
     });
     setIssuedQuantities(initialQtys);
+    if (!selectedStoreId) {
+      setSelectedStoreId(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
+    }
     setIsStartModalOpen(true);
   };
 
@@ -120,6 +123,17 @@ export const FieldSalesView: React.FC = () => {
       return;
     }
 
+    const storeId = selectedStoreId || currentStoreId || branchStores[0]?.id || stores[0]?.id || 'main-store';
+
+    // Verify stock availability
+    for (const item of sessionItems) {
+      const avail = inventoryStock[storeId]?.[item.productId] || 0;
+      if (item.issuedQty > avail) {
+        alert(`Insufficient store stock for ${item.name}! Available: ${avail}, Requested: ${item.issuedQty}`);
+        return;
+      }
+    }
+
     const sessionNumber = `FS-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
     const newSession: FieldSessionRecord = {
       id: uuidv4(),
@@ -128,7 +142,7 @@ export const FieldSalesView: React.FC = () => {
       vehicleName: `${vehicle.model} (${vehicle.registrationNumber})`,
       workerId,
       workerName,
-      storeId: selectedStoreId || stores[0]?.id || 'main-store',
+      storeId,
       status: 'OPEN',
       startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       items: sessionItems,
@@ -202,14 +216,27 @@ export const FieldSalesView: React.FC = () => {
       };
     });
 
-    closeFieldSession(activeReconcileSession.id, reconciledItems, moneyRes.moneyVarianceUgx);
+    closeFieldSession(
+      activeReconcileSession.id,
+      reconciledItems,
+      moneyRes.moneyVarianceUgx,
+      {
+        expectedSalesUgx: moneyRes.expectedSalesUgx,
+        cashCollectedUgx: Number(cashCollected) || 0,
+        mobileMoneyUgx: Number(mobileMoney) || 0,
+        bankDepositUgx: Number(bankDeposit) || 0,
+        approvedExpensesUgx: Number(approvedExpenses) || 0,
+        cashRemainingUgx: Number(cashRemaining) || 0,
+      }
+    );
+
     const closedSessionNumber = activeReconcileSession.sessionNumber;
     setActiveReconcileSession(null);
 
     if (moneyRes.moneyVarianceUgx < 0) {
-      notify(`Session ${closedSessionNumber} reconciled with shortage! Worker debt recorded for UGX ${Math.abs(moneyRes.moneyVarianceUgx).toLocaleString()}.`);
+      notify(`Session ${closedSessionNumber} reconciled with shortage! Worker debt recorded for UGX ${Math.abs(moneyRes.moneyVarianceUgx).toLocaleString()}. Revenue updated.`);
     } else {
-      notify(`Session ${closedSessionNumber} closed & reconciled successfully! All funds and stock accounted for.`);
+      notify(`Session ${closedSessionNumber} closed & reconciled successfully! Revenue and stock recorded in system.`);
     }
   };
 
@@ -237,8 +264,8 @@ export const FieldSalesView: React.FC = () => {
       </div>
 
       {notification && (
-        <div className="bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
-          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="bg-slate-900 border border-cyan-500/40 text-cyan-200 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
+          <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
@@ -251,7 +278,7 @@ export const FieldSalesView: React.FC = () => {
         
         {visibleSessions.length === 0 ? (
           <div className="text-center py-10 sm:py-12 text-slate-500 text-xs space-y-2">
-            <Truck className="w-8 h-8 mx-auto text-slate-600" />
+            <Truck className="w-8 h-8 mx-auto text-slate-500" />
             <p>No field sessions found for current branch. Click "Start New Field Session" to dispatch a delivery vehicle.</p>
           </div>
         ) : (
@@ -288,8 +315,8 @@ export const FieldSalesView: React.FC = () => {
                       <span
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                           session.status === 'OPEN'
-                            ? 'bg-amber-950/80 border-amber-500/40 text-amber-400'
-                            : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400'
+                            ? 'bg-slate-900/90 border-cyan-500/40 text-cyan-300'
+                            : 'bg-slate-900/90 border-slate-700 text-slate-300'
                         }`}
                       >
                         {session.status}
@@ -299,7 +326,7 @@ export const FieldSalesView: React.FC = () => {
                       {session.status === 'OPEN' ? (
                         <button
                           onClick={() => handleOpenReconcileModal(session)}
-                          className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 sm:px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-md shadow-emerald-950 transition-all cursor-pointer whitespace-nowrap"
+                          className="bg-cyan-600 hover:bg-cyan-500 text-white px-3 sm:px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-md shadow-cyan-950 transition-all cursor-pointer whitespace-nowrap"
                         >
                           Close & Reconcile
                         </button>
@@ -413,7 +440,7 @@ export const FieldSalesView: React.FC = () => {
                         <div className="flex-1 min-w-0">
                           <div className="font-bold text-slate-200 truncate">{prod.name}</div>
                           <div className="text-[10px] text-slate-400 font-mono truncate">
-                            Avail: <span className="text-emerald-400 font-bold">{storeAvail}</span> • UGX {prod.sellingPriceUgx.toLocaleString()}
+                            Avail: <span className="text-cyan-400 font-bold">{storeAvail}</span> • UGX {prod.sellingPriceUgx.toLocaleString()}
                           </div>
                         </div>
 
@@ -508,7 +535,7 @@ export const FieldSalesView: React.FC = () => {
 
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                         <div>
-                          <label className="block text-[10px] text-emerald-400 font-semibold mb-1">Sold Qty</label>
+                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Sold Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -519,11 +546,11 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, sold: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-emerald-300 font-bold focus:outline-none"
+                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-blue-400 font-semibold mb-1">Returned Qty</label>
+                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Returned Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -534,11 +561,11 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, returned: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-blue-300 font-bold focus:outline-none"
+                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-amber-400 font-semibold mb-1">Damaged Qty</label>
+                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Damaged Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -549,11 +576,11 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, damaged: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-amber-300 font-bold focus:outline-none"
+                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-rose-400 font-semibold mb-1">Missing Qty</label>
+                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Missing Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -564,13 +591,13 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, missing: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-rose-300 font-bold focus:outline-none"
+                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                       </div>
 
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[10px] pt-1">
-                        <span className={stockEq.isValid ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                        <span className={stockEq.isValid ? 'text-cyan-400 font-bold' : 'text-slate-400 font-bold'}>
                           Equation Status: {stockEq.isValid ? 'Stock Balanced ✓' : `Variance: ${stockEq.varianceQty} units`}
                         </span>
                         <span className="text-slate-400 font-mono">
@@ -586,7 +613,7 @@ export const FieldSalesView: React.FC = () => {
             {/* Step 2: Money Collection Reconciliation */}
             <div className="space-y-3 border-t border-slate-800 pt-4">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <DollarSign className="w-4 h-4 text-emerald-400 shrink-0" />
+                <DollarSign className="w-4 h-4 text-cyan-400 shrink-0" />
                 <span>2. Money Accounting (Expected = Cash + Mobile + Bank + Expenses + Remaining)</span>
               </div>
 
@@ -597,7 +624,7 @@ export const FieldSalesView: React.FC = () => {
                     type="number"
                     value={cashCollected}
                     onChange={(e) => setCashCollected(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -606,7 +633,7 @@ export const FieldSalesView: React.FC = () => {
                     type="number"
                     value={mobileMoney}
                     onChange={(e) => setMobileMoney(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -615,7 +642,7 @@ export const FieldSalesView: React.FC = () => {
                     type="number"
                     value={bankDeposit}
                     onChange={(e) => setBankDeposit(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -624,7 +651,7 @@ export const FieldSalesView: React.FC = () => {
                     type="number"
                     value={approvedExpenses}
                     onChange={(e) => setApprovedExpenses(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -633,7 +660,7 @@ export const FieldSalesView: React.FC = () => {
                     type="number"
                     value={cashRemaining}
                     onChange={(e) => setCashRemaining(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -642,10 +669,10 @@ export const FieldSalesView: React.FC = () => {
               <div
                 className={`p-3.5 sm:p-4 rounded-2xl text-xs font-semibold flex flex-col sm:flex-row sm:items-center justify-between gap-2 border ${
                   moneyRes.moneyVarianceUgx < 0
-                    ? 'bg-rose-950/80 border-rose-500/40 text-rose-300'
+                    ? 'bg-slate-950/90 border-slate-700 text-slate-200'
                     : moneyRes.moneyVarianceUgx > 0
-                    ? 'bg-amber-950/80 border-amber-500/40 text-amber-300'
-                    : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300'
+                    ? 'bg-slate-950/90 border-cyan-500/40 text-cyan-200'
+                    : 'bg-slate-950/90 border-cyan-500/40 text-cyan-300'
                 }`}
               >
                 <div>
@@ -658,7 +685,7 @@ export const FieldSalesView: React.FC = () => {
                 <div className="sm:text-right">
                   <div className="text-sm font-extrabold">{moneyRes.formattedMessage}</div>
                   {moneyRes.moneyVarianceUgx < 0 && (
-                    <div className="text-[10px] opacity-90 mt-0.5 font-bold">
+                    <div className="text-[10px] opacity-90 mt-0.5 font-bold text-slate-400">
                       Shortage will automatically create an outstanding worker debt record for payroll recovery.
                     </div>
                   )}
@@ -670,9 +697,9 @@ export const FieldSalesView: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 border-t border-slate-800 pt-4">
               <button
                 onClick={handleConfirmReconciliation}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30 cursor-pointer"
+                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-900/30 cursor-pointer"
               >
-                <CheckCircle className="w-4 h-4" /> Confirm & Authorize Reconciliation
+                <CheckCircle className="w-4 h-4 text-cyan-200" /> Confirm & Authorize Reconciliation
               </button>
               <button
                 onClick={() => setActiveReconcileSession(null)}
