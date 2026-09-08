@@ -577,43 +577,92 @@ export class SyncService {
           } else if ((tx.transactionType === 'FIELD_SESSION' || tx.transactionType === 'START_FIELD_SESSION') && p.status !== 'RECONCILED' && (p.sessionNumber || p.id)) {
             const fsId = p.id || tx.id;
             const fsStatus = p.status || 'OPEN';
-            await this.dbService.execute(
-              `INSERT OR REPLACE INTO field_sessions (id, session_number, store_id, vehicle_id, worker_id, status, start_time, end_time, created_by)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                fsId,
-                p.sessionNumber || `FS-${Date.now().toString().slice(-6)}`,
-                p.storeId,
-                p.vehicleId,
-                p.workerId,
-                fsStatus,
-                p.startTime || new Date().toISOString(),
-                p.endTime || null,
-                p.workerName || 'Salesperson',
-              ]
+
+            let safeStartTime = new Date().toISOString();
+            if (p.startTime) {
+              const d = new Date(p.startTime);
+              if (!isNaN(d.getTime())) safeStartTime = d.toISOString();
+            }
+
+            let safeEndTime: string | null = null;
+            if (p.endTime) {
+              const d = new Date(p.endTime);
+              if (!isNaN(d.getTime())) safeEndTime = d.toISOString();
+            }
+
+            const safeWorkerName = p.workerName || 'Salesperson';
+            const safeVehicleId = p.vehicleId || 'default-van';
+            const safeWorkerId = p.workerId || 'w-salesperson';
+
+            const existingSession = await this.dbService.queryOne<any>(
+              `SELECT id FROM field_sessions WHERE id = ?`,
+              [fsId]
             );
+
+            if (existingSession) {
+              await this.dbService.execute(
+                `UPDATE field_sessions SET session_number = ?, store_id = ?, vehicle_id = ?, worker_id = ?, status = ?, start_time = ? WHERE id = ?`,
+                [
+                  p.sessionNumber || existingSession.session_number,
+                  p.storeId || existingSession.store_id,
+                  safeVehicleId,
+                  safeWorkerId,
+                  fsStatus,
+                  safeStartTime,
+                  fsId,
+                ]
+              );
+            } else {
+              await this.dbService.execute(
+                `INSERT INTO field_sessions (id, session_number, store_id, vehicle_id, worker_id, status, start_time, end_time, created_by)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  fsId,
+                  p.sessionNumber || `FS-${Date.now().toString().slice(-6)}`,
+                  p.storeId,
+                  safeVehicleId,
+                  safeWorkerId,
+                  fsStatus,
+                  safeStartTime,
+                  safeEndTime,
+                  safeWorkerName,
+                ]
+              );
+            }
 
             // Record issued items and ledger entry for store stock reduction
             if (Array.isArray(p.items)) {
               for (const item of p.items) {
                 const issuedQty = Number(item.issuedQty || 0);
                 if (issuedQty > 0) {
-                  await this.dbService.execute(
-                    `INSERT OR REPLACE INTO field_session_items (id, field_session_id, product_id, product_name, issued_qty, sold_qty, returned_qty, damaged_qty, missing_qty, unit_price_ugx)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                      `${fsId}-${item.productId}`,
-                      fsId,
-                      item.productId,
-                      item.name || 'Water Product',
-                      issuedQty,
-                      Number(item.soldQty || 0),
-                      Number(item.returnedQty || 0),
-                      Number(item.damagedQty || 0),
-                      Number(item.missingQty || 0),
-                      Number(item.unitPriceUgx || 0),
-                    ]
+                  const existingItem = await this.dbService.queryOne<any>(
+                    `SELECT id FROM field_session_items WHERE field_session_id = ? AND product_id = ?`,
+                    [fsId, item.productId]
                   );
+
+                  if (existingItem) {
+                    await this.dbService.execute(
+                      `UPDATE field_session_items SET product_name = ?, issued_qty = ?, unit_price_ugx = ? WHERE id = ?`,
+                      [item.name || 'Water Product', issuedQty, Number(item.unitPriceUgx || 0), existingItem.id]
+                    );
+                  } else {
+                    await this.dbService.execute(
+                      `INSERT INTO field_session_items (id, field_session_id, product_id, product_name, issued_qty, sold_qty, returned_qty, damaged_qty, missing_qty, unit_price_ugx)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                      [
+                        uuidv4(),
+                        fsId,
+                        item.productId,
+                        item.name || 'Water Product',
+                        issuedQty,
+                        Number(item.soldQty || 0),
+                        Number(item.returnedQty || 0),
+                        Number(item.damagedQty || 0),
+                        Number(item.missingQty || 0),
+                        Number(item.unitPriceUgx || 0),
+                      ]
+                    );
+                  }
 
                   // Deduct from Store stock via FIELD_ISSUE in stock_ledger (idempotent)
                   const existingIssue = await this.dbService.queryOne<any>(
@@ -650,9 +699,15 @@ export class SyncService {
             const workerId = p.workerId || session?.worker_id || 'w-salesperson';
             const workerName = p.workerName || session?.created_by || 'Salesperson';
 
+            let safeEndTime = new Date().toISOString();
+            if (p.endTime) {
+              const d = new Date(p.endTime);
+              if (!isNaN(d.getTime())) safeEndTime = d.toISOString();
+            }
+
             await this.dbService.execute(
               `UPDATE field_sessions SET status = 'RECONCILED', return_store_id = ?, end_time = ? WHERE id = ?`,
-              [returnStoreId, p.endTime || new Date().toISOString(), fsId]
+              [returnStoreId, safeEndTime, fsId]
             );
 
             let totalSoldUnits = 0;
@@ -669,22 +724,34 @@ export class SyncService {
                 totalSoldUnits += soldQty;
                 totalExpectedSalesUgx += soldQty * unitPrice;
 
-                await this.dbService.execute(
-                  `INSERT OR REPLACE INTO field_session_items (id, field_session_id, product_id, product_name, issued_qty, sold_qty, returned_qty, damaged_qty, missing_qty, unit_price_ugx)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                  [
-                    `${fsId}-${item.productId}`,
-                    fsId,
-                    item.productId,
-                    item.name || 'Water Product',
-                    Number(item.issuedQty || 0),
-                    soldQty,
-                    returnedQty,
-                    damagedQty,
-                    missingQty,
-                    unitPrice,
-                  ]
+                const existingItem = await this.dbService.queryOne<any>(
+                  `SELECT id FROM field_session_items WHERE field_session_id = ? AND product_id = ?`,
+                  [fsId, item.productId]
                 );
+
+                if (existingItem) {
+                  await this.dbService.execute(
+                    `UPDATE field_session_items SET sold_qty = ?, returned_qty = ?, damaged_qty = ?, missing_qty = ?, unit_price_ugx = ? WHERE id = ?`,
+                    [soldQty, returnedQty, damagedQty, missingQty, unitPrice, existingItem.id]
+                  );
+                } else {
+                  await this.dbService.execute(
+                    `INSERT INTO field_session_items (id, field_session_id, product_id, product_name, issued_qty, sold_qty, returned_qty, damaged_qty, missing_qty, unit_price_ugx)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                      uuidv4(),
+                      fsId,
+                      item.productId,
+                      item.name || 'Water Product',
+                      Number(item.issuedQty || 0),
+                      soldQty,
+                      returnedQty,
+                      damagedQty,
+                      missingQty,
+                      unitPrice,
+                    ]
+                  );
+                }
 
                 // Credit returned stock back to selected destination return store ledger
                 if (returnedQty > 0 && returnStoreId) {
@@ -811,34 +878,66 @@ export class SyncService {
             }
 
             // Record in field_reconciliations
-            const reconId = `recon-fs-${fsId}`;
-            await this.dbService.execute(
-              `INSERT OR REPLACE INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-              [
-                reconId,
-                fsId,
-                returnStoreId,
-                Number(p.totalIssuedUnits || 0),
-                totalSoldUnits,
-                Number(p.totalReturnedUnits || 0),
-                Number(p.totalDamagedUnits || 0),
-                Number(p.totalMissingUnits || 0),
-                1,
-                grossSalesRevenue,
-                Number(p.cashCollectedUgx || 0),
-                Number(p.mobileMoneyUgx || 0),
-                Number(p.bankDepositUgx || 0),
-                expAmount,
-                Number(p.cashRemainingUgx || 0),
-                Number(p.totalAccountedMoneyUgx || 0),
-                variance,
-                variance === 0 ? 1 : 0,
-                variance < 0 ? 'SHORTAGE_FLAGGED' : (variance > 0 ? 'SURPLUS_FLAGGED' : 'BALANCED'),
-                p.notes || null,
-                p.reconciledBy || workerName,
-              ]
+            const existingRecon = await this.dbService.queryOne<any>(
+              `SELECT id FROM field_reconciliations WHERE field_session_id = ?`,
+              [fsId]
             );
+
+            if (existingRecon) {
+              await this.dbService.execute(
+                `UPDATE field_reconciliations SET return_store_id = ?, total_issued_units = ?, total_sold_units = ?, total_returned_units = ?, total_damaged_units = ?, total_missing_units = ?, is_stock_equation_valid = ?, expected_sales_ugx = ?, cash_collected_ugx = ?, mobile_money_ugx = ?, bank_deposit_ugx = ?, approved_expenses_ugx = ?, cash_remaining_ugx = ?, total_accounted_money_ugx = ?, money_variance_ugx = ?, is_money_equation_valid = ?, status = ?, notes = ?, reconciled_by = ? WHERE id = ?`,
+                [
+                  returnStoreId,
+                  Number(p.totalIssuedUnits || 0),
+                  totalSoldUnits,
+                  Number(p.totalReturnedUnits || 0),
+                  Number(p.totalDamagedUnits || 0),
+                  Number(p.totalMissingUnits || 0),
+                  1,
+                  grossSalesRevenue,
+                  Number(p.cashCollectedUgx || 0),
+                  Number(p.mobileMoneyUgx || 0),
+                  Number(p.bankDepositUgx || 0),
+                  expAmount,
+                  Number(p.cashRemainingUgx || 0),
+                  Number(p.totalAccountedMoneyUgx || 0),
+                  variance,
+                  variance === 0 ? 1 : 0,
+                  variance < 0 ? 'SHORTAGE_FLAGGED' : (variance > 0 ? 'SURPLUS_FLAGGED' : 'BALANCED'),
+                  p.notes || null,
+                  p.reconciledBy || workerName,
+                  existingRecon.id,
+                ]
+              );
+            } else {
+              await this.dbService.execute(
+                `INSERT INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  uuidv4(),
+                  fsId,
+                  returnStoreId,
+                  Number(p.totalIssuedUnits || 0),
+                  totalSoldUnits,
+                  Number(p.totalReturnedUnits || 0),
+                  Number(p.totalDamagedUnits || 0),
+                  Number(p.totalMissingUnits || 0),
+                  1,
+                  grossSalesRevenue,
+                  Number(p.cashCollectedUgx || 0),
+                  Number(p.mobileMoneyUgx || 0),
+                  Number(p.bankDepositUgx || 0),
+                  expAmount,
+                  Number(p.cashRemainingUgx || 0),
+                  Number(p.totalAccountedMoneyUgx || 0),
+                  variance,
+                  variance === 0 ? 1 : 0,
+                  variance < 0 ? 'SHORTAGE_FLAGGED' : (variance > 0 ? 'SURPLUS_FLAGGED' : 'BALANCED'),
+                  p.notes || null,
+                  p.reconciledBy || workerName,
+                ]
+              );
+            }
           } else if ((tx.transactionType === 'CREATE_STOCK_TRANSFER' || tx.transactionType === 'STOCK_TRANSFER') && (p.sourceStoreId || p.source_store_id)) {
             const trfId = p.id || tx.id;
             const trfNumber = p.transferNumber || p.transfer_number || `TRF-${trfId.slice(-6)}`;

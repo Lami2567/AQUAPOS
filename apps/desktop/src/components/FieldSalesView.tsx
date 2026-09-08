@@ -118,7 +118,8 @@ export const FieldSalesView: React.FC = () => {
         workerName = foundWorker.fullName;
       }
     } else {
-      workerId = user?.id || uuidv4();
+      const matchingWorker = workers.find((w) => w.fullName.toLowerCase() === (user?.fullName || '').toLowerCase());
+      workerId = matchingWorker ? matchingWorker.id : (workers[0]?.id || uuidv4());
     }
 
     const sessionItems: FieldSessionItem[] = [];
@@ -162,7 +163,7 @@ export const FieldSalesView: React.FC = () => {
       workerName,
       storeId,
       status: 'OPEN',
-      startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      startTime: new Date().toISOString(),
       items: sessionItems,
     };
 
@@ -378,7 +379,11 @@ export const FieldSalesView: React.FC = () => {
                         <span className="text-slate-600 font-mono text-[11px]">-</span>
                       )}
                     </td>
-                    <td className="p-3 text-slate-400">{session.startTime}</td>
+                    <td className="p-3 text-slate-400 font-mono">
+                      {session.startTime && session.startTime.includes('T')
+                        ? new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : session.startTime || '-'}
+                    </td>
                     <td className="p-3">
                       <span
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${

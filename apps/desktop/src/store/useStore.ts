@@ -665,6 +665,22 @@ export const useStore = create<AppState>((set) => ({
                 ...centralData.inventoryStock[storeId],
               };
             });
+
+            // Re-apply any pending field session deductions that haven't been incorporated centrally yet
+            const pendingFieldOutbox = state.outboxQueue.filter((o) => o.status === 'PENDING' && o.type === 'FIELD_SESSION');
+            pendingFieldOutbox.forEach((o) => {
+              const sessionPayload = o.payload;
+              if (sessionPayload && sessionPayload.storeId && Array.isArray(sessionPayload.items)) {
+                const remoteKnown = Array.isArray(centralData.fieldSessions) &&
+                  centralData.fieldSessions.some((s: any) => s.id === sessionPayload.id);
+                if (!remoteKnown && mergedStock[sessionPayload.storeId]) {
+                  sessionPayload.items.forEach((it: any) => {
+                    const cur = mergedStock[sessionPayload.storeId][it.productId] ?? 0;
+                    mergedStock[sessionPayload.storeId][it.productId] = Math.max(0, cur - Number(it.issuedQty || 0));
+                  });
+                }
+              }
+            });
           }
 
           // ── Apply tombstones (central deletions) to local state ────────────
