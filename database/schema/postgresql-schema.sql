@@ -185,6 +185,7 @@ CREATE TABLE IF NOT EXISTS field_sessions (
   id TEXT PRIMARY KEY,
   session_number VARCHAR(50) UNIQUE NOT NULL,
   store_id TEXT NOT NULL,
+  return_store_id TEXT,
   vehicle_id TEXT NOT NULL,
   worker_id TEXT NOT NULL,
   status VARCHAR(30) NOT NULL,
@@ -210,6 +211,7 @@ CREATE TABLE IF NOT EXISTS field_session_items (
 CREATE TABLE IF NOT EXISTS field_reconciliations (
   id TEXT PRIMARY KEY,
   field_session_id TEXT UNIQUE NOT NULL,
+  return_store_id TEXT,
   total_issued_units INT NOT NULL,
   total_sold_units INT NOT NULL,
   total_returned_units INT NOT NULL,

@@ -296,6 +296,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       `ALTER TABLE IF EXISTS workers ALTER COLUMN department DROP NOT NULL;`,
       `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN user_id SET DATA TYPE TEXT USING user_id::TEXT;`,
       `ALTER TABLE IF EXISTS audit_logs ALTER COLUMN entity_id SET DATA TYPE TEXT USING entity_id::TEXT;`,
+      `ALTER TABLE IF EXISTS field_sessions ADD COLUMN IF NOT EXISTS return_store_id TEXT;`,
+      `ALTER TABLE IF EXISTS field_reconciliations ADD COLUMN IF NOT EXISTS return_store_id TEXT;`,
     ];
 
     for (const stmt of migrationStatements) {
@@ -338,6 +340,18 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       const sql = fs.readFileSync(schemaPath, 'utf-8');
       this.sqliteDb.exec(sql);
     }
+
+    // Safely migrate existing SQLite columns if they don't exist
+    try {
+      const fsCols = this.sqliteDb.prepare(`PRAGMA table_info(field_sessions)`).all() as any[];
+      if (!fsCols.some((c) => c.name === 'return_store_id')) {
+        this.sqliteDb.exec(`ALTER TABLE field_sessions ADD COLUMN return_store_id TEXT`);
+      }
+      const frCols = this.sqliteDb.prepare(`PRAGMA table_info(field_reconciliations)`).all() as any[];
+      if (!frCols.some((c) => c.name === 'return_store_id')) {
+        this.sqliteDb.exec(`ALTER TABLE field_reconciliations ADD COLUMN return_store_id TEXT`);
+      }
+    } catch (e) {}
 
     try {
       const ismaelHash = bcrypt.hashSync('ismael2026??', 10);

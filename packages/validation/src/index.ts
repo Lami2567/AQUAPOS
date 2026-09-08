@@ -82,6 +82,7 @@ export const StartFieldSessionSchema = z.object({
 
 export const CloseFieldSessionSchema = z.object({
   fieldSessionId: z.string().uuid(),
+  returnStoreId: z.string().uuid().optional(),
   returnedItems: z.array(z.object({
     productId: z.string().uuid(),
     soldQty: z.number().int().nonnegative(),

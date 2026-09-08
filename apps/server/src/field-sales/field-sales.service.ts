@@ -92,7 +92,8 @@ export class FieldSalesService {
     cashRemainingUgx: number,
     reconciledBy: string,
     deviceId: string,
-    notes?: string
+    notes?: string,
+    returnStoreId?: string
   ) {
     return await this.dbService.transaction(async () => {
       const session = await this.dbService.queryOne<any>(`SELECT * FROM field_sessions WHERE id = ?`, [fieldSessionId]);
@@ -102,6 +103,7 @@ export class FieldSalesService {
         throw new BadRequestException('Field Session is already reconciled.');
       }
 
+      const targetReturnStoreId = returnStoreId || session.return_store_id || session.store_id;
       const sessionItems = await this.dbService.query<any>(`SELECT * FROM field_session_items WHERE field_session_id = ?`, [fieldSessionId]);
 
       let totalExpectedSalesUgx = 0;
@@ -132,14 +134,14 @@ export class FieldSalesService {
           [stockRes.soldQty, stockRes.returnedQty, stockRes.damagedQty, stockRes.missingQty, itemObj.id]
         );
 
-        // Return unsold stock back to Store Ledger (FIELD_RETURN)
+        // Return unsold stock back to selected destination Store Ledger (FIELD_RETURN)
         if (stockRes.returnedQty > 0) {
           await this.dbService.execute(
             `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               uuidv4(),
-              session.store_id,
+              targetReturnStoreId,
               itemObj.product_id,
               StockMovementType.FIELD_RETURN,
               stockRes.returnedQty, // Positive incoming
@@ -148,28 +150,7 @@ export class FieldSalesService {
               fieldSessionId,
               reconciledBy,
               deviceId,
-              `Field Session Stock Return ${session.session_number}`,
-            ]
-          );
-        }
-
-        // Record Damaged stock if any
-        if (stockRes.damagedQty > 0) {
-          await this.dbService.execute(
-            `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              uuidv4(),
-              session.store_id,
-              itemObj.product_id,
-              StockMovementType.DAMAGE,
-              -stockRes.damagedQty,
-              itemObj.unit_price_ugx,
-              'FIELD_SESSION',
-              fieldSessionId,
-              reconciledBy,
-              deviceId,
-              `Field Session Damaged Water ${session.session_number}`,
+              `Field Session Stock Return ${session.session_number} to Store ${targetReturnStoreId}`,
             ]
           );
         }
@@ -196,11 +177,12 @@ export class FieldSalesService {
       const isStockEqValid = totalIssued === (totalSold + totalReturned + totalDamaged + totalMissing);
 
       await this.dbService.execute(
-        `INSERT INTO field_reconciliations (id, field_session_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           reconciliationId,
           fieldSessionId,
+          targetReturnStoreId,
           totalIssued,
           totalSold,
           totalReturned,
@@ -309,8 +291,8 @@ export class FieldSalesService {
       }
 
       await this.dbService.execute(
-        `UPDATE field_sessions SET status = ?, end_time = CURRENT_TIMESTAMP WHERE id = ?`,
-        [FieldSessionStatus.RECONCILED, fieldSessionId]
+        `UPDATE field_sessions SET status = ?, return_store_id = ?, end_time = CURRENT_TIMESTAMP WHERE id = ?`,
+        [FieldSessionStatus.RECONCILED, targetReturnStoreId, fieldSessionId]
       );
 
       return {

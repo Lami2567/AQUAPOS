@@ -171,7 +171,8 @@ export class AppController {
       body.cashRemainingUgx || 0,
       req.user.sub,
       req.headers['x-device-id'] || 'device-01',
-      body.notes
+      body.notes,
+      body.returnStoreId
     );
   }
 

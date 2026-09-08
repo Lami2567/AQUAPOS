@@ -282,12 +282,14 @@ export interface FieldSessionReconciliation {
   notes?: string;
   reconciledBy: string;
   reconciledAt: string;
+  returnStoreId?: string;
 }
 
 export interface FieldSession {
   id: string;
   sessionNumber: string; // e.g. FS-2026-00045
   storeId: string;
+  returnStoreId?: string;
   vehicleId: string;
   workerId: string;
   workerName: string;

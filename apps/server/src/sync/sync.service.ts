@@ -198,7 +198,51 @@ export class SyncService {
     } catch (e) {
       salaryPayments = [];
     }
-    const fieldSessions = await this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
+    const rawSessions = await this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
+    const sessionIds = rawSessions.map((s) => s.id).filter(Boolean);
+    let allSessionItems: any[] = [];
+    if (sessionIds.length > 0) {
+      try {
+        allSessionItems = await this.dbService.query<any>(
+          `SELECT * FROM field_session_items WHERE field_session_id IN (${sessionIds.map(() => '?').join(',')})`,
+          sessionIds
+        );
+      } catch (err: any) {
+        this.logger.warn('Failed to query field_session_items in pullCentralData: ' + err.message);
+      }
+    }
+    const itemsBySessionId = new Map<string, any[]>();
+    for (const item of allSessionItems) {
+      if (!itemsBySessionId.has(item.field_session_id)) {
+        itemsBySessionId.set(item.field_session_id, []);
+      }
+      itemsBySessionId.get(item.field_session_id)!.push({
+        id: item.id,
+        productId: item.product_id,
+        name: item.product_name,
+        issuedQty: Number(item.issued_qty || 0),
+        soldQty: Number(item.sold_qty || 0),
+        returnedQty: Number(item.returned_qty || 0),
+        damagedQty: Number(item.damaged_qty || 0),
+        missingQty: Number(item.missing_qty || 0),
+        unitPriceUgx: Number(item.unit_price_ugx || 0),
+      });
+    }
+
+    const fieldSessions = rawSessions.map((fs) => ({
+      id: fs.id,
+      sessionNumber: fs.session_number,
+      storeId: fs.store_id,
+      returnStoreId: fs.return_store_id || fs.store_id,
+      vehicleId: fs.vehicle_id,
+      workerId: fs.worker_id,
+      status: fs.status,
+      startTime: fs.start_time,
+      endTime: fs.end_time,
+      createdBy: fs.created_by,
+      createdAt: fs.created_at,
+      items: itemsBySessionId.get(fs.id) || [],
+    }));
 
     let stockTransfers: any[] = [];
     try {
@@ -439,8 +483,14 @@ export class SyncService {
               ]
             );
 
-            // Deduct stock ledger for items
-            if (Array.isArray(p.items)) {
+            // Deduct stock ledger for items (POS in-store sales only; field route sales stock was already deducted via FIELD_ISSUE)
+            const isFieldSale = Boolean(
+              p.isFieldSale ||
+              (saleId && (saleId.startsWith('sale-fs-') || saleId.startsWith('fs-'))) ||
+              (receiptNum && (receiptNum.startsWith('FS-') || receiptNum.startsWith('REC-FS-')))
+            );
+
+            if (!isFieldSale && Array.isArray(p.items)) {
               for (const item of p.items) {
                 await this.dbService.execute(
                   `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
@@ -595,13 +645,14 @@ export class SyncService {
             const fsId = p.sessionId || p.id;
             const session = await this.dbService.queryOne<any>(`SELECT * FROM field_sessions WHERE id = ?`, [fsId]);
             const storeId = p.storeId || session?.store_id;
+            const returnStoreId = p.returnStoreId || session?.return_store_id || storeId;
             const sessionNum = p.sessionNumber || session?.session_number || `FS-${fsId.slice(-6)}`;
             const workerId = p.workerId || session?.worker_id || 'w-salesperson';
             const workerName = p.workerName || session?.created_by || 'Salesperson';
 
             await this.dbService.execute(
-              `UPDATE field_sessions SET status = 'RECONCILED', end_time = ? WHERE id = ?`,
-              [p.endTime || new Date().toISOString(), fsId]
+              `UPDATE field_sessions SET status = 'RECONCILED', return_store_id = ?, end_time = ? WHERE id = ?`,
+              [returnStoreId, p.endTime || new Date().toISOString(), fsId]
             );
 
             let totalSoldUnits = 0;
@@ -635,8 +686,8 @@ export class SyncService {
                   ]
                 );
 
-                // Credit returned stock back to store ledger
-                if (returnedQty > 0 && storeId) {
+                // Credit returned stock back to selected destination return store ledger
+                if (returnedQty > 0 && returnStoreId) {
                   const existingReturn = await this.dbService.queryOne<any>(
                     `SELECT id FROM stock_ledger WHERE reference_id = ? AND product_id = ? AND movement_type = 'FIELD_RETURN'`,
                     [fsId, item.productId]
@@ -647,39 +698,14 @@ export class SyncService {
                        VALUES (?, ?, ?, 'FIELD_RETURN', ?, ?, 'FIELD_SESSION', ?, ?, ?, ?)`,
                       [
                         uuidv4(),
-                        storeId,
+                        returnStoreId,
                         item.productId,
                         returnedQty,
                         unitPrice,
                         fsId,
                         workerName,
                         deviceId,
-                        `Field Session Return ${sessionNum}`,
-                      ]
-                    );
-                  }
-                }
-
-                // Record damaged stock in stock ledger
-                if (damagedQty > 0 && storeId) {
-                  const existingDamage = await this.dbService.queryOne<any>(
-                    `SELECT id FROM stock_ledger WHERE reference_id = ? AND product_id = ? AND movement_type = 'DAMAGE'`,
-                    [fsId, item.productId]
-                  );
-                  if (!existingDamage) {
-                    await this.dbService.execute(
-                      `INSERT INTO stock_ledger (id, store_id, product_id, movement_type, quantity_change, unit_cost_ugx, reference_type, reference_id, created_by, device_id, notes)
-                       VALUES (?, ?, ?, 'DAMAGE', ?, ?, 'FIELD_SESSION', ?, ?, ?, ?)`,
-                      [
-                        uuidv4(),
-                        storeId,
-                        item.productId,
-                        -damagedQty,
-                        unitPrice,
-                        fsId,
-                        workerName,
-                        deviceId,
-                        `Field Session Damaged Stock ${sessionNum}`,
+                        `Field Session Return ${sessionNum} to Store ${returnStoreId}`,
                       ]
                     );
                   }
@@ -787,11 +813,12 @@ export class SyncService {
             // Record in field_reconciliations
             const reconId = `recon-fs-${fsId}`;
             await this.dbService.execute(
-              `INSERT OR REPLACE INTO field_reconciliations (id, field_session_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              `INSERT OR REPLACE INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               [
                 reconId,
                 fsId,
+                returnStoreId,
                 Number(p.totalIssuedUnits || 0),
                 totalSoldUnits,
                 Number(p.totalReturnedUnits || 0),

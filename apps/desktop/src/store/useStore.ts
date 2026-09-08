@@ -107,6 +107,8 @@ export interface FieldSessionRecord {
   workerId: string;
   workerName: string;
   storeId: string;
+  returnStoreId?: string;
+  returnStoreName?: string;
   status: 'OPEN' | 'CLOSED' | 'RECONCILED';
   startTime: string;
   endTime?: string;
@@ -256,7 +258,9 @@ export interface AppState {
       approvedExpensesUgx: number;
       cashRemainingUgx: number;
       expenseDescription?: string;
-    }
+      returnStoreId?: string;
+    },
+    returnStoreId?: string
   ) => void;
   createStockTransfer: (transfer: StockTransferRecord) => void;
   advanceTransferStatus: (transferId: string, nextStatus: StockTransferRecord['status']) => void;
@@ -602,19 +606,34 @@ export const useStore = create<AppState>((set) => ({
             voucherNumber: sp.voucherNumber || `PAY-${sp.id}`,
           }));
 
-          const mergedFieldSessions = upsertEntities(state.fieldSessionsList, centralData.fieldSessions, (fs: any) => ({
-            id: fs.id,
-            sessionNumber: fs.sessionNumber || fs.session_number || `FS-${fs.id}`,
-            storeId: fs.storeId || fs.store_id || '',
-            vehicleId: fs.vehicleId || fs.vehicle_id || '',
-            vehicleName: fs.vehicleName || fs.vehicle_name || 'Delivery Vehicle',
-            workerId: fs.workerId || fs.worker_id || '',
-            workerName: fs.workerName || fs.worker_name || fs.createdBy || fs.created_by || 'Salesperson',
-            status: fs.status || 'OPEN',
-            startTime: fs.startTime || fs.start_time || new Date().toISOString(),
-            endTime: fs.endTime || fs.end_time || '',
-            items: Array.isArray(fs.items) ? fs.items : (typeof fs.items === 'string' ? (() => { try { return JSON.parse(fs.items); } catch(e) { return []; } })() : []),
-          }));
+          const mergedFieldSessions = upsertEntities(state.fieldSessionsList, centralData.fieldSessions, (fs: any) => {
+            const local = state.fieldSessionsList.find((l) => l.id === fs.id);
+            const parsedRemoteItems = Array.isArray(fs.items)
+              ? fs.items
+              : (typeof fs.items === 'string' ? (() => { try { return JSON.parse(fs.items); } catch(e) { return []; } })() : []);
+            const localItems = local?.items && local.items.length > 0 ? local.items : [];
+            const items = parsedRemoteItems.length > 0 ? parsedRemoteItems : localItems;
+            const returnStoreId = fs.returnStoreId || fs.return_store_id || local?.returnStoreId || '';
+            const retStoreObj = state.stores.find((s) => s.id === returnStoreId);
+            const returnStoreName = fs.returnStoreName || local?.returnStoreName || (retStoreObj ? `${retStoreObj.name} (${retStoreObj.code})` : undefined);
+            return {
+              id: fs.id,
+              sessionNumber: fs.sessionNumber || fs.session_number || local?.sessionNumber || `FS-${fs.id}`,
+              storeId: fs.storeId || fs.store_id || local?.storeId || '',
+              returnStoreId,
+              returnStoreName,
+              vehicleId: fs.vehicleId || fs.vehicle_id || local?.vehicleId || '',
+              vehicleName: fs.vehicleName || fs.vehicle_name || local?.vehicleName || 'Delivery Vehicle',
+              workerId: fs.workerId || fs.worker_id || local?.workerId || '',
+              workerName: fs.workerName || fs.worker_name || fs.createdBy || fs.created_by || local?.workerName || 'Salesperson',
+              status: fs.status || local?.status || 'OPEN',
+              startTime: fs.startTime || fs.start_time || local?.startTime || new Date().toISOString(),
+              endTime: fs.endTime || fs.end_time || local?.endTime || '',
+              items,
+              approvedExpensesUgx: fs.approvedExpensesUgx || fs.approved_expenses_ugx || local?.approvedExpensesUgx,
+              expenseDescription: fs.expenseDescription || fs.expense_description || local?.expenseDescription,
+            };
+          });
 
           const mergedTransfers = upsertEntities(state.stockTransfersList, centralData.stockTransfers, (t: any) => {
             const local = state.stockTransfersList.find((l) => l.id === t.id);
@@ -1540,12 +1559,19 @@ export const useStore = create<AppState>((set) => ({
           };
         }),
 
-      closeFieldSession: (sessionId, reconciledItems, varianceUgx = 0, financials) =>
+      closeFieldSession: (sessionId, reconciledItems, varianceUgx = 0, financials, optReturnStoreId) =>
         set((state) => {
           const session = state.fieldSessionsList.find((s) => s.id === sessionId);
           if (!session) return state;
 
-          const storeStock = { ...(state.inventoryStock[session.storeId] || {}) };
+          const returnStoreId = optReturnStoreId || financials?.returnStoreId || session.returnStoreId || session.storeId;
+          const returnStoreObj = state.stores.find((s) => s.id === returnStoreId);
+          const returnStoreName = returnStoreObj ? `${returnStoreObj.name} (${returnStoreObj.code})` : returnStoreId;
+
+          const isSameStore = returnStoreId === session.storeId;
+          const dispatchStock = { ...(state.inventoryStock[session.storeId] || {}) };
+          const returnStoreStock = isSameStore ? dispatchStock : { ...(state.inventoryStock[returnStoreId] || {}) };
+
           let totalReturned = 0;
           let totalSold = 0;
           let computedExpectedSales = 0;
@@ -1553,10 +1579,12 @@ export const useStore = create<AppState>((set) => ({
           const soldCartItems: CartItem[] = [];
 
           reconciledItems.forEach((item) => {
-            const cur = storeStock[item.productId] || 0;
             const returnBack = Number(item.returnedQty || 0);
             const soldCount = Number(item.soldQty || 0);
-            storeStock[item.productId] = cur + returnBack;
+            if (returnBack > 0) {
+              const curReturnStock = returnStoreStock[item.productId] || 0;
+              returnStoreStock[item.productId] = curReturnStock + returnBack;
+            }
             totalReturned += returnBack;
             totalSold += soldCount;
 
@@ -1588,7 +1616,7 @@ export const useStore = create<AppState>((set) => ({
 
           const newOutboxItems: OutboxRecord[] = [];
 
-          // 1. Create SaleRecord if water was sold, immediately reflecting in revenue
+          // 1. Create SaleRecord locally for immediate client sales history display
           let updatedSales = [...state.salesHistory];
           if (grossSalesUgx > 0) {
             const saleId = `sale-fs-${session.id}`;
@@ -1609,15 +1637,9 @@ export const useStore = create<AppState>((set) => ({
               createdAt: new Date().toISOString(),
             };
             updatedSales = [fieldSale, ...updatedSales];
-
-            newOutboxItems.push({
-              id: `outbox-sale-${saleId}`,
-              type: 'SALE',
-              receiptNumber: session.sessionNumber,
-              status: 'PENDING',
-              createdAt: new Date().toISOString(),
-              payload: fieldSale,
-            });
+            // NOTE: We do not push a separate outbox-sale transaction here because
+            // outbox-recon atomically records the field sale & revenue on the server
+            // without mistakenly double-deducting stock in POS sale processing!
           }
 
           // 2. Create ExpenseRecord if route expenses were approved
@@ -1677,12 +1699,13 @@ export const useStore = create<AppState>((set) => ({
             });
           }
 
-          // 4. Outbox item for reconciliation
+          // 4. Outbox item for reconciliation (includes returnStoreId)
           const reconcilePayload = {
             id: session.id,
             sessionId: session.id,
             sessionNumber: session.sessionNumber,
             storeId: session.storeId,
+            returnStoreId,
             vehicleId: session.vehicleId,
             workerId: session.workerId,
             workerName: session.workerName,
@@ -1717,9 +1740,17 @@ export const useStore = create<AppState>((set) => ({
             user: state.user?.fullName || 'Branch Manager',
             action: 'FIELD_SESSION_RECONCILED',
             entity: 'FieldSession',
-            details: `Reconciled ${session.sessionNumber}: ${totalSold} sold (UGX ${grossSalesUgx.toLocaleString()} revenue), ${totalReturned} returned to store. Variance: ${varianceUgx >= 0 ? `+${varianceUgx}` : varianceUgx}`,
+            details: `Reconciled ${session.sessionNumber}: ${totalSold} sold (UGX ${grossSalesUgx.toLocaleString()} revenue), ${totalReturned} returned to ${returnStoreName}. Variance: ${varianceUgx >= 0 ? `+${varianceUgx}` : varianceUgx}`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           };
+
+          const newInventoryStock = {
+            ...state.inventoryStock,
+            [returnStoreId]: returnStoreStock,
+          };
+          if (!isSameStore) {
+            newInventoryStock[session.storeId] = dispatchStock;
+          }
 
           return {
             fieldSessionsList: state.fieldSessionsList.map((s) =>
@@ -1729,15 +1760,14 @@ export const useStore = create<AppState>((set) => ({
                     status: 'RECONCILED',
                     endTime: new Date().toISOString(),
                     items: reconciledItems,
+                    returnStoreId,
+                    returnStoreName,
                     approvedExpensesUgx: appExpenses,
                     expenseDescription: expenseDesc,
                   }
                 : s
             ),
-            inventoryStock: {
-              ...state.inventoryStock,
-              [session.storeId]: storeStock,
-            },
+            inventoryStock: newInventoryStock,
             salesHistory: updatedSales,
             expensesList: updatedExpenses,
             debtsList: updatedDebts,

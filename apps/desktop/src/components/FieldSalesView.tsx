@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore, FieldSessionRecord, FieldSessionItem } from '../store/useStore';
 import {
   calculateFieldStockReconciliation,
@@ -54,7 +54,14 @@ export const FieldSalesView: React.FC = () => {
   const [selectedStoreId, setSelectedStoreId] = useState(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
   const [issuedQuantities, setIssuedQuantities] = useState<Record<string, number>>({});
 
+  useEffect(() => {
+    if (!selectedStoreId && stores.length > 0) {
+      setSelectedStoreId(currentStoreId || branchStores[0]?.id || stores[0]?.id || '');
+    }
+  }, [stores, currentStoreId, branchStores, selectedStoreId]);
+
   // Reconcile Form State
+  const [selectedReturnStoreId, setSelectedReturnStoreId] = useState<string>('');
   const [itemReconcileInputs, setItemReconcileInputs] = useState<
     Record<string, { sold: number; returned: number; damaged: number; missing: number }>
   >({});
@@ -166,6 +173,7 @@ export const FieldSalesView: React.FC = () => {
 
   const handleOpenReconcileModal = (session: FieldSessionRecord) => {
     setActiveReconcileSession(session);
+    setSelectedReturnStoreId(session.returnStoreId || session.storeId || currentStoreId || stores[0]?.id || '');
 
     // Initialize item reconciliation state
     const initialInputs: Record<string, { sold: number; returned: number; damaged: number; missing: number }> = {};
@@ -228,6 +236,8 @@ export const FieldSalesView: React.FC = () => {
       };
     });
 
+    const targetReturnStoreId = selectedReturnStoreId || activeReconcileSession.returnStoreId || activeReconcileSession.storeId;
+
     closeFieldSession(
       activeReconcileSession.id,
       reconciledItems,
@@ -240,7 +250,9 @@ export const FieldSalesView: React.FC = () => {
         approvedExpensesUgx: Number(approvedExpenses) || 0,
         cashRemainingUgx: Number(cashRemaining) || 0,
         expenseDescription: expenseDescription.trim(),
-      }
+        returnStoreId: targetReturnStoreId,
+      },
+      targetReturnStoreId
     );
 
     const closedSessionNumber = activeReconcileSession.sessionNumber;
@@ -310,11 +322,25 @@ export const FieldSalesView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {visibleSessions.map((session) => (
-                  <tr key={session.id} className="hover:bg-slate-900/50">
-                    <td className="p-3 font-bold text-cyan-400 font-mono">{session.sessionNumber}</td>
-                    <td className="p-3 font-semibold text-slate-200">{session.vehicleName}</td>
-                    <td className="p-3">{session.workerName}</td>
+                {visibleSessions.map((session) => {
+                  const dispatchStore = stores.find((s) => s.id === session.storeId);
+                  const returnStore = session.returnStoreId ? stores.find((s) => s.id === session.returnStoreId) : null;
+                  return (
+                    <tr key={session.id} className="hover:bg-slate-900/50">
+                      <td className="p-3">
+                        <div className="font-bold text-cyan-400 font-mono">{session.sessionNumber}</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                          <span>Store: </span>
+                          <span className="text-slate-300 font-semibold">{dispatchStore ? `${dispatchStore.name} (${dispatchStore.code})` : session.storeId}</span>
+                          {session.returnStoreId && session.returnStoreId !== session.storeId && (
+                            <span className="text-cyan-400 font-semibold block">
+                              ↳ Ret: {returnStore ? `${returnStore.name} (${returnStore.code})` : session.returnStoreName || session.returnStoreId}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-3 font-semibold text-slate-200">{session.vehicleName}</td>
+                      <td className="p-3">{session.workerName}</td>
                     <td className="p-3">
                       <div className="flex flex-wrap gap-1">
                         {session.items.map((it, idx) => (
@@ -377,7 +403,8 @@ export const FieldSalesView: React.FC = () => {
                       )}
                     </td>
                   </tr>
-                ))}
+                );
+              })}
               </tbody>
             </table>
           </div>
@@ -548,6 +575,46 @@ export const FieldSalesView: React.FC = () => {
               >
                 ✕
               </button>
+            </div>
+
+            {/* Return Destination Store Selection */}
+            <div className="bg-slate-950 border border-slate-800 p-3 sm:p-4 rounded-2xl space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+                  <StoreIcon className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span>Return Destination Store (For Unsold Water)</span>
+                </label>
+                {selectedReturnStoreId && selectedReturnStoreId !== activeReconcileSession.storeId && (
+                  <span className="text-[10px] text-cyan-300 font-bold bg-cyan-950/90 px-2 py-0.5 rounded-full border border-cyan-700/60 inline-flex items-center gap-1">
+                    ✓ Returning stock to different store
+                  </span>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex flex-col justify-center">
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Dispatched From</span>
+                  <span className="text-slate-200 font-semibold">
+                    {stores.find((s) => s.id === activeReconcileSession.storeId)?.name || activeReconcileSession.storeId} ({stores.find((s) => s.id === activeReconcileSession.storeId)?.code || 'SRC'})
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-[10px] text-slate-400 mb-1 font-semibold">Deliver / Offload Returns Into:</label>
+                  <select
+                    value={selectedReturnStoreId}
+                    onChange={(e) => setSelectedReturnStoreId(e.target.value)}
+                    className="w-full bg-slate-900 border border-cyan-500/60 rounded-xl px-3 py-2 text-xs text-slate-100 font-semibold focus:outline-none focus:border-cyan-400 cursor-pointer"
+                  >
+                    {stores.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.code}) {s.id === activeReconcileSession.storeId ? '— (Original Dispatch Store)' : '— (Alternative Return Store)'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                You can return unsold bottles to <strong className="text-slate-200">any store</strong>. Returned quantities will be immediately credited and added to the selected store's stock.
+              </p>
             </div>
 
             {/* Step 1: Stock Item Balancing Inputs */}
