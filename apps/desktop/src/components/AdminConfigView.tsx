@@ -377,7 +377,7 @@ export const AdminConfigView: React.FC = () => {
               }}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === tab.key
-                  ? 'bg-white text-[#070E24] font-bold text-white shadow-md shadow-cyan-900/40'
+                  ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold shadow-cyan-900/40'
                   : 'bg-[#070E24] border border-white/15 text-white/80 hover:text-white'
               }`}
             >
@@ -409,7 +409,7 @@ export const AdminConfigView: React.FC = () => {
                 }}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === tab.key
-                    ? 'bg-white text-[#070E24] font-bold text-white shadow-md shadow-cyan-900/40'
+                    ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold shadow-cyan-900/40'
                     : 'text-white/80 hover:text-white hover:bg-[#182855]/60'
                 }`}
               >
@@ -457,7 +457,7 @@ export const AdminConfigView: React.FC = () => {
 
               <button
                 onClick={openAddModal}
-                className="flex items-center gap-2 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-xl transition-all shadow-md shadow-cyan-900/30 whitespace-nowrap cursor-pointer"
+                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-xl transition-all shadow-md shadow-cyan-900/30 whitespace-nowrap cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Entry</span>
@@ -1192,7 +1192,7 @@ export const AdminConfigView: React.FC = () => {
                       <button
                         type="submit"
                         disabled={isUpdatingPassword}
-                        className="w-full flex items-center justify-center gap-2 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-md shadow-cyan-900/40 cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-md shadow-cyan-900/40 cursor-pointer"
                       >
                         <Save className="w-4 h-4" />
                         <span>{isUpdatingPassword ? 'Saving...' : 'Update Password'}</span>
@@ -1219,7 +1219,7 @@ export const AdminConfigView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setIsResetConfirmModalOpen(true)}
-                      className="px-4 py-2.5 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-950 flex items-center gap-2 cursor-pointer transition-all flex-shrink-0"
+                      className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-950 flex items-center gap-2 cursor-pointer transition-all flex-shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span>Reset Production Ledger</span>
@@ -2090,7 +2090,7 @@ export const AdminConfigView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-5 py-2 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-semibold rounded-xl transition-all shadow-md shadow-cyan-900/40"
+                  className="flex items-center gap-2 px-5 py-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-semibold rounded-xl transition-all shadow-md shadow-cyan-900/40"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Entry</span>
@@ -2184,7 +2184,7 @@ export const AdminConfigView: React.FC = () => {
                       : 'Production ledger reset successfully! Test sales wiped and stock initialized to 0.'
                   );
                 }}
-                className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950 cursor-pointer"
+                className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-950 cursor-pointer"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>{clearDemoMaster ? 'Wipe Everything & Start Fresh' : 'Purge Test Data & Prepare Real Ledger'}</span>

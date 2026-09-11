@@ -234,7 +234,7 @@ export const StockView: React.FC = () => {
             }}
             className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               canReceiveStock
-                ? 'bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white shadow-md shadow-emerald-950 cursor-pointer'
+                ? 'bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white shadow-md shadow-emerald-950 cursor-pointer'
                 : 'bg-[#0F1B3E] text-white/70 border border-white/15 opacity-60 cursor-not-allowed'
             }`}
             title={canReceiveStock ? 'Record new goods intake receipt' : 'Restricted to STOREKEEPER & ADMIN'}
@@ -247,7 +247,7 @@ export const StockView: React.FC = () => {
             onClick={() => setActiveTab('inventory')}
             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'inventory'
-                ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold'
                 : 'bg-[#0F1B3E] text-white/80 border border-white/15'
             }`}
           >
@@ -257,7 +257,7 @@ export const StockView: React.FC = () => {
             onClick={() => setActiveTab('transfers')}
             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'transfers'
-                ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold'
                 : 'bg-[#0F1B3E] text-white/80 border border-white/15'
             }`}
           >
@@ -297,13 +297,13 @@ export const StockView: React.FC = () => {
             <div className="flex gap-1">
               <button
                 onClick={() => setStoreFilterMode('BRANCH')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'BRANCH' ? 'bg-white text-[#070E24] font-bold text-white' : 'text-white/80 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'BRANCH' ? 'bg-white/20 text-white border border-white/40 font-bold' : 'text-white/80 hover:text-white'}`}
               >
                 Current Branch Only
               </button>
               <button
                 onClick={() => setStoreFilterMode('ALL')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'ALL' ? 'bg-white text-[#070E24] font-bold text-white' : 'text-white/80 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'ALL' ? 'bg-white/20 text-white border border-white/40 font-bold' : 'text-white/80 hover:text-white'}`}
               >
                 All Branches
               </button>
@@ -385,7 +385,7 @@ export const StockView: React.FC = () => {
               }}
               className={`btn-touch text-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold ${
                 canTransferStock
-                  ? 'bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white shadow-md shadow-cyan-950 cursor-pointer'
+                  ? 'bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white shadow-md shadow-cyan-950 cursor-pointer'
                   : 'bg-[#0F1B3E] text-white/70 border border-white/15 opacity-60 cursor-not-allowed'
               }`}
             >
@@ -453,7 +453,7 @@ export const StockView: React.FC = () => {
                             advanceTransferStatus(trf.id, 'IN_TRANSIT');
                             notify(`Transfer ${trf.transferNumber} Dispatched! Stock deducted from ${trf.sourceStoreName}.`);
                           }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white shadow-md cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white shadow-md cursor-pointer"
                         >
                           Dispatch (In Transit)
                         </button>
@@ -465,7 +465,7 @@ export const StockView: React.FC = () => {
                             advanceTransferStatus(trf.id, 'CONFIRMED');
                             notify(`Transfer ${trf.transferNumber} Received & Confirmed! Stock credited to ${trf.destStoreName}.`);
                           }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white shadow-md cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white shadow-md cursor-pointer"
                         >
                           Receive & Credit Stock
                         </button>
@@ -477,7 +477,7 @@ export const StockView: React.FC = () => {
                             advanceTransferStatus(trf.id, 'CONFIRMED');
                             notify(`Transfer ${trf.transferNumber} Confirmed! Stock credited to ${trf.destStoreName}.`);
                           }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white shadow-md cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white shadow-md cursor-pointer"
                         >
                           Confirm Final Receive
                         </button>
@@ -609,7 +609,7 @@ export const StockView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl shadow-lg shadow-emerald-950 cursor-pointer"
+                  className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-emerald-950 cursor-pointer"
                 >
                   Record Goods Intake
                 </button>
@@ -730,7 +730,7 @@ export const StockView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer"
+                  className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer"
                 >
                   Create & Save Draft Transfer
                 </button>
@@ -898,7 +898,7 @@ export const StockView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Save Stock Quantity</span>

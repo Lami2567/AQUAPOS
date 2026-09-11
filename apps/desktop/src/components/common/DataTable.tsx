@@ -313,7 +313,7 @@ export function DataTable<T extends Record<string, any>>({
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-md shadow-cyan-900/30 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white border border-white/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-md shadow-cyan-900/30 transition-all cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>

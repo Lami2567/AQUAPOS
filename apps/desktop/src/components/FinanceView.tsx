@@ -181,7 +181,7 @@ export const FinanceView: React.FC = () => {
           {activeTab === 'expenses' && (
             <button
               onClick={() => setIsExpenseModalOpen(true)}
-              className="btn-touch bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-950 cursor-pointer"
+              className="btn-touch bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-950 cursor-pointer"
             >
               <Plus className="w-4 h-4" /> Record Expense
             </button>
@@ -194,7 +194,7 @@ export const FinanceView: React.FC = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
                   activeTab === tab
-                    ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+                    ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold'
                     : 'text-white/80 hover:text-white'
                 }`}
               >
@@ -366,7 +366,7 @@ export const FinanceView: React.FC = () => {
                               setSalaryCommission(50000);
                               setSalaryAllowances(20000);
                             }}
-                            className="bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer"
+                            className="bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer"
                           >
                             Process Payslip & Disburse
                           </button>
@@ -472,7 +472,7 @@ export const FinanceView: React.FC = () => {
                             setSettleDebtModalTarget(debt);
                             setSettleAmount(debt.balanceAmountUgx);
                           }}
-                          className="bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer"
+                          className="bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md cursor-pointer"
                         >
                           Direct Payment Settle
                         </button>
@@ -583,7 +583,7 @@ export const FinanceView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer"
+                  className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-950 cursor-pointer"
                 >
                   Authorize & Record Expense
                 </button>
@@ -671,7 +671,7 @@ export const FinanceView: React.FC = () => {
               </button>
               <button
                 onClick={handleAuthorizeSalaryPayment}
-                className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-950 cursor-pointer"
+                className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-950 cursor-pointer"
               >
                 <CheckCircle className="w-4 h-4 text-white/80" /> Authorize & Pay Salary
               </button>
@@ -729,7 +729,7 @@ export const FinanceView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl shadow-md cursor-pointer"
+                  className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl shadow-md cursor-pointer"
                 >
                   Record Payment & Settle
                 </button>

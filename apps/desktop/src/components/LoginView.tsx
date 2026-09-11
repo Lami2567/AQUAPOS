@@ -86,7 +86,7 @@ export const LoginView: React.FC = () => {
     <div className="min-h-screen bg-[#070E24] text-white flex items-center justify-center p-3 sm:p-6 select-none relative overflow-hidden">
       {/* Ambient background dark-blue glows */}
       <div className="absolute top-1/4 left-1/4 w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] bg-white text-[#070E24] font-bold/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-md w-full bg-[#0F1B3E] border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-8 relative z-10 space-y-6 my-auto">
         
@@ -152,7 +152,7 @@ export const LoginView: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2.5 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] active:bg-white/90 text-[#070E24] text-white font-bold py-3.5 rounded-xl transition-all shadow-xl shadow-cyan-950/60 text-sm tracking-wide cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2.5 bg-white/20 hover:bg-white/30 text-white border border-white/40 font-bold py-3.5 rounded-xl transition-all shadow-xl text-sm tracking-wide cursor-pointer disabled:opacity-50"
           >
             {isLoading ? (
               <span className="text-white">Authenticating Credentials...</span>

@@ -377,7 +377,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('dashboard')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'dashboard'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -389,7 +389,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('sales_service')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'sales_service'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -401,7 +401,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('expenses')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'expenses'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -413,7 +413,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('debts')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'debts'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -425,7 +425,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('stock_grid')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'stock_grid'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -437,7 +437,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('digital_collections')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'digital_collections'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -449,7 +449,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('reports')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'reports'
-                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                 : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
@@ -819,7 +819,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'operations', subView: 'pos' })}
-                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <Store className="w-3.5 h-3.5" />
                   <span>Open Store POS</span>
@@ -827,7 +827,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Sales CSV</span>
@@ -977,7 +977,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       <td className="p-3 text-center">
                         <button
                           onClick={() => setSelectedSaleForModal(s)}
-                          className="p-1.5 bg-[#182855] hover:bg-white text-[#070E24] font-black hover:text-white rounded-lg text-white transition-colors cursor-pointer"
+                          className="p-1.5 bg-[#182855] hover:bg-white/25 text-white font-black hover:text-white rounded-lg text-white transition-colors cursor-pointer"
                           title="View Complete Products & Receipt Breakdown"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -1029,7 +1029,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'operations', subView: 'expenses' })}
-                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
                   <span>Open Expense Manager</span>
@@ -1037,7 +1037,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Expenses CSV</span>
@@ -1195,7 +1195,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'finance', subView: 'debts' })}
-                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <CreditCard className="w-3.5 h-3.5" />
                   <span>Open Debts Manager</span>
@@ -1203,7 +1203,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Debts CSV</span>
@@ -1375,7 +1375,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'inventory', subView: 'stock' })}
-                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <Layers className="w-3.5 h-3.5" />
                   <span>Stock Management</span>
@@ -1383,7 +1383,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Stock CSV</span>
@@ -1545,7 +1545,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'finance', subView: 'bank_mobile' })}
-                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <Landmark className="w-3.5 h-3.5" />
                   <span>Bank & Cash Accounts</span>
@@ -1553,7 +1553,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Digital CSV</span>
@@ -1696,7 +1696,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+              className="px-3 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export P&L CSV</span>
@@ -1783,7 +1783,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
             <button
               onClick={handleExportCSV}
-              className="px-3.5 py-2 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+              className="px-3.5 py-2 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export {selectedReportType} CSV</span>
@@ -2042,7 +2042,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
               <button
                 onClick={() => setSelectedExpenseForModal(null)}
-                className="px-4 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
+                className="px-4 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
               >
                 Close
               </button>
@@ -2160,7 +2160,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
               <button
                 onClick={() => setSelectedDebtForModal(null)}
-                className="px-4 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
+                className="px-4 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
               >
                 Close
               </button>
@@ -2291,7 +2291,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-white/15 flex items-center justify-end">
               <button
                 onClick={() => setSelectedSaleForModal(null)}
-                className="px-4 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
+                className="px-4 py-1.5 bg-white/20 text-white border border-white/40 font-black hover:bg-white/25 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
               >
                 Close Receipt
               </button>

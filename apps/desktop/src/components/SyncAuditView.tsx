@@ -42,7 +42,7 @@ export const SyncAuditView: React.FC = () => {
           <button
             onClick={handleManualSync}
             disabled={!isOnline || syncStatus === 'SYNCING'}
-            className="btn-touch bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] disabled:bg-[#182855] disabled:text-white/70 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
+            className="btn-touch bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white disabled:bg-[#182855] disabled:text-white/70 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
           >
             <RefreshCw className={`w-4 h-4 ${syncStatus === 'SYNCING' ? 'animate-spin' : ''}`} />
             <span>{syncStatus === 'SYNCING' ? 'Syncing...' : 'Cloud Sync'}</span>
@@ -51,7 +51,7 @@ export const SyncAuditView: React.FC = () => {
           <button
             onClick={handleCreateBackup}
             disabled={isBackingUp}
-            className="btn-touch bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
+            className="btn-touch bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
           >
             <HardDrive className="w-4 h-4" />
             <span>{isBackingUp ? 'Encrypting...' : 'Local Backup'}</span>

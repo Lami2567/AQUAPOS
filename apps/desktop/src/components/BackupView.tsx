@@ -350,7 +350,7 @@ export const BackupView: React.FC = () => {
           <button
             onClick={handleExportBackup}
             disabled={isExporting}
-            className="w-full flex items-center justify-center gap-2 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white py-3 rounded-xl text-xs font-bold shadow-md shadow-cyan-900/20 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white py-3 rounded-xl text-xs font-bold shadow-md shadow-cyan-900/20 transition-all cursor-pointer disabled:opacity-50"
           >
             {isExporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             <span>{isExporting ? 'Extracting Cloud Records...' : 'Download Complete Backup File'}</span>
@@ -427,7 +427,7 @@ export const BackupView: React.FC = () => {
           <button
             onClick={handleExecuteRestore}
             disabled={isRestoring || !parsedBackupData}
-            className="w-full flex items-center justify-center gap-2 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white py-3 rounded-xl text-xs font-bold shadow-md shadow-emerald-900/20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white py-3 rounded-xl text-xs font-bold shadow-md shadow-emerald-900/20 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isRestoring ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
             <span>{isRestoring ? 'Restoring All Cloud Tables...' : 'Confirm & Restore Database'}</span>

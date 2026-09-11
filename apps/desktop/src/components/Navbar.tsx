@@ -292,11 +292,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                     onClick={() => onSelectNav({ domain: item.domain, subView: item.subView })}
                     className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                       isSelected
-                        ? 'bg-white text-[#070E24] shadow-lg font-black'
+                        ? 'bg-white/20 text-white border border-white/40 shadow-lg font-black'
                         : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent'
                     }`}
                   >
-                    <IconComponent className={`w-4 h-4 ${isSelected ? 'text-[#070E24]' : 'text-white'}`} />
+                    <IconComponent className={`w-4 h-4 text-white`} />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -415,12 +415,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                         }}
                         className={`w-full flex items-center gap-3 p-3 rounded-2xl text-left text-xs font-bold transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-white text-[#070E24] shadow-md font-black'
+                            ? 'bg-white/20 text-white border border-white/40 shadow-md font-black'
                             : 'bg-[#0F1B3E] hover:bg-[#13224E] border border-white/15 text-white'
                         }`}
                       >
-                        <div className={`p-2 rounded-xl ${isSelected ? 'bg-[#070E24]/10' : 'bg-white/10'}`}>
-                          <IconComponent className={`w-5 h-5 ${isSelected ? 'text-[#070E24]' : 'text-white'}`} />
+                        <div className={`p-2 rounded-xl ${isSelected ? 'bg-white/20' : 'bg-white/10'}`}>
+                          <IconComponent className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-sm font-bold">{item.label}</span>
                       </button>
@@ -477,7 +477,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                   setUser(null, null);
                   setShowLogoutModal(false);
                 }}
-                className="px-5 py-2.5 bg-white text-[#070E24] hover:bg-white/90 font-black rounded-xl transition-all shadow-lg cursor-pointer"
+                className="px-5 py-2.5 bg-white/20 hover:bg-white/35 text-white border border-white/40 font-black rounded-xl transition-all shadow-lg cursor-pointer"
               >
                 Sign Out
               </button>

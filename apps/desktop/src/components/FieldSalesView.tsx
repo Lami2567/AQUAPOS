@@ -283,7 +283,7 @@ export const FieldSalesView: React.FC = () => {
 
         <button
           onClick={handleOpenStartModal}
-          className="btn-touch bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white shadow-lg shadow-cyan-900/40 font-bold text-xs flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+          className="btn-touch bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white shadow-lg shadow-cyan-900/40 font-bold text-xs flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <PlusCircle className="w-4 h-4" /> Start New Field Session
         </button>
@@ -399,7 +399,7 @@ export const FieldSalesView: React.FC = () => {
                       {session.status === 'OPEN' ? (
                         <button
                           onClick={() => handleOpenReconcileModal(session)}
-                          className="bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white px-3 sm:px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-md shadow-cyan-950 transition-all cursor-pointer whitespace-nowrap"
+                          className="bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white px-3 sm:px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-md shadow-cyan-950 transition-all cursor-pointer whitespace-nowrap"
                         >
                           Close & Reconcile
                         </button>
@@ -550,7 +550,7 @@ export const FieldSalesView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-900/40 cursor-pointer"
+                  className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-900/40 cursor-pointer"
                 >
                   Dispatch Vehicle & Start Session
                 </button>
@@ -833,7 +833,7 @@ export const FieldSalesView: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 border-t border-white/15 pt-4">
               <button
                 onClick={handleConfirmReconciliation}
-                className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-900/30 cursor-pointer"
+                className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-900/30 cursor-pointer"
               >
                 <CheckCircle className="w-4 h-4 text-white/80" /> Confirm & Authorize Reconciliation
               </button>

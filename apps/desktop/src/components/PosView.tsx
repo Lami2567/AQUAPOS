@@ -158,7 +158,7 @@ export const PosView: React.FC = () => {
           onClick={() => setMobileTab('catalog')}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
             mobileTab === 'catalog'
-              ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+              ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold'
               : 'text-white/80 hover:text-white'
           }`}
         >
@@ -169,7 +169,7 @@ export const PosView: React.FC = () => {
           onClick={() => setMobileTab('cart')}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
             mobileTab === 'cart'
-              ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+              ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold'
               : 'text-white/80 hover:text-white'
           }`}
         >
@@ -205,7 +205,7 @@ export const PosView: React.FC = () => {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     activeCategory === cat
-                      ? 'bg-white text-[#070E24] font-bold text-white shadow-md shadow-cyan-900/30'
+                      ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold shadow-cyan-900/30'
                       : 'bg-[#0F1B3E] text-white/80 hover:text-white border border-white/15'
                   }`}
                 >
@@ -277,7 +277,7 @@ export const PosView: React.FC = () => {
                       className={`btn-touch p-2 sm:p-2.5 rounded-xl font-bold flex items-center gap-1 text-xs cursor-pointer ${
                         isOutOfStock
                           ? 'bg-[#182855] text-white/70 cursor-not-allowed'
-                          : 'bg-white text-[#070E24] font-bold group-hover:bg-white text-[#070E24] text-white shadow-md'
+                          : 'bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold group-hover:bg-white/25 text-white shadow-md'
                       }`}
                     >
                       <Plus className="w-4 h-4" />
@@ -403,7 +403,7 @@ export const PosView: React.FC = () => {
                       onClick={() => setPaymentMethod(pm)}
                       className={`py-2 px-1 rounded-xl font-bold border transition-all text-center text-[10px] cursor-pointer ${
                         selectedPaymentMethod === pm
-                          ? 'bg-white text-[#070E24] font-bold border-white/25 text-white shadow-md'
+                          ? 'bg-white/20 text-white border border-white/40 shadow-md font-bold'
                           : 'bg-[#070E24] border-white/15 text-white/80 hover:text-white'
                       }`}
                     >
@@ -462,7 +462,7 @@ export const PosView: React.FC = () => {
 
           <button
             onClick={() => setMobileTab('cart')}
-            className="bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-950 cursor-pointer"
+            className="bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-950 cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>View Cart & Checkout</span>
@@ -509,7 +509,7 @@ export const PosView: React.FC = () => {
             <div className="flex gap-2 border-t border-white/15 pt-3">
               <button
                 onClick={() => setCompletedReceipt(null)}
-                className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                className="flex-1 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" /> Done / Print
               </button>
