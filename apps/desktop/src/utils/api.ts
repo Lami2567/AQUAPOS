@@ -19,7 +19,7 @@ export const apiClient = axios.create({
 // Request interceptor to attach authorization JWT token from active session
 apiClient.interceptors.request.use((config) => {
   try {
-    const token = sessionStorage.getItem('aquapos-auth-token');
+    const token = localStorage.getItem('aquapos_token') || sessionStorage.getItem('aquapos-auth-token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

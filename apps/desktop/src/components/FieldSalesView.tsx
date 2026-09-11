@@ -272,11 +272,11 @@ export const FieldSalesView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
             <Truck className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Field Sales & Worker Sessions</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-blue-100 mt-1">
             Track lorry & tricycle field deliveries, stock issues, returns, and dual stock/money reconciliations.
           </p>
         </div>
@@ -290,27 +290,27 @@ export const FieldSalesView: React.FC = () => {
       </div>
 
       {notification && (
-        <div className="bg-slate-900 border border-cyan-500/40 text-cyan-200 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
+        <div className="bg-[#0F1B3E] border border-cyan-500/40 text-cyan-200 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
           <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
 
       {/* Active Field Sessions Table */}
-      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-3 sm:space-y-4">
-        <h3 className="font-bold text-slate-200 text-sm">
+      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-blue-900/60 space-y-3 sm:space-y-4">
+        <h3 className="font-bold text-white text-sm">
           Active & Recent Field Sessions ({visibleSessions.length})
         </h3>
         
         {visibleSessions.length === 0 ? (
-          <div className="text-center py-10 sm:py-12 text-slate-500 text-xs space-y-2">
-            <Truck className="w-8 h-8 mx-auto text-slate-500" />
+          <div className="text-center py-10 sm:py-12 text-blue-100/80 text-xs space-y-2">
+            <Truck className="w-8 h-8 mx-auto text-blue-100/80" />
             <p>No field sessions found for current branch. Click "Start New Field Session" to dispatch a delivery vehicle.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-800/80">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+          <div className="overflow-x-auto rounded-xl border border-blue-900/60/80">
+            <table className="w-full text-left text-xs text-white">
+              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase tracking-wider border-b border-blue-900/60">
                 <tr>
                   <th className="p-3">Session #</th>
                   <th className="p-3">Vehicle</th>
@@ -327,12 +327,12 @@ export const FieldSalesView: React.FC = () => {
                   const dispatchStore = stores.find((s) => s.id === session.storeId);
                   const returnStore = session.returnStoreId ? stores.find((s) => s.id === session.returnStoreId) : null;
                   return (
-                    <tr key={session.id} className="hover:bg-slate-900/50">
+                    <tr key={session.id} className="hover:bg-[#0F1B3E]/50">
                       <td className="p-3">
                         <div className="font-bold text-cyan-400 font-mono">{session.sessionNumber}</div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">
+                        <div className="text-[10px] text-blue-100 mt-0.5">
                           <span>Store: </span>
-                          <span className="text-slate-300 font-semibold">{dispatchStore ? `${dispatchStore.name} (${dispatchStore.code})` : session.storeId}</span>
+                          <span className="text-white font-semibold">{dispatchStore ? `${dispatchStore.name} (${dispatchStore.code})` : session.storeId}</span>
                           {session.returnStoreId && session.returnStoreId !== session.storeId && (
                             <span className="text-cyan-400 font-semibold block">
                               ↳ Ret: {returnStore ? `${returnStore.name} (${returnStore.code})` : session.returnStoreName || session.returnStoreId}
@@ -340,12 +340,12 @@ export const FieldSalesView: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="p-3 font-semibold text-slate-200">{session.vehicleName}</td>
+                      <td className="p-3 font-semibold text-white">{session.vehicleName}</td>
                       <td className="p-3">{session.workerName}</td>
                     <td className="p-3">
                       <div className="flex flex-wrap gap-1">
                         {session.items.map((it, idx) => (
-                          <span key={idx} className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap">
+                          <span key={idx} className="bg-[#182855] text-white px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap">
                             {it.issuedQty}x {it.name.split(' ')[2] || it.name}
                           </span>
                         ))}
@@ -354,7 +354,7 @@ export const FieldSalesView: React.FC = () => {
                     <td className="p-3">
                       {(session.approvedExpensesUgx && session.approvedExpensesUgx > 0) || session.expenseDescription ? (
                         <div className="space-y-0.5">
-                          <div className="font-mono font-bold text-slate-200 text-xs">
+                          <div className="font-mono font-bold text-white text-xs">
                             UGX {(session.approvedExpensesUgx || 0).toLocaleString()}
                           </div>
                           <button
@@ -379,7 +379,7 @@ export const FieldSalesView: React.FC = () => {
                         <span className="text-slate-600 font-mono text-[11px]">-</span>
                       )}
                     </td>
-                    <td className="p-3 text-slate-400 font-mono">
+                    <td className="p-3 text-blue-100 font-mono">
                       {session.startTime && session.startTime.includes('T')
                         ? new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                         : session.startTime || '-'}
@@ -388,8 +388,8 @@ export const FieldSalesView: React.FC = () => {
                       <span
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                           session.status === 'OPEN'
-                            ? 'bg-slate-900/90 border-cyan-500/40 text-cyan-300'
-                            : 'bg-slate-900/90 border-slate-700 text-slate-300'
+                            ? 'bg-[#0F1B3E]/90 border-cyan-500/40 text-cyan-300'
+                            : 'bg-[#0F1B3E]/90 border-blue-800/60 text-white'
                         }`}
                       >
                         {session.status}
@@ -404,7 +404,7 @@ export const FieldSalesView: React.FC = () => {
                           Close & Reconcile
                         </button>
                       ) : (
-                        <span className="text-slate-500 text-[11px] font-semibold whitespace-nowrap">Reconciled ✓</span>
+                        <span className="text-blue-100/80 text-[11px] font-semibold whitespace-nowrap">Reconciled ✓</span>
                       )}
                     </td>
                   </tr>
@@ -419,15 +419,15 @@ export const FieldSalesView: React.FC = () => {
       {/* Start New Field Session Modal */}
       {isStartModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl text-slate-100 my-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-xl w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl text-white my-auto">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="flex items-center gap-2 font-bold text-cyan-400 text-sm sm:text-base">
                 <Truck className="w-5 h-5" />
                 <span>Start New Route Field Session</span>
               </div>
               <button
                 onClick={() => setIsStartModalOpen(false)}
-                className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer"
+                className="text-blue-100 hover:text-white text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -436,11 +436,11 @@ export const FieldSalesView: React.FC = () => {
             <form onSubmit={handleStartSessionSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Delivery Vehicle</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Delivery Vehicle</label>
                   <select
                     value={selectedVehicleId}
                     onChange={(e) => setSelectedVehicleId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                   >
                     {vehicles.length === 0 ? (
                       <option value="default-van">Direct Route Vehicle (Default Van / Tricycle)</option>
@@ -455,11 +455,11 @@ export const FieldSalesView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Lead Salesperson & Driver</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Lead Salesperson & Driver</label>
                   <select
                     value={selectedWorkerId}
                     onChange={(e) => setSelectedWorkerId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                   >
                     <option value="self">
                       {user?.fullName || user?.username || 'Current User'} (Self - Salesperson & Driver)
@@ -479,11 +479,11 @@ export const FieldSalesView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Dispatching Source Store</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Dispatching Source Store</label>
                 <select
                   value={selectedStoreId}
                   onChange={(e) => setSelectedStoreId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                 >
                   {stores.length === 0 ? (
                     <option value="main-store">Main Store</option>
@@ -498,7 +498,7 @@ export const FieldSalesView: React.FC = () => {
               </div>
 
               {/* Product Quantity Issuance Inputs */}
-              <div className="space-y-2 border-t border-slate-800 pt-3">
+              <div className="space-y-2 border-t border-blue-900/60 pt-3">
                 <label className="block text-cyan-400 font-bold uppercase tracking-wider text-[11px]">
                   Issue Stock Quantities to Vehicle:
                 </label>
@@ -509,11 +509,11 @@ export const FieldSalesView: React.FC = () => {
                     return (
                       <div
                         key={prod.id}
-                        className="flex items-center justify-between p-2.5 bg-slate-950/70 border border-slate-800/80 rounded-xl gap-2"
+                        className="flex items-center justify-between p-2.5 bg-[#070E24]/70 border border-blue-900/60/80 rounded-xl gap-2"
                       >
                         <div className="flex-1 min-w-0">
-                          <div className="font-bold text-slate-200 truncate">{prod.name}</div>
-                          <div className="text-[10px] text-slate-400 font-mono truncate">
+                          <div className="font-bold text-white truncate">{prod.name}</div>
+                          <div className="text-[10px] text-blue-100 font-mono truncate">
                             Avail: <span className="text-cyan-400 font-bold">{storeAvail}</span> • UGX {prod.sellingPriceUgx.toLocaleString()}
                           </div>
                         </div>
@@ -530,9 +530,9 @@ export const FieldSalesView: React.FC = () => {
                                 [prod.id]: Math.max(0, parseInt(e.target.value) || 0),
                               })
                             }
-                            className="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-right font-mono font-bold text-cyan-300 focus:outline-none focus:border-cyan-500"
+                            className="w-20 bg-[#0F1B3E] border border-blue-800/60 rounded-lg px-2 py-1.5 text-right font-mono font-bold text-cyan-300 focus:outline-none focus:border-cyan-500"
                           />
-                          <span className="text-[10px] text-slate-400">units</span>
+                          <span className="text-[10px] text-blue-100">units</span>
                         </div>
                       </div>
                     );
@@ -540,11 +540,11 @@ export const FieldSalesView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 border-t border-slate-800 pt-3 sm:pt-4">
+              <div className="flex gap-2 border-t border-blue-900/60 pt-3 sm:pt-4">
                 <button
                   type="button"
                   onClick={() => setIsStartModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
+                  className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -562,30 +562,30 @@ export const FieldSalesView: React.FC = () => {
 
       {/* Dual Reconcile Modal */}
       {activeReconcileSession && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-4xl w-full p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-[#070E24]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-4xl w-full p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl text-white my-auto max-h-[92vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 sm:pb-4">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3 sm:pb-4">
               <div>
                 <h2 className="text-base sm:text-lg font-extrabold text-cyan-400 flex items-center gap-2">
                   <FileSpreadsheet className="w-5 h-5 shrink-0" /> Field Session Reconciliation: {activeReconcileSession.sessionNumber}
                 </h2>
-                <div className="text-xs text-slate-400 mt-0.5">
-                  Vehicle: <span className="text-slate-200 font-bold">{activeReconcileSession.vehicleName}</span> • Salesperson: <span className="text-slate-200 font-bold">{activeReconcileSession.workerName}</span>
+                <div className="text-xs text-blue-100 mt-0.5">
+                  Vehicle: <span className="text-white font-bold">{activeReconcileSession.vehicleName}</span> • Salesperson: <span className="text-white font-bold">{activeReconcileSession.workerName}</span>
                 </div>
               </div>
               <button
                 onClick={() => setActiveReconcileSession(null)}
-                className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer"
+                className="text-blue-100 hover:text-white text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* Return Destination Store Selection */}
-            <div className="bg-slate-950 border border-slate-800 p-3 sm:p-4 rounded-2xl space-y-2">
+            <div className="bg-[#070E24] border border-blue-900/60 p-3 sm:p-4 rounded-2xl space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
                   <StoreIcon className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>Return Destination Store (For Unsold Water)</span>
                 </label>
@@ -596,18 +596,18 @@ export const FieldSalesView: React.FC = () => {
                 )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex flex-col justify-center">
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Dispatched From</span>
-                  <span className="text-slate-200 font-semibold">
+                <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-xl p-2.5 flex flex-col justify-center">
+                  <span className="text-[10px] text-blue-100 block uppercase font-bold">Dispatched From</span>
+                  <span className="text-white font-semibold">
                     {stores.find((s) => s.id === activeReconcileSession.storeId)?.name || activeReconcileSession.storeId} ({stores.find((s) => s.id === activeReconcileSession.storeId)?.code || 'SRC'})
                   </span>
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1 font-semibold">Deliver / Offload Returns Into:</label>
+                  <label className="block text-[10px] text-blue-100 mb-1 font-semibold">Deliver / Offload Returns Into:</label>
                   <select
                     value={selectedReturnStoreId}
                     onChange={(e) => setSelectedReturnStoreId(e.target.value)}
-                    className="w-full bg-slate-900 border border-cyan-500/60 rounded-xl px-3 py-2 text-xs text-slate-100 font-semibold focus:outline-none focus:border-cyan-400 cursor-pointer"
+                    className="w-full bg-[#0F1B3E] border border-cyan-500/60 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-cyan-400 cursor-pointer"
                   >
                     {stores.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -617,14 +617,14 @@ export const FieldSalesView: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400">
-                You can return unsold bottles to <strong className="text-slate-200">any store</strong>. Returned quantities will be immediately credited and added to the selected store's stock.
+              <p className="text-[11px] text-blue-100">
+                You can return unsold bottles to <strong className="text-white">any store</strong>. Returned quantities will be immediately credited and added to the selected store's stock.
               </p>
             </div>
 
             {/* Step 1: Stock Item Balancing Inputs */}
             <div className="space-y-3">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <div className="text-xs font-bold uppercase tracking-wider text-blue-100 flex items-center gap-1.5">
                 <Package className="w-4 h-4 text-cyan-400 shrink-0" />
                 <span>1. Stock Equation Reconciliation (Issued = Sold + Returned + Damaged + Missing)</span>
               </div>
@@ -641,15 +641,15 @@ export const FieldSalesView: React.FC = () => {
                   });
 
                   return (
-                    <div key={item.productId} className="bg-slate-950 border border-slate-800 p-3 sm:p-3.5 rounded-2xl space-y-2.5">
+                    <div key={item.productId} className="bg-[#070E24] border border-blue-900/60 p-3 sm:p-3.5 rounded-2xl space-y-2.5">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
-                        <span className="font-bold text-slate-100">{item.name}</span>
+                        <span className="font-bold text-white">{item.name}</span>
                         <span className="font-mono text-cyan-400 font-bold">Issued: {item.issuedQty} units @ UGX {item.unitPriceUgx.toLocaleString()}</span>
                       </div>
 
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                         <div>
-                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Sold Qty</label>
+                          <label className="block text-[10px] text-white font-semibold mb-1">Sold Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -660,11 +660,11 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, sold: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                            className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1.5 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Returned Qty</label>
+                          <label className="block text-[10px] text-white font-semibold mb-1">Returned Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -675,11 +675,11 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, returned: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                            className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1.5 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Damaged Qty</label>
+                          <label className="block text-[10px] text-white font-semibold mb-1">Damaged Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -690,11 +690,11 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, damaged: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                            className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1.5 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] text-slate-300 font-semibold mb-1">Missing Qty</label>
+                          <label className="block text-[10px] text-white font-semibold mb-1">Missing Qty</label>
                           <input
                             type="number"
                             min="0"
@@ -705,16 +705,16 @@ export const FieldSalesView: React.FC = () => {
                                 [item.productId]: { ...inputs, missing: parseInt(e.target.value) || 0 },
                               })
                             }
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                            className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1.5 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                           />
                         </div>
                       </div>
 
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[10px] pt-1">
-                        <span className={stockEq.isValid ? 'text-cyan-400 font-bold' : 'text-slate-400 font-bold'}>
+                        <span className={stockEq.isValid ? 'text-cyan-400 font-bold' : 'text-blue-100 font-bold'}>
                           Equation Status: {stockEq.isValid ? 'Stock Balanced ✓' : `Variance: ${stockEq.varianceQty} units`}
                         </span>
-                        <span className="text-slate-400 font-mono">
+                        <span className="text-blue-100 font-mono">
                           Expected Sales Revenue: UGX {((Number(inputs.sold) || 0) * item.unitPriceUgx).toLocaleString()}
                         </span>
                       </div>
@@ -725,63 +725,63 @@ export const FieldSalesView: React.FC = () => {
             </div>
 
             {/* Step 2: Money Collection Reconciliation */}
-            <div className="space-y-3 border-t border-slate-800 pt-4">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <div className="space-y-3 border-t border-blue-900/60 pt-4">
+              <div className="text-xs font-bold uppercase tracking-wider text-blue-100 flex items-center gap-1.5">
                 <DollarSign className="w-4 h-4 text-cyan-400 shrink-0" />
                 <span>2. Money Accounting (Expected = Cash + Mobile + Bank + Expenses + Remaining)</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3 text-xs">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Physical Cash (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Physical Cash (UGX)</label>
                   <input
                     type="number"
                     value={cashCollected}
                     onChange={(e) => setCashCollected(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-2 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Mobile Money (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Mobile Money (UGX)</label>
                   <input
                     type="number"
                     value={mobileMoney}
                     onChange={(e) => setMobileMoney(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-2 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Bank Deposit (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Bank Deposit (UGX)</label>
                   <input
                     type="number"
                     value={bankDeposit}
                     onChange={(e) => setBankDeposit(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-2 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Route Expenses (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Route Expenses (UGX)</label>
                   <input
                     type="number"
                     value={approvedExpenses}
                     onChange={(e) => setApprovedExpenses(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-2 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Remaining Float (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Remaining Float (UGX)</label>
                   <input
                     type="number"
                     value={cashRemaining}
                     onChange={(e) => setCashRemaining(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-2 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
 
               {/* Route Expenses Description Section */}
-              <div className="space-y-1.5 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
-                <label className="block text-[11px] text-slate-300 font-semibold flex items-center justify-between">
+              <div className="space-y-1.5 bg-[#070E24]/60 border border-blue-900/60/80 rounded-xl p-3">
+                <label className="block text-[11px] text-white font-semibold flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
                     <DollarSign className="w-3.5 h-3.5 text-cyan-400" />
                     <span>Route Expenses Description & Justification</span>
@@ -797,7 +797,7 @@ export const FieldSalesView: React.FC = () => {
                   value={expenseDescription}
                   onChange={(e) => setExpenseDescription(e.target.value)}
                   placeholder="Enter details of field route expenses (e.g., Vehicle fuel UGX 20,000, Tyre repair UGX 5,000, Driver & loader lunch UGX 10,000)..."
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
 
@@ -805,10 +805,10 @@ export const FieldSalesView: React.FC = () => {
               <div
                 className={`p-3.5 sm:p-4 rounded-2xl text-xs font-semibold flex flex-col sm:flex-row sm:items-center justify-between gap-2 border ${
                   moneyRes.moneyVarianceUgx < 0
-                    ? 'bg-slate-950/90 border-slate-700 text-slate-200'
+                    ? 'bg-[#070E24]/90 border-blue-800/60 text-white'
                     : moneyRes.moneyVarianceUgx > 0
-                    ? 'bg-slate-950/90 border-cyan-500/40 text-cyan-200'
-                    : 'bg-slate-950/90 border-cyan-500/40 text-cyan-300'
+                    ? 'bg-[#070E24]/90 border-cyan-500/40 text-cyan-200'
+                    : 'bg-[#070E24]/90 border-cyan-500/40 text-cyan-300'
                 }`}
               >
                 <div>
@@ -821,7 +821,7 @@ export const FieldSalesView: React.FC = () => {
                 <div className="sm:text-right">
                   <div className="text-sm font-extrabold">{moneyRes.formattedMessage}</div>
                   {moneyRes.moneyVarianceUgx < 0 && (
-                    <div className="text-[10px] opacity-90 mt-0.5 font-bold text-slate-400">
+                    <div className="text-[10px] opacity-90 mt-0.5 font-bold text-blue-100">
                       Shortage will automatically create an outstanding worker debt record for payroll recovery.
                     </div>
                   )}
@@ -830,7 +830,7 @@ export const FieldSalesView: React.FC = () => {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 border-t border-slate-800 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 border-t border-blue-900/60 pt-4">
               <button
                 onClick={handleConfirmReconciliation}
                 className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-900/30 cursor-pointer"
@@ -839,7 +839,7 @@ export const FieldSalesView: React.FC = () => {
               </button>
               <button
                 onClick={() => setActiveReconcileSession(null)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-5 py-3 rounded-xl text-xs cursor-pointer"
+                className="bg-[#182855] hover:bg-slate-700 text-white font-bold px-5 py-3 rounded-xl text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -856,65 +856,65 @@ export const FieldSalesView: React.FC = () => {
           onClick={() => setSelectedExpensePopup(null)}
         >
           <div
-            className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100"
+            className="bg-[#0F1B3E] border border-blue-900/60 rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-white"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="space-y-0.5">
                 <div className="text-cyan-400 font-bold text-sm sm:text-base">
                   {selectedExpensePopup.title}
                 </div>
                 {selectedExpensePopup.subtitle && (
-                  <div className="text-slate-400 text-xs">
+                  <div className="text-blue-100 text-xs">
                     {selectedExpensePopup.subtitle}
                   </div>
                 )}
               </div>
               <button
                 onClick={() => setSelectedExpensePopup(null)}
-                className="text-slate-400 hover:text-slate-100 text-base font-bold p-1 cursor-pointer"
+                className="text-blue-100 hover:text-white text-base font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
-                <span className="text-slate-400 font-semibold">Expense Amount:</span>
-                <span className="font-mono font-bold text-slate-100 text-sm">
+              <div className="bg-[#070E24] border border-blue-900/60 rounded-xl p-3 flex justify-between items-center">
+                <span className="text-blue-100 font-semibold">Expense Amount:</span>
+                <span className="font-mono font-bold text-white text-sm">
                   UGX {selectedExpensePopup.amountUgx.toLocaleString()}
                 </span>
               </div>
 
               {(selectedExpensePopup.author || selectedExpensePopup.date) && (
-                <div className="flex justify-between text-slate-400 text-[11px] px-1">
+                <div className="flex justify-between text-blue-100 text-[11px] px-1">
                   {selectedExpensePopup.author && (
                     <span>
-                      Worker: <span className="text-slate-200 font-medium">{selectedExpensePopup.author}</span>
+                      Worker: <span className="text-white font-medium">{selectedExpensePopup.author}</span>
                     </span>
                   )}
                   {selectedExpensePopup.date && (
                     <span>
-                      Date: <span className="text-slate-200 font-medium">{selectedExpensePopup.date}</span>
+                      Date: <span className="text-white font-medium">{selectedExpensePopup.date}</span>
                     </span>
                   )}
                 </div>
               )}
 
               <div>
-                <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+                <label className="block text-[11px] uppercase tracking-wider text-blue-100 font-semibold mb-1.5">
                   Full Expense Description:
                 </label>
-                <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-slate-200 text-xs leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto font-normal">
+                <div className="bg-[#070E24] border border-blue-900/60 rounded-xl p-3.5 text-white text-xs leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto font-normal">
                   {selectedExpensePopup.description}
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-slate-800 pt-3 flex justify-end">
+            <div className="border-t border-blue-900/60 pt-3 flex justify-end">
               <button
                 onClick={() => setSelectedExpensePopup(null)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
+                className="bg-[#182855] hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
               >
                 Close
               </button>

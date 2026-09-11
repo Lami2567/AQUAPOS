@@ -1,27 +1,36 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
-import { apiClient } from '../utils/api';
-import { syncManager } from '../services/syncService';
-import { BRAND_ASSETS, APP_ICONS } from '../config/assets.config';
-import { UserRole, User } from '@water-business/shared-types';
 import { canAccessDomain } from '../utils/rbac';
 import {
   Building2,
   Store,
   ChevronDown,
   ChevronRight,
-  Wifi,
-  WifiOff,
   UserCheck,
-  RefreshCw,
-  AlertCircle,
   LogOut,
-  KeyRound,
   ShieldAlert,
-  CheckCircle,
   Menu,
   X,
-  Database,
+  Droplets,
+  LayoutDashboard,
+  ShoppingCart,
+  Truck,
+  Package,
+  Receipt,
+  BarChart3,
+  DollarSign,
+  Settings,
+  Layers,
+  ArrowRightLeft,
+  Users,
+  HardDrive,
+  History,
+  AlertTriangle,
+  Briefcase,
+  Coins,
+  CreditCard,
+  FileSpreadsheet,
+  Cpu,
 } from 'lucide-react';
 
 export type NavDomain =
@@ -51,13 +60,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     stores,
     currentBranchId,
     currentStoreId,
-    isOnline,
-    syncStatus,
-    pendingSyncCount,
     setStore,
-    setOnlineStatus,
     setUser,
-    usersList,
   } = useStore();
   const [openDropdown, setOpenDropdown] = useState<NavDomain | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -81,8 +85,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     setMobileExpandedDomain(currentNav.domain);
   }, [currentNav.domain]);
 
-  const LogoIcon = BRAND_ASSETS.LogoIcon;
-
   const domainConfigs: {
     key: NavDomain;
     label: string;
@@ -92,88 +94,88 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     {
       key: 'dashboard',
       label: 'Dashboard',
-      icon: APP_ICONS.dashboard,
+      icon: LayoutDashboard,
       subViews: [
-        { key: 'overview', label: 'Executive Overview', icon: APP_ICONS.dashboard, description: 'Real-time KPIs & daily metrics' },
+        { key: 'overview', label: 'Executive Overview', icon: LayoutDashboard, description: 'Real-time KPIs & daily metrics' },
       ],
     },
     {
       key: 'operations',
       label: 'Operations',
-      icon: APP_ICONS.operations,
+      icon: ShoppingCart,
       subViews: [
-        { key: 'pos', label: 'Store POS', icon: APP_ICONS.pos, description: 'Counter retail sales & checkout' },
-        { key: 'field_sales', label: 'Field Sales', icon: APP_ICONS.fieldSales, description: 'Route delivery sessions' },
-        { key: 'field_sessions', label: 'Field Sessions', icon: APP_ICONS.fieldSessions, description: 'Active & closed session logs' },
-        { key: 'stock_receipts', label: 'Stock Receipts', icon: APP_ICONS.stockReceipts, description: 'Goods intake & receiving' },
-        { key: 'stock_transfers', label: 'Stock Transfers', icon: APP_ICONS.stockTransfers, description: 'Branch-to-branch transfers' },
-        { key: 'expenses', label: 'Expenses', icon: APP_ICONS.expenses, description: 'Operating expense vouchers' },
+        { key: 'pos', label: 'Store POS', icon: ShoppingCart, description: 'Counter retail sales & checkout' },
+        { key: 'field_sales', label: 'Field Sales', icon: Truck, description: 'Route delivery sessions' },
+        { key: 'field_sessions', label: 'Field Sessions', icon: Layers, description: 'Active & closed session logs' },
+        { key: 'stock_receipts', label: 'Stock Receipts', icon: Receipt, description: 'Goods intake & receiving' },
+        { key: 'stock_transfers', label: 'Stock Transfers', icon: ArrowRightLeft, description: 'Branch-to-branch transfers' },
+        { key: 'expenses', label: 'Expenses', icon: Receipt, description: 'Operating expense vouchers' },
       ],
     },
     {
       key: 'inventory',
       label: 'Inventory',
-      icon: APP_ICONS.inventory,
+      icon: Package,
       subViews: [
-        { key: 'products', label: 'Products', icon: APP_ICONS.products, description: 'Product catalog & SKUs' },
-        { key: 'stock', label: 'Stock Levels', icon: APP_ICONS.stock, description: 'Store inventory balances' },
-        { key: 'stock_movements', label: 'Stock Movements', icon: APP_ICONS.stockMovements, description: 'Immutable stock ledger' },
-        { key: 'damages', label: 'Damages & Loss', icon: APP_ICONS.damages, description: 'Spoilage & missing stock' },
+        { key: 'products', label: 'Products', icon: Package, description: 'Product catalog & SKUs' },
+        { key: 'stock', label: 'Stock Levels', icon: HardDrive, description: 'Store inventory balances' },
+        { key: 'stock_movements', label: 'Stock Movements', icon: History, description: 'Immutable stock ledger' },
+        { key: 'damages', label: 'Damages & Loss', icon: AlertTriangle, description: 'Spoilage & missing stock' },
       ],
     },
     {
       key: 'branches',
       label: 'Branches',
-      icon: APP_ICONS.branches,
+      icon: Building2,
       subViews: [
-        { key: 'branches', label: 'Branches', icon: APP_ICONS.branchList, description: 'Regional branch locations' },
-        { key: 'stores', label: 'Stores', icon: APP_ICONS.stores, description: 'Warehouses & sales stores' },
-        { key: 'vehicles', label: 'Vehicles', icon: APP_ICONS.vehicles, description: 'Delivery lorries & tuk-tuks' },
+        { key: 'branches', label: 'Branches', icon: Building2, description: 'Regional branch locations' },
+        { key: 'stores', label: 'Stores', icon: Store, description: 'Warehouses & sales stores' },
+        { key: 'vehicles', label: 'Vehicles', icon: Truck, description: 'Delivery lorries & tuk-tuks' },
       ],
     },
     {
       key: 'people',
       label: 'People',
-      icon: APP_ICONS.people,
+      icon: Users,
       subViews: [
-        { key: 'workers', label: 'Workers', icon: APP_ICONS.workers, description: 'Staff directory & profiles' },
-        { key: 'departments', label: 'Departments', icon: APP_ICONS.departments, description: 'Organizational departments' },
-        { key: 'users', label: 'Users', icon: APP_ICONS.users, description: 'User login credentials' },
-        { key: 'roles', label: 'Roles & Permissions', icon: APP_ICONS.roles, description: 'RBAC security policies' },
+        { key: 'workers', label: 'Workers', icon: Users, description: 'Staff directory & profiles' },
+        { key: 'departments', label: 'Departments', icon: Briefcase, description: 'Organizational departments' },
+        { key: 'users', label: 'Users', icon: UserCheck, description: 'User login credentials' },
+        { key: 'roles', label: 'Roles & Permissions', icon: ShieldAlert, description: 'RBAC security policies' },
       ],
     },
     {
       key: 'finance',
       label: 'Finance',
-      icon: APP_ICONS.finance,
+      icon: DollarSign,
       subViews: [
-        { key: 'sales_ledger', label: 'Sales Ledger', icon: APP_ICONS.sales, description: 'POS & Field revenue records' },
-        { key: 'cash', label: 'Cash Accounts', icon: APP_ICONS.cash, description: 'Cash drawer balances' },
-        { key: 'bank_mobile', label: 'Bank & Mobile Money', icon: APP_ICONS.bank, description: 'Digital & bank payments' },
-        { key: 'debts', label: 'Debts & Recovery', icon: APP_ICONS.debts, description: 'Worker shortages & credit' },
-        { key: 'salaries', label: 'Salary Processing', icon: APP_ICONS.salaries, description: 'Monthly payroll & commissions' },
+        { key: 'sales_ledger', label: 'Sales Ledger', icon: DollarSign, description: 'POS & Field revenue records' },
+        { key: 'cash', label: 'Cash Accounts', icon: Coins, description: 'Cash drawer balances' },
+        { key: 'bank_mobile', label: 'Bank & Mobile Money', icon: CreditCard, description: 'Digital & bank payments' },
+        { key: 'debts', label: 'Debts & Recovery', icon: FileSpreadsheet, description: 'Worker shortages & credit' },
+        { key: 'salaries', label: 'Salary Processing', icon: Coins, description: 'Monthly payroll & commissions' },
       ],
     },
     {
       key: 'reports',
       label: 'Reports',
-      icon: APP_ICONS.reports,
+      icon: BarChart3,
       subViews: [
-        { key: 'sales_reports', label: 'Sales Reports', icon: APP_ICONS.salesReports, description: 'Revenue & product performance' },
-        { key: 'stock_reports', label: 'Stock Reports', icon: APP_ICONS.stockReports, description: 'Valuation & movement analytics' },
-        { key: 'financial_reports', label: 'Financial Reports', icon: APP_ICONS.financialReports, description: 'P&L, expenses & debt ledgers' },
-        { key: 'audit_reports', label: 'Audit Reports', icon: APP_ICONS.auditReports, description: 'System audit trail logs' },
+        { key: 'sales_reports', label: 'Sales Reports', icon: BarChart3, description: 'Revenue & product performance' },
+        { key: 'stock_reports', label: 'Stock Reports', icon: Package, description: 'Valuation & movement analytics' },
+        { key: 'financial_reports', label: 'Financial Reports', icon: DollarSign, description: 'P&L, expenses & debt ledgers' },
+        { key: 'audit_reports', label: 'Audit Reports', icon: History, description: 'System audit trail logs' },
       ],
     },
     {
       key: 'system',
       label: 'System',
-      icon: APP_ICONS.system,
+      icon: Settings,
       subViews: [
-        { key: 'backups', label: 'Cloud Data Backups', icon: APP_ICONS.backups, description: 'Export snapshots & disaster recovery' },
-        { key: 'admin_config', label: 'Master Configuration', icon: APP_ICONS.settings, description: 'Code-free system settings' },
-        { key: 'audit_log', label: 'Audit Log', icon: APP_ICONS.auditLog, description: 'Security & action records' },
-        { key: 'devices', label: 'Registered Devices', icon: APP_ICONS.devices, description: 'Authorized POS hardware' },
+        { key: 'backups', label: 'Cloud Data Backups', icon: HardDrive, description: 'Export snapshots & disaster recovery' },
+        { key: 'admin_config', label: 'Master Configuration', icon: Settings, description: 'Code-free system settings' },
+        { key: 'audit_log', label: 'Audit Log', icon: History, description: 'Security & action records' },
+        { key: 'devices', label: 'Registered Devices', icon: Cpu, description: 'Authorized POS hardware' },
       ],
     },
   ];
@@ -184,31 +186,32 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     setIsMobileMenuOpen(false);
   };
 
-  const currentBranch = branches.find((b) => b.id === currentBranchId);
-  const currentStore = stores.find((s) => s.id === currentStoreId);
-
   return (
-    <header className="bg-slate-950 border-b border-slate-800 text-slate-100 select-none sticky top-0 z-50 shadow-md">
-      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2">
+    <header className="bg-[#0B132B] border-b border-blue-900/60 text-white select-none sticky top-0 z-50 shadow-xl">
+      {/* Top Main Navigation Bar */}
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between gap-3">
         
-        {/* Brand & Store Selector */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Left Section: Brand & Store Selector */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Logo */}
           <div
             onClick={() => onSelectNav({ domain: 'dashboard', subView: 'overview' })}
-            className="flex items-center gap-2 text-cyan-400 font-extrabold text-base sm:text-lg tracking-tight cursor-pointer"
+            className="flex items-center gap-2.5 text-white font-extrabold text-lg sm:text-xl tracking-tight cursor-pointer hover:opacity-90 transition-opacity"
           >
-            <div className="p-1 sm:p-1.5 bg-cyan-950/90 rounded-xl border border-cyan-500/30 text-cyan-400">
-              <LogoIcon className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+            <div className="p-1.5 sm:p-2 bg-blue-950 rounded-xl border border-blue-700/70 text-white shadow-md">
+              <Droplets className="w-5 h-5 text-white animate-pulse" />
             </div>
-            <span>AQUA<span className="text-slate-300">POS</span></span>
+            <span className="flex items-center">
+              AQUA<span className="text-cyan-400 font-black">POS</span>
+            </span>
           </div>
 
-          <div className="h-5 w-px bg-slate-800 hidden md:block" />
+          <div className="h-6 w-px bg-blue-900/60 hidden md:block" />
 
           {/* Dynamic Branch Picker (Desktop/Tablet) */}
-          <div className="hidden md:flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
-            <Building2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span className="text-slate-400 font-medium">Branch:</span>
+          <div className="hidden lg:flex items-center gap-2 text-xs bg-[#101C38] border border-blue-800/60 rounded-xl px-3 py-1.5 shadow-sm">
+            <Building2 className="w-4 h-4 text-white shrink-0" />
+            <span className="text-blue-100 font-semibold">Branch:</span>
             <select
               value={currentBranchId}
               onChange={(e) => {
@@ -217,25 +220,25 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 const firstStoreId = branchStores[0]?.id || '';
                 setStore(newBranchId, firstStoreId);
               }}
-              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] max-w-[120px] lg:max-w-none truncate"
+              className="bg-transparent text-white font-bold focus:outline-none cursor-pointer text-xs max-w-[130px] xl:max-w-none truncate"
             >
               {branches.map((b) => (
-                <option key={b.id} value={b.id} className="bg-slate-900 text-slate-200">
+                <option key={b.id} value={b.id} className="bg-[#0B132B] text-white">
                   {b.name} ({b.code})
                 </option>
               ))}
               {branches.length === 0 && (
-                <option value="" className="bg-slate-900 text-slate-400">
-                  No Branches Configured
+                <option value="" className="bg-[#0B132B] text-white">
+                  All Branches
                 </option>
               )}
             </select>
           </div>
 
           {/* Dynamic Store Picker (Desktop/Tablet) */}
-          <div className="hidden md:flex items-center gap-1.5 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
-            <Store className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="text-slate-400 font-medium">Store:</span>
+          <div className="hidden md:flex items-center gap-2 text-xs bg-[#101C38] border border-blue-800/60 rounded-xl px-3 py-1.5 shadow-sm">
+            <Store className="w-4 h-4 text-white shrink-0" />
+            <span className="text-blue-100 font-semibold">Store:</span>
             <select
               value={currentStoreId}
               onChange={(e) => {
@@ -243,26 +246,26 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 const selectedStore = stores.find((s) => s.id === newStoreId);
                 setStore(selectedStore?.branchId || currentBranchId, newStoreId);
               }}
-              className="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer text-[11px] max-w-[120px] lg:max-w-none truncate"
+              className="bg-transparent text-white font-bold focus:outline-none cursor-pointer text-xs max-w-[140px] xl:max-w-none truncate"
             >
               {stores
                 .filter((s) => !currentBranchId || s.branchId === currentBranchId)
                 .map((st) => (
-                  <option key={st.id} value={st.id} className="bg-slate-900 text-slate-200">
+                  <option key={st.id} value={st.id} className="bg-[#0B132B] text-white">
                     {st.name} ({st.type})
                   </option>
                 ))}
               {stores.filter((s) => !currentBranchId || s.branchId === currentBranchId).length === 0 && (
-                <option value="" className="bg-slate-900 text-slate-400">
-                  No Stores in Branch
+                <option value="" className="bg-[#0B132B] text-white">
+                  All Stores
                 </option>
               )}
             </select>
           </div>
         </div>
 
-        {/* 8 Business Domain Navigation Tabs (Desktop screens >= 1024px) */}
-        <nav className="hidden xl:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800/80 relative" ref={dropdownRef}>
+        {/* Center Section: 8 Business Domain Navigation Tabs (Desktop screens >= 1200px) */}
+        <nav className="hidden xl:flex items-center gap-1.5 bg-[#101C38] p-1.5 rounded-2xl border border-blue-800/60 shadow-inner" ref={dropdownRef}>
           {domainConfigs
             .filter((domain) => canAccessDomain(user?.role, domain.key))
             .map((domain) => {
@@ -280,26 +283,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                       setOpenDropdown(openDropdown === domain.key ? null : domain.key);
                     }
                   }}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                     isDomainActive
-                      ? 'bg-cyan-600 text-white shadow-sm shadow-cyan-900/40'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-950 border border-blue-400/40'
+                      : 'text-white hover:bg-blue-900/50 hover:text-cyan-200'
                   }`}
                 >
-                  <IconComponent className="w-3.5 h-3.5" />
+                  <IconComponent className="w-4 h-4 text-white" />
                   <span>{domain.label}</span>
                   {!isSingleView && (
                     <ChevronDown
-                      className={`w-3 h-3 transition-transform ${openDropdown === domain.key ? 'rotate-180 text-cyan-200' : 'text-slate-500'}`}
+                      className={`w-3.5 h-3.5 text-white transition-transform ${openDropdown === domain.key ? 'rotate-180' : ''}`}
                     />
                   )}
                 </button>
 
                 {/* Sub-menu Dropdown Popup */}
                 {!isSingleView && openDropdown === domain.key && (
-                  <div className="absolute top-full left-0 mt-1.5 w-60 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-2xl z-50 animate-fade-in space-y-1">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 py-1 border-b border-slate-800/60 mb-0.5">
-                      {domain.label} Options
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-[#0D1836] border border-blue-700/60 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in space-y-1">
+                    <div className="text-[11px] font-bold text-white uppercase tracking-wider px-3 py-1.5 border-b border-blue-900/60 mb-1 flex items-center gap-1.5">
+                      <IconComponent className="w-3.5 h-3.5 text-white" />
+                      <span>{domain.label} Menu</span>
                     </div>
                     {domain.subViews.map((sub) => {
                       const SubIcon = sub.icon;
@@ -309,18 +313,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                         <button
                           key={sub.key}
                           onClick={() => handleSelectSubView(domain.key, sub.key)}
-                          className={`w-full flex items-start gap-2 p-1.5 rounded-xl text-left transition-all cursor-pointer ${
+                          className={`w-full flex items-start gap-2.5 p-2 rounded-xl text-left transition-all cursor-pointer ${
                             isSubActive
-                              ? 'bg-cyan-950/80 border border-cyan-500/40 text-cyan-300'
-                              : 'hover:bg-slate-800/60 text-slate-300'
+                              ? 'bg-blue-600 text-white shadow-md border border-blue-400/50 font-bold'
+                              : 'hover:bg-blue-900/50 text-white'
                           }`}
                         >
-                          <div className={`p-1 rounded-lg my-auto ${isSubActive ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
-                            <SubIcon className="w-3.5 h-3.5" />
+                          <div className={`p-1.5 rounded-lg my-auto ${isSubActive ? 'bg-blue-900 text-white' : 'bg-[#101C38] text-white border border-blue-800/60'}`}>
+                            <SubIcon className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <div className="text-xs font-semibold">{sub.label}</div>
-                            {sub.description && <div className="text-[10px] text-slate-400">{sub.description}</div>}
+                            <div className="text-xs font-bold text-white">{sub.label}</div>
+                            {sub.description && <div className="text-[10px] text-blue-100/70">{sub.description}</div>}
                           </div>
                         </button>
                       );
@@ -332,54 +336,143 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
           })}
         </nav>
 
-        {/* Right Action Bar (Network Status, User Profile, Mobile Hamburger) */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right Section: Quick Shortcuts, User Profile, Mobile Hamburger */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Quick Access Operational Shortcuts */}
+          <div className="hidden sm:flex items-center gap-1 bg-[#101C38] border border-blue-800/60 p-1 rounded-xl">
+            <button
+              onClick={() => onSelectNav({ domain: 'operations', subView: 'pos' })}
+              title="Quick POS Checkout"
+              className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                currentNav.subView === 'pos' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/50'
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4 text-white" />
+              <span className="hidden lg:inline">POS</span>
+            </button>
+
+            <button
+              onClick={() => onSelectNav({ domain: 'operations', subView: 'field_sales' })}
+              title="Quick Field Sales"
+              className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                currentNav.subView === 'field_sales' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/50'
+              }`}
+            >
+              <Truck className="w-4 h-4 text-white" />
+              <span className="hidden lg:inline">Field</span>
+            </button>
+
+            <button
+              onClick={() => onSelectNav({ domain: 'inventory', subView: 'stock' })}
+              title="Quick Stock View"
+              className={`p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                currentNav.subView === 'stock' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/50'
+              }`}
+            >
+              <Package className="w-4 h-4 text-white" />
+              <span className="hidden lg:inline">Stock</span>
+            </button>
+          </div>
+
           {/* User Badge (Desktop) */}
-          <div className="hidden lg:flex items-center gap-2 text-[11px] bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1">
-            <UserCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <div className="leading-tight">
-              <div className="font-semibold text-slate-200 truncate max-w-[100px]">{user?.fullName}</div>
-              <div className="text-[9px] text-slate-400">{user?.role}</div>
+          <div className="hidden md:flex items-center gap-2.5 text-xs bg-[#101C38] border border-blue-800/60 rounded-xl px-3 py-1.5">
+            <UserCheck className="w-4 h-4 text-white shrink-0" />
+            <div className="leading-tight text-left">
+              <div className="font-bold text-white truncate max-w-[110px]">{user?.fullName || user?.username}</div>
+              <div className="text-[10px] text-blue-200 font-semibold">{user?.role}</div>
             </div>
           </div>
 
           {/* Desktop Logout Button */}
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="hidden sm:flex items-center gap-1.5 bg-rose-950/80 hover:bg-rose-900/90 border border-rose-800/50 text-rose-300 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] font-bold transition-all shadow-sm shadow-rose-950 cursor-pointer"
-            title="Sign out of current user account"
+            className="hidden sm:flex items-center gap-1.5 bg-rose-900/80 hover:bg-rose-800 border border-rose-700/80 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-950/60 cursor-pointer"
+            title="Sign out"
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Logout</span>
+            <LogOut className="w-4 h-4 text-white" />
+            <span className="hidden md:inline">Sign Out</span>
           </button>
 
           {/* Mobile/Tablet Hamburger Menu Toggle Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="xl:hidden p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition-all flex items-center justify-center cursor-pointer"
+            className="xl:hidden p-2 rounded-xl bg-[#101C38] hover:bg-blue-900/60 border border-blue-800/60 text-white transition-all flex items-center justify-center cursor-pointer shadow-md"
             aria-label="Toggle navigation menu"
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5 text-slate-200" />}
+            {isMobileMenuOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
           </button>
         </div>
 
       </div>
 
+      {/* Mobile Fast-Access Navigation Bar (Visible on mobile screens < 640px) */}
+      <div className="sm:hidden border-t border-blue-900/40 bg-[#09112A] px-3 py-1.5 flex items-center justify-around gap-1 overflow-x-auto no-scrollbar">
+        <button
+          onClick={() => onSelectNav({ domain: 'dashboard', subView: 'overview' })}
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+            currentNav.domain === 'dashboard' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/40'
+          }`}
+        >
+          <LayoutDashboard className="w-3.5 h-3.5 text-white" />
+          <span>Dashboard</span>
+        </button>
+
+        <button
+          onClick={() => onSelectNav({ domain: 'operations', subView: 'pos' })}
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+            currentNav.subView === 'pos' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/40'
+          }`}
+        >
+          <ShoppingCart className="w-3.5 h-3.5 text-white" />
+          <span>POS</span>
+        </button>
+
+        <button
+          onClick={() => onSelectNav({ domain: 'operations', subView: 'field_sales' })}
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+            currentNav.subView === 'field_sales' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/40'
+          }`}
+        >
+          <Truck className="w-3.5 h-3.5 text-white" />
+          <span>Field</span>
+        </button>
+
+        <button
+          onClick={() => onSelectNav({ domain: 'inventory', subView: 'stock' })}
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+            currentNav.subView === 'stock' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/40'
+          }`}
+        >
+          <Package className="w-3.5 h-3.5 text-white" />
+          <span>Stock</span>
+        </button>
+
+        <button
+          onClick={() => onSelectNav({ domain: 'reports', subView: 'sales_reports' })}
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all ${
+            currentNav.domain === 'reports' ? 'bg-blue-600 text-white shadow' : 'text-white hover:bg-blue-900/40'
+          }`}
+        >
+          <BarChart3 className="w-3.5 h-3.5 text-white" />
+          <span>Reports</span>
+        </button>
+      </div>
+
       {/* Mobile Navigation Drawer / Off-Canvas Sheet */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden fixed inset-0 top-[53px] z-50 bg-slate-950/90 backdrop-blur-md flex flex-col justify-between animate-fade-in border-t border-slate-800 overflow-y-auto">
+        <div className="xl:hidden fixed inset-0 top-[52px] sm:top-[56px] z-50 bg-[#070E24]/98 backdrop-blur-xl flex flex-col justify-between animate-fade-in border-t border-blue-900/60 overflow-y-auto">
           <div className="p-4 space-y-4 max-w-lg mx-auto w-full">
             
-            {/* User Account & Status Card */}
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between shadow-lg">
+            {/* Mobile User Profile Card */}
+            <div className="bg-[#101C38] border border-blue-800/70 rounded-2xl p-4 flex items-center justify-between shadow-xl">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-cyan-950 rounded-xl border border-cyan-500/30 text-cyan-400">
-                  <UserCheck className="w-5 h-5" />
+                <div className="p-2.5 bg-blue-950 rounded-xl border border-blue-700/60 text-white">
+                  <UserCheck className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-100 text-sm">{user?.fullName}</div>
-                  <div className="text-[11px] text-cyan-400 font-mono">
-                    @{user?.username} • <span className="text-amber-300">{user?.role}</span>
+                  <div className="font-extrabold text-white text-base">{user?.fullName || user?.username}</div>
+                  <div className="text-xs text-cyan-300 font-mono">
+                    @{user?.username} • <span className="text-white font-bold">{user?.role}</span>
                   </div>
                 </div>
               </div>
@@ -389,18 +482,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                   setIsMobileMenuOpen(false);
                   setShowLogoutModal(true);
                 }}
-                className="p-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-800/50 text-rose-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                className="p-2.5 bg-rose-900/80 hover:bg-rose-800 border border-rose-700/70 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
                 title="Sign out"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 text-white" />
+                <span className="text-white">Exit</span>
               </button>
             </div>
 
             {/* Mobile Branch & Store Selectors */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#101C38]/80 p-3.5 rounded-2xl border border-blue-800/60 shadow-lg">
               <div>
-                <label className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-1 flex items-center gap-1">
-                  <Building2 className="w-3 h-3 text-cyan-400" /> Active Branch
+                <label className="text-xs text-white uppercase tracking-wider font-bold block mb-1.5 flex items-center gap-1.5">
+                  <Building2 className="w-4 h-4 text-white" /> Active Branch
                 </label>
                 <select
                   value={currentBranchId}
@@ -410,19 +504,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                     const firstStoreId = branchStores[0]?.id || '';
                     setStore(newBranchId, firstStoreId);
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none"
+                  className="w-full bg-[#081028] border border-blue-800/70 rounded-xl px-3 py-2.5 text-xs text-white font-bold focus:outline-none"
                 >
                   {branches.map((b) => (
-                    <option key={b.id} value={b.id}>
+                    <option key={b.id} value={b.id} className="bg-[#0B132B] text-white">
                       {b.name} ({b.code})
                     </option>
                   ))}
+                  {branches.length === 0 && (
+                    <option value="" className="bg-[#0B132B] text-white">All Branches</option>
+                  )}
                 </select>
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block mb-1 flex items-center gap-1">
-                  <Store className="w-3 h-3 text-emerald-400" /> Active Store
+                <label className="text-xs text-white uppercase tracking-wider font-bold block mb-1.5 flex items-center gap-1.5">
+                  <Store className="w-4 h-4 text-white" /> Active Store
                 </label>
                 <select
                   value={currentStoreId}
@@ -431,23 +528,26 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                     const selectedStore = stores.find((s) => s.id === newStoreId);
                     setStore(selectedStore?.branchId || currentBranchId, newStoreId);
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none"
+                  className="w-full bg-[#081028] border border-blue-800/70 rounded-xl px-3 py-2.5 text-xs text-white font-bold focus:outline-none"
                 >
                   {stores
                     .filter((s) => !currentBranchId || s.branchId === currentBranchId)
                     .map((st) => (
-                      <option key={st.id} value={st.id}>
+                      <option key={st.id} value={st.id} className="bg-[#0B132B] text-white">
                         {st.name} ({st.type})
                       </option>
                     ))}
+                  {stores.length === 0 && (
+                    <option value="" className="bg-[#0B132B] text-white">All Stores</option>
+                  )}
                 </select>
               </div>
             </div>
 
-            {/* Business Domain Menu Accordions */}
-            <div className="space-y-1.5 pt-1">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
-                Business Navigation
+            {/* Mobile Business Navigation Domains */}
+            <div className="space-y-2 pt-1">
+              <div className="text-xs font-bold text-white uppercase tracking-wider px-2 flex items-center gap-1.5">
+                <span>System Modules</span>
               </div>
 
               {domainConfigs
@@ -459,7 +559,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                   const isSingleView = domain.subViews.length === 1;
 
                   return (
-                    <div key={domain.key} className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden">
+                    <div key={domain.key} className="bg-[#101C38] border border-blue-800/60 rounded-2xl overflow-hidden shadow-md">
                       <button
                         onClick={() => {
                           if (isSingleView) {
@@ -468,28 +568,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                             setMobileExpandedDomain(isExpanded ? null : domain.key);
                           }
                         }}
-                        className={`w-full flex items-center justify-between p-3 text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between p-3.5 text-xs font-bold transition-all cursor-pointer ${
                           isDomainActive
-                            ? 'bg-cyan-950/60 text-cyan-300'
-                            : 'text-slate-300 hover:bg-slate-800/50'
+                            ? 'bg-blue-600 text-white font-extrabold shadow-md'
+                            : 'text-white hover:bg-blue-900/50'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <div className={`p-1.5 rounded-lg ${isDomainActive ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
-                            <DomainIcon className="w-4 h-4" />
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-xl ${isDomainActive ? 'bg-blue-900 text-white' : 'bg-[#081028] text-white border border-blue-800/60'}`}>
+                            <DomainIcon className="w-4 h-4 text-white" />
                           </div>
-                          <span>{domain.label}</span>
+                          <span className="text-sm font-bold text-white">{domain.label}</span>
                         </div>
                         {!isSingleView && (
                           <ChevronDown
-                            className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-180 text-cyan-400' : ''}`}
+                            className={`w-4 h-4 text-white transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                           />
                         )}
                       </button>
 
                       {/* Sub-items */}
                       {isExpanded && !isSingleView && (
-                        <div className="p-2 pt-0 space-y-1 bg-slate-950/50 border-t border-slate-800/60">
+                        <div className="p-2.5 pt-1 space-y-1.5 bg-[#081028] border-t border-blue-900/60">
                           {domain.subViews.map((sub) => {
                             const SubIcon = sub.icon;
                             const isSubActive = currentNav.domain === domain.key && currentNav.subView === sub.key;
@@ -498,17 +598,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                               <button
                                 key={sub.key}
                                 onClick={() => handleSelectSubView(domain.key, sub.key)}
-                                className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-left text-xs transition-all cursor-pointer ${
+                                className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-left text-xs transition-all cursor-pointer ${
                                   isSubActive
-                                    ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-950'
-                                    : 'text-slate-300 hover:bg-slate-800/60 font-medium'
+                                    ? 'bg-blue-600 text-white font-bold shadow-md'
+                                    : 'text-white hover:bg-blue-900/50 font-medium'
                                 }`}
                               >
-                                <SubIcon className="w-3.5 h-3.5 shrink-0" />
+                                <SubIcon className="w-4 h-4 text-white shrink-0" />
                                 <div className="flex-1">
-                                  <div>{sub.label}</div>
+                                  <div className="text-xs font-bold text-white">{sub.label}</div>
                                   {sub.description && (
-                                    <div className={`text-[10px] ${isSubActive ? 'text-cyan-100' : 'text-slate-400'}`}>
+                                    <div className="text-[10px] text-blue-100/70">
                                       {sub.description}
                                     </div>
                                   )}
@@ -524,44 +624,44 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
             </div>
           </div>
 
-          <div className="p-4 border-t border-slate-900 bg-slate-950 text-center text-[10px] text-slate-500">
-            AQUAPOS Mobile • Offline First Engine
+          <div className="p-4 border-t border-blue-900/60 bg-[#070E24] text-center text-xs text-white font-medium">
+            AquaPOS Management System • Mobile & Desktop Responsive
           </div>
         </div>
       )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 max-w-sm w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
-                <ShieldAlert className="w-4 h-4" />
-                <span>Confirm User Sign Out</span>
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-[#0F1B3E] border border-blue-800/70 rounded-3xl p-6 max-w-sm w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3.5">
+              <div className="flex items-center gap-2.5 text-white font-extrabold text-base">
+                <ShieldAlert className="w-5 h-5 text-white" />
+                <span>Confirm Sign Out</span>
               </div>
               <button
                 onClick={() => setShowLogoutModal(false)}
-                className="text-slate-400 hover:text-slate-200 text-xs font-bold cursor-pointer"
+                className="text-white hover:text-cyan-300 text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="bg-slate-950/80 border border-slate-800 p-3 rounded-xl space-y-1">
-              <div className="text-xs font-bold text-slate-100">{user?.fullName}</div>
-              <div className="text-[10px] text-slate-400 font-mono">
-                Username: <span className="text-cyan-400 font-semibold">{user?.username}</span> | Role: <span className="text-amber-300">{user?.role}</span>
+            <div className="bg-[#081028] border border-blue-800/60 p-3.5 rounded-2xl space-y-1">
+              <div className="text-sm font-extrabold text-white">{user?.fullName || user?.username}</div>
+              <div className="text-xs text-white font-mono">
+                Username: <span className="text-cyan-300 font-bold">{user?.username}</span> | Role: <span className="text-white font-bold">{user?.role}</span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Are you sure you want to sign out? You will need to enter your username and password credentials to log back in.
+            <p className="text-xs text-blue-100/90 leading-relaxed font-medium">
+              Are you sure you want to sign out? Your current session will end, and you will need to re-enter your credentials.
             </p>
 
-            <div className="border-t border-slate-800 pt-3 flex items-center justify-end gap-2 text-xs">
+            <div className="border-t border-blue-900/60 pt-4 flex items-center justify-end gap-2.5 text-xs">
               <button
                 onClick={() => setShowLogoutModal(false)}
-                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2.5 bg-blue-900/60 hover:bg-blue-800 text-white font-bold rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -570,9 +670,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                   setUser(null, null);
                   setShowLogoutModal(false);
                 }}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md shadow-rose-950 cursor-pointer"
+                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-extrabold rounded-xl transition-all shadow-lg shadow-rose-950 cursor-pointer"
               >
-                Sign Out Now
+                Sign Out
               </button>
             </div>
           </div>
@@ -581,4 +681,3 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     </header>
   );
 };
-

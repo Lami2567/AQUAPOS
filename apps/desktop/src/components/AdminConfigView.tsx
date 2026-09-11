@@ -341,14 +341,14 @@ export const AdminConfigView: React.FC = () => {
   return (
     <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xl">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-[#0F1B3E]/90 border border-blue-900/60 p-4 sm:p-5 rounded-2xl shadow-xl">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="p-2.5 sm:p-3 bg-cyan-950/80 rounded-xl border border-cyan-500/30 text-cyan-400 shrink-0">
             <Settings className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-slate-100">System Administration & Master Configuration</h1>
-            <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
+            <h1 className="text-lg sm:text-xl font-bold text-white">System Administration & Master Configuration</h1>
+            <p className="text-xs text-blue-100 mt-0.5 sm:mt-1">
               Configure system parameters, branches, roles, pricing, workers, products, and operational rules dynamically.
             </p>
           </div>
@@ -363,8 +363,8 @@ export const AdminConfigView: React.FC = () => {
       </div>
 
       {/* Mobile Module Selector (< lg) */}
-      <div className="lg:hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-3 space-y-2 shadow-lg">
-        <label className="text-[11px] font-bold tracking-wider text-slate-400 uppercase block">
+      <div className="lg:hidden bg-[#0F1B3E]/90 border border-blue-900/60 rounded-2xl p-3 space-y-2 shadow-lg">
+        <label className="text-[11px] font-bold tracking-wider text-blue-100 uppercase block">
           Select Configuration Module:
         </label>
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
@@ -378,12 +378,12 @@ export const AdminConfigView: React.FC = () => {
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 activeTab === tab.key
                   ? 'bg-cyan-600 text-white shadow-md shadow-cyan-900/40'
-                  : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200'
+                  : 'bg-[#070E24] border border-blue-900/60 text-blue-100 hover:text-white'
               }`}
             >
               {tab.icon}
               <span>{tab.label}</span>
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${activeTab === tab.key ? 'bg-cyan-800 text-cyan-100' : 'bg-slate-800 text-slate-400'}`}>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${activeTab === tab.key ? 'bg-cyan-800 text-cyan-100' : 'bg-[#182855] text-blue-100'}`}>
                 {tab.count}
               </span>
             </button>
@@ -395,8 +395,8 @@ export const AdminConfigView: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         
         {/* Desktop Left Sub-Nav Tabs (hidden on < lg) */}
-        <div className="hidden lg:block lg:col-span-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-3 space-y-1 shadow-lg h-fit">
-          <div className="text-[11px] font-bold tracking-wider text-slate-400 px-3 py-2 uppercase">
+        <div className="hidden lg:block lg:col-span-1 bg-[#0F1B3E]/80 border border-blue-900/60 rounded-2xl p-3 space-y-1 shadow-lg h-fit">
+          <div className="text-[11px] font-bold tracking-wider text-blue-100 px-3 py-2 uppercase">
             Configuration Modules ({tabs.length})
           </div>
           <div className="space-y-1 max-h-[600px] overflow-y-auto pr-1">
@@ -410,7 +410,7 @@ export const AdminConfigView: React.FC = () => {
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === tab.key
                     ? 'bg-cyan-600 text-white shadow-md shadow-cyan-900/40'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    : 'text-blue-100 hover:text-white hover:bg-[#182855]/60'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -419,7 +419,7 @@ export const AdminConfigView: React.FC = () => {
                 </div>
                 <span
                   className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    activeTab === tab.key ? 'bg-cyan-700 text-cyan-100' : 'bg-slate-800 text-slate-400'
+                    activeTab === tab.key ? 'bg-cyan-700 text-cyan-100' : 'bg-[#182855] text-blue-100'
                   }`}
                 >
                   {tab.count}
@@ -430,28 +430,28 @@ export const AdminConfigView: React.FC = () => {
         </div>
 
         {/* Right Content Area */}
-        <div className="lg:col-span-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-lg space-y-4 sm:space-y-6">
+        <div className="lg:col-span-3 bg-[#0F1B3E]/80 border border-blue-900/60 rounded-2xl p-4 sm:p-6 shadow-lg space-y-4 sm:space-y-6">
           
           {/* Header Action Bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-b border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 border-b border-blue-900/60 pb-4">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-slate-100 capitalize">
+              <h2 className="text-base sm:text-lg font-bold text-white capitalize">
                 {tabs.find((t) => t.key === activeTab)?.label} Management
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-blue-100 mt-0.5">
                 Manage dynamic master definitions for {activeTab.replace('_', ' ')}.
               </p>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <div className="relative flex-1 sm:w-64">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Search className="w-4 h-4 text-blue-100 absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Search entries..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -466,10 +466,10 @@ export const AdminConfigView: React.FC = () => {
           </div>
 
           {/* Dynamic Data Table Render */}
-          <div className="overflow-x-auto rounded-xl border border-slate-800/80">
+          <div className="overflow-x-auto rounded-xl border border-blue-900/60/80">
             {activeTab === 'branches' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Branch Name</th>
@@ -487,9 +487,9 @@ export const AdminConfigView: React.FC = () => {
                       return name.includes(q) || code.includes(q);
                     })
                     .map((b) => (
-                      <tr key={b.id} className="hover:bg-slate-800/40">
+                      <tr key={b.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{b.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{b.name}</td>
+                        <td className="p-3 font-medium text-white">{b.name}</td>
                         <td className="p-3">{b.location}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
@@ -497,10 +497,10 @@ export const AdminConfigView: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(b)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(b)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('branches', b.id, b.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Branch">
+                          <button onClick={() => handleDelete('branches', b.id, b.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Branch">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -511,8 +511,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'stores' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Store Name</th>
@@ -531,21 +531,21 @@ export const AdminConfigView: React.FC = () => {
                       return name.includes(q) || code.includes(q);
                     })
                     .map((s) => (
-                      <tr key={s.id} className="hover:bg-slate-800/40">
+                      <tr key={s.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{s.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{s.name}</td>
-                        <td className="p-3 text-slate-400 font-mono text-[11px]">{s.branchId}</td>
-                        <td className="p-3"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono">{s.type}</span></td>
+                        <td className="p-3 font-medium text-white">{s.name}</td>
+                        <td className="p-3 text-blue-100 font-mono text-[11px]">{s.branchId}</td>
+                        <td className="p-3"><span className="bg-[#182855] px-2 py-0.5 rounded text-[10px] font-mono">{s.type}</span></td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${s.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {s.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(s)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(s)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('stores', s.id, s.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Store">
+                          <button onClick={() => handleDelete('stores', s.id, s.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Store">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -556,8 +556,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'departments' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Department Name</th>
@@ -575,20 +575,20 @@ export const AdminConfigView: React.FC = () => {
                       return name.includes(q) || code.includes(q);
                     })
                     .map((d) => (
-                      <tr key={d.id} className="hover:bg-slate-800/40">
+                      <tr key={d.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{d.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{d.name}</td>
-                        <td className="p-3 text-slate-400">{d.description || '-'}</td>
+                        <td className="p-3 font-medium text-white">{d.name}</td>
+                        <td className="p-3 text-blue-100">{d.description || '-'}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${d.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {d.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(d)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(d)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('departments', d.id, d.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Department">
+                          <button onClick={() => handleDelete('departments', d.id, d.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Department">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -599,8 +599,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'workers' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Full Name</th>
                     <th className="p-3">Phone</th>
@@ -620,11 +620,11 @@ export const AdminConfigView: React.FC = () => {
                       return name.includes(q) || phone.includes(q);
                     })
                     .map((w) => (
-                      <tr key={w.id} className="hover:bg-slate-800/40">
-                        <td className="p-3 font-semibold text-slate-100">{w.fullName}</td>
+                      <tr key={w.id} className="hover:bg-[#182855]/40">
+                        <td className="p-3 font-semibold text-white">{w.fullName}</td>
                         <td className="p-3 font-mono text-cyan-400">{w.phone}</td>
                         <td className="p-3">{w.department}</td>
-                        <td className="p-3"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono">{w.role}</span></td>
+                        <td className="p-3"><span className="bg-[#182855] px-2 py-0.5 rounded text-[10px] font-mono">{w.role}</span></td>
                         <td className="p-3 font-mono text-emerald-400 font-semibold">{w.basicSalaryUgx.toLocaleString()}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${w.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
@@ -632,10 +632,10 @@ export const AdminConfigView: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(w)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(w)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('workers', w.id, w.fullName)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Worker">
+                          <button onClick={() => handleDelete('workers', w.id, w.fullName)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Worker">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -646,8 +646,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'users' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Username</th>
                     <th className="p-3">Full Name</th>
@@ -666,22 +666,22 @@ export const AdminConfigView: React.FC = () => {
                       return uname.includes(q) || fname.includes(q);
                     })
                     .map((u) => (
-                      <tr key={u.id} className="hover:bg-slate-800/40">
+                      <tr key={u.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{u.username}</td>
-                        <td className="p-3 font-medium text-slate-100">{u.fullName}</td>
+                        <td className="p-3 font-medium text-white">{u.fullName}</td>
                         <td className="p-3"><span className="bg-cyan-950 text-cyan-300 border border-cyan-800/40 px-2 py-0.5 rounded text-[10px] font-mono">{u.role}</span></td>
-                        <td className="p-3 text-slate-400 text-[11px]">{branches.find(b => b.id === u.branchId)?.name || u.branchId}</td>
+                        <td className="p-3 text-blue-100 text-[11px]">{branches.find(b => b.id === u.branchId)?.name || u.branchId}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${u.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {u.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(u)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(u)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
                           {u.username !== 'admin' && (
-                            <button onClick={() => handleDelete('users', u.id, u.username)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete User">
+                            <button onClick={() => handleDelete('users', u.id, u.username)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete User">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           )}
@@ -693,8 +693,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'roles' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Role Code</th>
                     <th className="p-3">Display Name</th>
@@ -713,13 +713,13 @@ export const AdminConfigView: React.FC = () => {
                       return dname.includes(q) || code.includes(q);
                     })
                     .map((r) => (
-                      <tr key={r.id} className="hover:bg-slate-800/40">
+                      <tr key={r.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-semibold text-cyan-400">{r.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{r.displayName}</td>
-                        <td className="p-3 text-slate-400">{r.description || '-'}</td>
-                        <td className="p-3 font-mono text-[10px] text-slate-300">
+                        <td className="p-3 font-medium text-white">{r.displayName}</td>
+                        <td className="p-3 text-blue-100">{r.description || '-'}</td>
+                        <td className="p-3 font-mono text-[10px] text-white">
                           {r.permissions.map((p) => (
-                            <span key={p} className="bg-slate-800 px-1.5 py-0.5 rounded mr-1 inline-block my-0.5">{p}</span>
+                            <span key={p} className="bg-[#182855] px-1.5 py-0.5 rounded mr-1 inline-block my-0.5">{p}</span>
                           ))}
                         </td>
                         <td className="p-3">
@@ -728,10 +728,10 @@ export const AdminConfigView: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(r)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(r)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('roles', r.id, r.displayName)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Role">
+                          <button onClick={() => handleDelete('roles', r.id, r.displayName)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Role">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -742,8 +742,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'vehicles' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Reg Number</th>
                     <th className="p-3">Type</th>
@@ -762,21 +762,21 @@ export const AdminConfigView: React.FC = () => {
                       return reg.includes(q) || model.includes(q);
                     })
                     .map((v) => (
-                      <tr key={v.id} className="hover:bg-slate-800/40">
+                      <tr key={v.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-amber-400">{v.registrationNumber}</td>
-                        <td className="p-3 font-mono"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px]">{v.type}</span></td>
-                        <td className="p-3 font-medium text-slate-100">{v.model}</td>
-                        <td className="p-3 text-slate-400">{branches.find(b => b.id === v.branchId)?.name || v.branchId}</td>
+                        <td className="p-3 font-mono"><span className="bg-[#182855] px-2 py-0.5 rounded text-[10px]">{v.type}</span></td>
+                        <td className="p-3 font-medium text-white">{v.model}</td>
+                        <td className="p-3 text-blue-100">{branches.find(b => b.id === v.branchId)?.name || v.branchId}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${v.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {v.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(v)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(v)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('vehicles', v.id, v.registrationNumber)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Vehicle">
+                          <button onClick={() => handleDelete('vehicles', v.id, v.registrationNumber)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Vehicle">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -787,8 +787,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'products' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">SKU</th>
                     <th className="p-3">Product Name</th>
@@ -810,12 +810,12 @@ export const AdminConfigView: React.FC = () => {
                       return name.includes(q) || sku.includes(q);
                     })
                     .map((p) => (
-                      <tr key={p.id} className="hover:bg-slate-800/40">
+                      <tr key={p.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{p.sku}</td>
-                        <td className="p-3 font-semibold text-slate-100">{p.name}</td>
-                        <td className="p-3 text-slate-300"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px]">{p.category}</span></td>
+                        <td className="p-3 font-semibold text-white">{p.name}</td>
+                        <td className="p-3 text-white"><span className="bg-[#182855] px-2 py-0.5 rounded text-[10px]">{p.category}</span></td>
                         <td className="p-3 font-mono">{p.capacityMl} ml</td>
-                        <td className="p-3 font-mono text-slate-400">UGX {p.costPriceUgx.toLocaleString()}</td>
+                        <td className="p-3 font-mono text-blue-100">UGX {p.costPriceUgx.toLocaleString()}</td>
                         <td className="p-3 font-mono text-emerald-400 font-bold">UGX {p.sellingPriceUgx.toLocaleString()}</td>
                         <td className="p-3 font-mono text-amber-400">{p.minStockAlert} / {p.maxStockLevel}</td>
                         <td className="p-3">
@@ -824,10 +824,10 @@ export const AdminConfigView: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(p)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(p)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('products', p.id, p.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Product">
+                          <button onClick={() => handleDelete('products', p.id, p.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Product">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -838,8 +838,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'categories' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Category Name</th>
@@ -857,20 +857,20 @@ export const AdminConfigView: React.FC = () => {
                       return name.includes(q) || code.includes(q);
                     })
                     .map((c) => (
-                      <tr key={c.id} className="hover:bg-slate-800/40">
+                      <tr key={c.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{c.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{c.name}</td>
-                        <td className="p-3 text-slate-400">{c.description || '-'}</td>
+                        <td className="p-3 font-medium text-white">{c.name}</td>
+                        <td className="p-3 text-blue-100">{c.description || '-'}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {c.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(c)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(c)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('categories', c.id, c.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Category">
+                          <button onClick={() => handleDelete('categories', c.id, c.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Category">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -881,8 +881,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'prices' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Branch ID</th>
                     <th className="p-3">Cost Price (UGX)</th>
@@ -892,15 +892,15 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {branchPrices.map((bp, idx) => (
-                    <tr key={idx} className="hover:bg-slate-800/40">
+                    <tr key={idx} className="hover:bg-[#182855]/40">
                       <td className="p-3 font-mono text-cyan-400">{bp.branchId}</td>
-                      <td className="p-3 font-mono text-slate-400">{bp.costPriceUgx ? `UGX ${bp.costPriceUgx.toLocaleString()}` : 'Default'}</td>
+                      <td className="p-3 font-mono text-blue-100">{bp.costPriceUgx ? `UGX ${bp.costPriceUgx.toLocaleString()}` : 'Default'}</td>
                       <td className="p-3 font-mono font-bold text-emerald-400">UGX {bp.sellingPriceUgx.toLocaleString()}</td>
                       <td className="p-3 text-right flex items-center justify-end gap-1">
-                        <button onClick={() => openEditModal(bp)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                        <button onClick={() => openEditModal(bp)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete('prices', bp.id || `${bp.branchId}-${bp.productId}`)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Price Rule">
+                        <button onClick={() => handleDelete('prices', bp.id || `${bp.branchId}-${bp.productId}`)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Price Rule">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
@@ -911,8 +911,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'payment_methods' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Method Name</th>
@@ -925,11 +925,11 @@ export const AdminConfigView: React.FC = () => {
                   {paymentMethodsList
                     .filter((pm) => (pm?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()))
                     .map((pm) => (
-                      <tr key={pm.id} className="hover:bg-slate-800/40">
+                      <tr key={pm.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{pm.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{pm.name}</td>
+                        <td className="p-3 font-medium text-white">{pm.name}</td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${pm.requiresReference ? 'bg-amber-950 text-amber-300 border border-amber-800/40' : 'bg-slate-800 text-slate-400'}`}>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${pm.requiresReference ? 'bg-amber-950 text-amber-300 border border-amber-800/40' : 'bg-[#182855] text-blue-100'}`}>
                             {pm.requiresReference ? 'YES (TX ID Required)' : 'NO'}
                           </span>
                         </td>
@@ -939,10 +939,10 @@ export const AdminConfigView: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(pm)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(pm)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('payment_methods', pm.id, pm.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Payment Method">
+                          <button onClick={() => handleDelete('payment_methods', pm.id, pm.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Payment Method">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -953,8 +953,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'expense_types' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Category Name</th>
@@ -968,25 +968,25 @@ export const AdminConfigView: React.FC = () => {
                   {expenseTypes
                     .filter((et) => (et?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()))
                     .map((et) => (
-                      <tr key={et.id} className="hover:bg-slate-800/40">
+                      <tr key={et.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{et.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{et.name}</td>
+                        <td className="p-3 font-medium text-white">{et.name}</td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${et.requiresApproval ? 'bg-cyan-950 text-cyan-300 border border-cyan-800/40' : 'bg-slate-800 text-slate-400'}`}>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${et.requiresApproval ? 'bg-cyan-950 text-cyan-300 border border-cyan-800/40' : 'bg-[#182855] text-blue-100'}`}>
                             {et.requiresApproval ? 'Manager Approval Needed' : 'Auto-Approve'}
                           </span>
                         </td>
-                        <td className="p-3 text-slate-400">{et.description || '-'}</td>
+                        <td className="p-3 text-blue-100">{et.description || '-'}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${et.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {et.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(et)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(et)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('expense_types', et.id, et.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Expense Type">
+                          <button onClick={() => handleDelete('expense_types', et.id, et.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Expense Type">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -997,8 +997,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'debt_types' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Code</th>
                     <th className="p-3">Debt Type Name</th>
@@ -1012,25 +1012,25 @@ export const AdminConfigView: React.FC = () => {
                   {debtTypes
                     .filter((dt) => (dt?.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()))
                     .map((dt) => (
-                      <tr key={dt.id} className="hover:bg-slate-800/40">
+                      <tr key={dt.id} className="hover:bg-[#182855]/40">
                         <td className="p-3 font-mono font-bold text-cyan-400">{dt.code}</td>
-                        <td className="p-3 font-medium text-slate-100">{dt.name}</td>
+                        <td className="p-3 font-medium text-white">{dt.name}</td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${dt.autoDeductPayroll ? 'bg-rose-950 text-rose-300 border border-rose-800/40' : 'bg-slate-800 text-slate-400'}`}>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${dt.autoDeductPayroll ? 'bg-rose-950 text-rose-300 border border-rose-800/40' : 'bg-[#182855] text-blue-100'}`}>
                             {dt.autoDeductPayroll ? 'AUTO DEDUCT' : 'MANUAL CLEARANCE'}
                           </span>
                         </td>
-                        <td className="p-3 text-slate-400">{dt.description || '-'}</td>
+                        <td className="p-3 text-blue-100">{dt.description || '-'}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${dt.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
                             {dt.isActive ? 'ACTIVE' : 'INACTIVE'}
                           </span>
                         </td>
                         <td className="p-3 text-right flex items-center justify-end gap-1">
-                          <button onClick={() => openEditModal(dt)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                          <button onClick={() => openEditModal(dt)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete('debt_types', dt.id, dt.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Debt Type">
+                          <button onClick={() => handleDelete('debt_types', dt.id, dt.name)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Debt Type">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -1041,8 +1041,8 @@ export const AdminConfigView: React.FC = () => {
             )}
 
             {activeTab === 'salary_settings' && (
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3 rounded-l-lg">Role Code</th>
                     <th className="p-3">Department</th>
@@ -1055,9 +1055,9 @@ export const AdminConfigView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {salarySettings.map((ss) => (
-                    <tr key={ss.id} className="hover:bg-slate-800/40">
+                    <tr key={ss.id} className="hover:bg-[#182855]/40">
                       <td className="p-3 font-mono font-bold text-cyan-400">{ss.roleCode}</td>
-                      <td className="p-3 font-medium text-slate-100">{ss.departmentCode}</td>
+                      <td className="p-3 font-medium text-white">{ss.departmentCode}</td>
                       <td className="p-3 font-mono text-emerald-400 font-bold">UGX {ss.baseSalaryUgx.toLocaleString()}</td>
                       <td className="p-3 font-mono text-cyan-300">UGX {ss.commissionPerUnitUgx.toLocaleString()}</td>
                       <td className="p-3 font-mono text-amber-300">UGX {ss.allowanceUgx.toLocaleString()}</td>
@@ -1067,10 +1067,10 @@ export const AdminConfigView: React.FC = () => {
                         </span>
                       </td>
                       <td className="p-3 text-right flex items-center justify-end gap-1">
-                        <button onClick={() => openEditModal(ss)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                        <button onClick={() => openEditModal(ss)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete('salary_settings', ss.id, ss.roleCode)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete Salary Setting">
+                        <button onClick={() => handleDelete('salary_settings', ss.id, ss.roleCode)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete Salary Setting">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
@@ -1083,14 +1083,14 @@ export const AdminConfigView: React.FC = () => {
             {activeTab === 'system_settings' && (
               <div className="space-y-6">
                 {/* Admin Credentials Manager Block */}
-                <div className="bg-slate-950/80 border border-slate-800 p-5 rounded-2xl space-y-4">
-                  <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+                <div className="bg-[#070E24]/80 border border-blue-900/60 p-5 rounded-2xl space-y-4">
+                  <div className="flex items-center gap-3 border-b border-blue-900/60 pb-3">
                     <div className="p-2 bg-cyan-950 text-cyan-400 rounded-xl border border-cyan-800/40">
                       <KeyRound className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-slate-100">Administrator Credentials & Login Security</h3>
-                      <p className="text-xs text-slate-400">Update your administrator login username and password credentials.</p>
+                      <h3 className="text-sm font-bold text-white">Administrator Credentials & Login Security</h3>
+                      <p className="text-xs text-blue-100">Update your administrator login username and password credentials.</p>
                     </div>
                   </div>
 
@@ -1149,11 +1149,11 @@ export const AdminConfigView: React.FC = () => {
                     className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs"
                   >
                     <div>
-                      <label className="block text-slate-400 mb-1">Select Account</label>
+                      <label className="block text-blue-100 mb-1">Select Account</label>
                       <select
                         value={adminUsernameInput}
                         onChange={(e) => setAdminUsernameInput(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       >
                         <option value="ismael">ismael (SUPER_ADMIN)</option>
                         <option value="admin">admin (SUPER_ADMIN)</option>
@@ -1167,25 +1167,25 @@ export const AdminConfigView: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">New Password</label>
+                      <label className="block text-blue-100 mb-1">New Password</label>
                       <input
                         type="password"
                         placeholder="Enter new password"
                         value={adminPasswordInput}
                         onChange={(e) => setAdminPasswordInput(e.target.value)}
                         required
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Confirm New Password</label>
+                      <label className="block text-blue-100 mb-1">Confirm New Password</label>
                       <input
                         type="password"
                         placeholder="Re-enter new password"
                         value={adminConfirmPasswordInput}
                         onChange={(e) => setAdminConfirmPasswordInput(e.target.value)}
                         required
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div className="flex items-end">
@@ -1210,7 +1210,7 @@ export const AdminConfigView: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-rose-200">Reset Production Data & Outbox Queues</h3>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-blue-100">
                           Purge all test transactions, mock sales, test field sessions, draft transfers, test expenses, and offline outbox queues while preserving Master Configurations (Branches, Stores, Departments, Roles, Workers, Users, Products).
                         </p>
                       </div>
@@ -1227,8 +1227,8 @@ export const AdminConfigView: React.FC = () => {
                   </div>
                 </div>
 
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+                <table className="w-full text-left text-xs text-white">
+                  <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider">
                     <tr>
                       <th className="p-3 rounded-l-lg">Setting Key</th>
                       <th className="p-3">Setting Value</th>
@@ -1251,16 +1251,16 @@ export const AdminConfigView: React.FC = () => {
                         const cat = sys?.category || 'GENERAL';
                         const desc = sys?.description || '-';
                         return (
-                          <tr key={sys.id || key} className="hover:bg-slate-800/40">
+                          <tr key={sys.id || key} className="hover:bg-[#182855]/40">
                             <td className="p-3 font-mono font-bold text-cyan-400">{key}</td>
-                            <td className="p-3 font-mono text-slate-100 font-semibold">{val}</td>
-                            <td className="p-3"><span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono">{cat}</span></td>
-                            <td className="p-3 text-slate-400">{desc}</td>
+                            <td className="p-3 font-mono text-white font-semibold">{val}</td>
+                            <td className="p-3"><span className="bg-[#182855] px-2 py-0.5 rounded text-[10px] font-mono">{cat}</span></td>
+                            <td className="p-3 text-blue-100">{desc}</td>
                             <td className="p-3 text-right flex items-center justify-end gap-1">
-                              <button onClick={() => openEditModal(sys)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-cyan-400" title="Edit">
+                              <button onClick={() => openEditModal(sys)} className="p-1.5 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-cyan-400" title="Edit">
                                 <Edit className="w-4 h-4" />
                               </button>
-                              <button onClick={() => handleDelete('system_settings', sys.id || key, key)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-slate-400 hover:text-rose-400" title="Delete System Setting">
+                              <button onClick={() => handleDelete('system_settings', sys.id || key, key)} className="p-1.5 hover:bg-rose-950/60 rounded-lg text-blue-100 hover:text-rose-400" title="Delete System Setting">
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </td>
@@ -1279,14 +1279,14 @@ export const AdminConfigView: React.FC = () => {
       {/* Edit / Add Modal */}
       {showModal && editingItem && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 my-auto max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm sm:text-base font-bold text-slate-100 capitalize">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl p-4 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
+              <h3 className="text-sm sm:text-base font-bold text-white capitalize">
                 Configure {activeTab.replace('_', ' ')} Entry
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 cursor-pointer"
+                className="p-1 hover:bg-[#182855] rounded-lg text-blue-100 hover:text-white cursor-pointer"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -1297,33 +1297,33 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'branches' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Branch Code</label>
+                    <label className="block text-blue-100 mb-1">Branch Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Branch Name</label>
+                    <label className="block text-blue-100 mb-1">Branch Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Location</label>
+                    <label className="block text-blue-100 mb-1">Location</label>
                     <input
                       type="text"
                       required
                       value={editingItem.location || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, location: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                 </>
@@ -1332,31 +1332,31 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'stores' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Store Code</label>
+                    <label className="block text-blue-100 mb-1">Store Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Store Name</label>
+                    <label className="block text-blue-100 mb-1">Store Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Branch</label>
+                    <label className="block text-blue-100 mb-1">Branch</label>
                     <select
                       value={editingItem.branchId || branches[0]?.id}
                       onChange={(e) => setEditingItem({ ...editingItem, branchId: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     >
                       {branches.map((b) => (
                         <option key={b.id} value={b.id}>
@@ -1366,11 +1366,11 @@ export const AdminConfigView: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Store Type</label>
+                    <label className="block text-blue-100 mb-1">Store Type</label>
                     <select
                       value={editingItem.type || 'MAIN_STORE'}
                       onChange={(e) => setEditingItem({ ...editingItem, type: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     >
                       <option value="MAIN_STORE">MAIN_STORE</option>
                       <option value="SALES_STORE">SALES_STORE</option>
@@ -1383,32 +1383,32 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'departments' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Department Code</label>
+                    <label className="block text-blue-100 mb-1">Department Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Department Name</label>
+                    <label className="block text-blue-100 mb-1">Department Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Description</label>
+                    <label className="block text-blue-100 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={editingItem.description || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                 </>
@@ -1417,31 +1417,31 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'users' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Username</label>
+                    <label className="block text-blue-100 mb-1">Username</label>
                     <input
                       type="text"
                       required
                       value={editingItem.username || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, username: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Full Name</label>
+                    <label className="block text-blue-100 mb-1">Full Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.fullName || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, fullName: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">System Role</label>
+                    <label className="block text-blue-100 mb-1">System Role</label>
                     <select
                       value={editingItem.role || 'CASHIER'}
                       onChange={(e) => setEditingItem({ ...editingItem, role: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     >
                       <option value="SUPER_ADMIN">SUPER_ADMIN</option>
                       <option value="BRANCH_MANAGER">BRANCH_MANAGER</option>
@@ -1454,11 +1454,11 @@ export const AdminConfigView: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Branch</label>
+                      <label className="block text-blue-100 mb-1">Branch</label>
                       <select
                         value={editingItem.branchId || branches[0]?.id}
                         onChange={(e) => setEditingItem({ ...editingItem, branchId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white text-xs"
                       >
                         {branches.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -1468,11 +1468,11 @@ export const AdminConfigView: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Store (Optional)</label>
+                      <label className="block text-blue-100 mb-1">Store (Optional)</label>
                       <select
                         value={editingItem.storeId || ''}
                         onChange={(e) => setEditingItem({ ...editingItem, storeId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white text-xs"
                       >
                         <option value="">-- None / All --</option>
                         {stores.map((s) => (
@@ -1484,13 +1484,13 @@ export const AdminConfigView: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Set Password</label>
+                    <label className="block text-blue-100 mb-1">Set Password</label>
                     <input
                       type="password"
                       placeholder="Leave blank to keep existing password"
                       value={editingItem.password || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, password: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                 </>
@@ -1499,32 +1499,32 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'workers' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Full Name</label>
+                    <label className="block text-blue-100 mb-1">Full Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.fullName || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, fullName: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Phone Number</label>
+                    <label className="block text-blue-100 mb-1">Phone Number</label>
                     <input
                       type="text"
                       required
                       value={editingItem.phone || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, phone: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Branch</label>
+                      <label className="block text-blue-100 mb-1">Branch</label>
                       <select
                         value={editingItem.branchId || branches[0]?.id}
                         onChange={(e) => setEditingItem({ ...editingItem, branchId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       >
                         {branches.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -1534,11 +1534,11 @@ export const AdminConfigView: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Role / Designation</label>
+                      <label className="block text-blue-100 mb-1">Role / Designation</label>
                       <select
                         value={editingItem.role || 'FIELD_SALESPERSON'}
                         onChange={(e) => setEditingItem({ ...editingItem, role: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       >
                         <option value="FIELD_SALESPERSON">Field Sales / Driver</option>
                         <option value="CASHIER">Cashier</option>
@@ -1552,11 +1552,11 @@ export const AdminConfigView: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Department</label>
+                    <label className="block text-blue-100 mb-1">Department</label>
                     <select
                       value={editingItem.department || departments[0]?.code}
                       onChange={(e) => setEditingItem({ ...editingItem, department: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     >
                       {departments.map((d) => (
                         <option key={d.id} value={d.code}>
@@ -1566,13 +1566,13 @@ export const AdminConfigView: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Base Salary (UGX)</label>
+                    <label className="block text-blue-100 mb-1">Base Salary (UGX)</label>
                     <input
                       type="number"
                       required
                       value={editingItem.basicSalaryUgx || 0}
                       onChange={(e) => setEditingItem({ ...editingItem, basicSalaryUgx: parseInt(e.target.value) || 0 })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                 </>
@@ -1582,21 +1582,21 @@ export const AdminConfigView: React.FC = () => {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">SKU</label>
+                      <label className="block text-blue-100 mb-1">SKU</label>
                       <input
                         type="text"
                         required
                         value={editingItem.sku || ''}
                         onChange={(e) => setEditingItem({ ...editingItem, sku: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Category</label>
+                      <label className="block text-blue-100 mb-1">Category</label>
                       <select
                         value={editingItem.category || categories[0]?.code}
                         onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       >
                         {categories.map((c) => (
                           <option key={c.id} value={c.code}>
@@ -1607,56 +1607,56 @@ export const AdminConfigView: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Product Name</label>
+                    <label className="block text-blue-100 mb-1">Product Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Unit of Measure</label>
+                      <label className="block text-blue-100 mb-1">Unit of Measure</label>
                       <input
                         type="text"
                         required
                         value={editingItem.unitOfMeasure || 'Carton (24)'}
                         onChange={(e) => setEditingItem({ ...editingItem, unitOfMeasure: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Capacity (ml)</label>
+                      <label className="block text-blue-100 mb-1">Capacity (ml)</label>
                       <input
                         type="number"
                         required
                         value={editingItem.capacityMl || 500}
                         onChange={(e) => setEditingItem({ ...editingItem, capacityMl: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Cost Price (UGX)</label>
+                      <label className="block text-blue-100 mb-1">Cost Price (UGX)</label>
                       <input
                         type="number"
                         required
                         value={editingItem.costPriceUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, costPriceUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Selling Price (UGX)</label>
+                      <label className="block text-blue-100 mb-1">Selling Price (UGX)</label>
                       <input
                         type="number"
                         required
                         value={editingItem.sellingPriceUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, sellingPriceUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                   </div>
@@ -1666,23 +1666,23 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'vehicles' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Registration Number / Plate</label>
+                    <label className="block text-blue-100 mb-1">Registration Number / Plate</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. UBB 450L or UFX 101T"
                       value={editingItem.registrationNumber || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, registrationNumber: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Vehicle Type</label>
+                      <label className="block text-blue-100 mb-1">Vehicle Type</label>
                       <select
                         value={editingItem.type || 'TRICYCLE'}
                         onChange={(e) => setEditingItem({ ...editingItem, type: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       >
                         <option value="TRICYCLE">TRICYCLE (Tuk-Tuk)</option>
                         <option value="LORRY">LORRY / TRUCK</option>
@@ -1691,11 +1691,11 @@ export const AdminConfigView: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Assigned Branch</label>
+                      <label className="block text-blue-100 mb-1">Assigned Branch</label>
                       <select
                         value={editingItem.branchId || branches[0]?.id}
                         onChange={(e) => setEditingItem({ ...editingItem, branchId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       >
                         {branches.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -1706,14 +1706,14 @@ export const AdminConfigView: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Model / Make Description</label>
+                    <label className="block text-blue-100 mb-1">Model / Make Description</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Tuk-Tuk Cargo Tricycle 150cc"
                       value={editingItem.model || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, model: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                 </>
@@ -1722,32 +1722,32 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'categories' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Category Code</label>
+                    <label className="block text-blue-100 mb-1">Category Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Category Name</label>
+                    <label className="block text-blue-100 mb-1">Category Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Description</label>
+                    <label className="block text-blue-100 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={editingItem.description || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                 </>
@@ -1756,32 +1756,32 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'roles' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Role Code</label>
+                    <label className="block text-blue-100 mb-1">Role Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Display Name</label>
+                    <label className="block text-blue-100 mb-1">Display Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.displayName || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, displayName: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Description</label>
+                    <label className="block text-blue-100 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={editingItem.description || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                 </>
@@ -1791,11 +1791,11 @@ export const AdminConfigView: React.FC = () => {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Product</label>
+                      <label className="block text-blue-100 mb-1">Product</label>
                       <select
                         value={editingItem.productId || products[0]?.id}
                         onChange={(e) => setEditingItem({ ...editingItem, productId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       >
                         {products.map((p) => (
                           <option key={p.id} value={p.id}>
@@ -1805,11 +1805,11 @@ export const AdminConfigView: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Branch</label>
+                      <label className="block text-blue-100 mb-1">Branch</label>
                       <select
                         value={editingItem.branchId || branches[0]?.id}
                         onChange={(e) => setEditingItem({ ...editingItem, branchId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                       >
                         {branches.map((b) => (
                           <option key={b.id} value={b.id}>
@@ -1821,23 +1821,23 @@ export const AdminConfigView: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Selling Price (UGX)</label>
+                      <label className="block text-blue-100 mb-1">Selling Price (UGX)</label>
                       <input
                         type="number"
                         required
                         value={editingItem.sellingPriceUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, sellingPriceUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Min Wholesale Price (UGX)</label>
+                      <label className="block text-blue-100 mb-1">Min Wholesale Price (UGX)</label>
                       <input
                         type="number"
                         required
                         value={editingItem.minWholesalePriceUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, minWholesalePriceUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                   </div>
@@ -1847,27 +1847,27 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'payment_methods' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Method Code</label>
+                    <label className="block text-blue-100 mb-1">Method Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Method Name</label>
+                    <label className="block text-blue-100 mb-1">Method Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
-                  <div className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-300">Requires Transaction Reference Number</span>
+                  <div className="flex items-center justify-between bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+                    <span className="text-white">Requires Transaction Reference Number</span>
                     <input
                       type="checkbox"
                       checked={editingItem.requiresReference || false}
@@ -1881,36 +1881,36 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'expense_types' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Expense Type Code</label>
+                    <label className="block text-blue-100 mb-1">Expense Type Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Expense Type Name</label>
+                    <label className="block text-blue-100 mb-1">Expense Type Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Description</label>
+                    <label className="block text-blue-100 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={editingItem.description || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
-                  <div className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-300">Requires Manager Approval</span>
+                  <div className="flex items-center justify-between bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+                    <span className="text-white">Requires Manager Approval</span>
                     <input
                       type="checkbox"
                       checked={editingItem.requiresApproval ?? true}
@@ -1924,36 +1924,36 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'debt_types' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Debt Type Code</label>
+                    <label className="block text-blue-100 mb-1">Debt Type Code</label>
                     <input
                       type="text"
                       required
                       value={editingItem.code || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, code: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Debt Type Name</label>
+                    <label className="block text-blue-100 mb-1">Debt Type Name</label>
                     <input
                       type="text"
                       required
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Description</label>
+                    <label className="block text-blue-100 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={editingItem.description || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
-                  <div className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span className="text-slate-300">Auto Deduct From Monthly Worker Payroll</span>
+                  <div className="flex items-center justify-between bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+                    <span className="text-white">Auto Deduct From Monthly Worker Payroll</span>
                     <input
                       type="checkbox"
                       checked={editingItem.autoDeductPayroll ?? true}
@@ -1968,55 +1968,55 @@ export const AdminConfigView: React.FC = () => {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-400 mb-1">Role Code</label>
+                      <label className="block text-blue-100 mb-1">Role Code</label>
                       <input
                         type="text"
                         required
                         value={editingItem.roleCode || 'FIELD_SALESPERSON'}
                         onChange={(e) => setEditingItem({ ...editingItem, roleCode: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Department Code</label>
+                      <label className="block text-blue-100 mb-1">Department Code</label>
                       <input
                         type="text"
                         required
                         value={editingItem.departmentCode || 'SALES'}
                         onChange={(e) => setEditingItem({ ...editingItem, departmentCode: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-slate-400 mb-1">Base (UGX)</label>
+                      <label className="block text-blue-100 mb-1">Base (UGX)</label>
                       <input
                         type="number"
                         required
                         value={editingItem.baseSalaryUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, baseSalaryUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Commission/Unit</label>
+                      <label className="block text-blue-100 mb-1">Commission/Unit</label>
                       <input
                         type="number"
                         required
                         value={editingItem.commissionPerUnitUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, commissionPerUnitUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Allowance</label>
+                      <label className="block text-blue-100 mb-1">Allowance</label>
                       <input
                         type="number"
                         required
                         value={editingItem.allowanceUgx || 0}
                         onChange={(e) => setEditingItem({ ...editingItem, allowanceUgx: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                        className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                       />
                     </div>
                   </div>
@@ -2026,42 +2026,42 @@ export const AdminConfigView: React.FC = () => {
               {activeTab === 'system_settings' && (
                 <>
                   <div>
-                    <label className="block text-slate-400 mb-1">Setting Key</label>
+                    <label className="block text-blue-100 mb-1">Setting Key</label>
                     <input
                       type="text"
                       required
                       value={editingItem.settingKey || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, settingKey: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Setting Value</label>
+                    <label className="block text-blue-100 mb-1">Setting Value</label>
                     <input
                       type="text"
                       required
                       value={editingItem.settingValue || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, settingValue: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Category</label>
+                    <label className="block text-blue-100 mb-1">Category</label>
                     <input
                       type="text"
                       required
                       value={editingItem.category || 'GENERAL'}
                       onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Description</label>
+                    <label className="block text-blue-100 mb-1">Description</label>
                     <textarea
                       rows={2}
                       value={editingItem.description || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100"
+                      className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white"
                     />
                   </div>
                 </>
@@ -2069,8 +2069,8 @@ export const AdminConfigView: React.FC = () => {
 
               {/* Status Toggle Switch */}
               {editingItem.isActive !== undefined && (
-                <div className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
-                  <span className="text-slate-300 font-medium">Is Active Status</span>
+                <div className="flex items-center justify-between bg-[#070E24] p-3 rounded-xl border border-blue-900/60 mt-2">
+                  <span className="text-white font-medium">Is Active Status</span>
                   <input
                     type="checkbox"
                     checked={editingItem.isActive}
@@ -2080,11 +2080,11 @@ export const AdminConfigView: React.FC = () => {
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-3 border-t border-slate-800 pt-4 mt-4">
+              <div className="flex items-center justify-end gap-3 border-t border-blue-900/60 pt-4 mt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-all"
+                  className="px-4 py-2 bg-[#182855] hover:bg-slate-700 text-white rounded-xl transition-all"
                 >
                   Cancel
                 </button>
@@ -2104,22 +2104,22 @@ export const AdminConfigView: React.FC = () => {
       {/* Reset Production Data Confirmation Modal */}
       {isResetConfirmModalOpen && (
         <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-rose-900/80 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-slate-100">
-            <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1B3E] border border-rose-900/80 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-white">
+            <div className="flex items-center gap-3 border-b border-blue-900/60 pb-3">
               <div className="p-2.5 bg-rose-950 text-rose-400 rounded-2xl border border-rose-800/60">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="font-extrabold text-base text-rose-300">Confirm Production Ledger Reset</h3>
-                <p className="text-xs text-slate-400">This action cleans transactional data to prepare for live business.</p>
+                <p className="text-xs text-blue-100">This action cleans transactional data to prepare for live business.</p>
               </div>
             </div>
 
-            <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs space-y-2 text-slate-300">
+            <div className="bg-[#070E24] p-4 rounded-2xl border border-blue-900/60 text-xs space-y-2 text-white">
               <div className="font-bold text-rose-400 flex items-center gap-1.5">
                 <span>⚠️ What will be purged:</span>
               </div>
-              <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1 text-[11px]">
+              <ul className="list-disc list-inside space-y-1 text-blue-100 pl-1 text-[11px]">
                 <li>All mock/test POS cart sales and receipts</li>
                 <li>All field route sessions and worker reconciliations</li>
                 <li>All draft and dispatched stock transfers</li>
@@ -2128,7 +2128,7 @@ export const AdminConfigView: React.FC = () => {
                 <li>Inventory stock quantities reset to clean 0 for actual opening intake</li>
               </ul>
 
-              <div className="pt-2 border-t border-slate-800">
+              <div className="pt-2 border-t border-blue-900/60">
                 <label className="flex items-center gap-2 cursor-pointer bg-rose-950/40 p-2.5 rounded-xl border border-rose-800/40">
                   <input
                     type="checkbox"
@@ -2147,7 +2147,7 @@ export const AdminConfigView: React.FC = () => {
                   <div className="font-bold text-emerald-400 flex items-center gap-1.5 pt-2 border-t border-slate-900">
                     <span>✓ What will be PRESERVED safely:</span>
                   </div>
-                  <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1 text-[11px]">
+                  <ul className="list-disc list-inside space-y-1 text-blue-100 pl-1 text-[11px]">
                     <li>All Branches, Stores, Warehouses & Delivery Vehicles</li>
                     <li>All Registered Products, SKUs, Categories & Price Rules</li>
                     <li>All Workers, Departments, User Accounts & Security Roles</li>
@@ -2157,14 +2157,14 @@ export const AdminConfigView: React.FC = () => {
               )}
             </div>
 
-            <div className="flex gap-2 border-t border-slate-800 pt-3">
+            <div className="flex gap-2 border-t border-blue-900/60 pt-3">
               <button
                 type="button"
                 onClick={() => {
                   setIsResetConfirmModalOpen(false);
                   setClearDemoMaster(false);
                 }}
-                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs"
+                className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl text-xs"
               >
                 Cancel / Keep Data
               </button>

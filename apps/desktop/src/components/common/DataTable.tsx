@@ -181,12 +181,12 @@ export function DataTable<T extends Record<string, any>>({
   };
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xl space-y-3 sm:space-y-4">
+    <div className="bg-[#0F1B3E]/80 border border-blue-900/60 rounded-2xl p-3.5 sm:p-5 shadow-xl space-y-3 sm:space-y-4">
       {/* Title & Top Bar */}
       {(title || description) && (
-        <div className="border-b border-slate-800 pb-3">
-          {title && <h3 className="text-base font-bold text-slate-100">{title}</h3>}
-          {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+        <div className="border-b border-blue-900/60 pb-3">
+          {title && <h3 className="text-base font-bold text-white">{title}</h3>}
+          {description && <p className="text-xs text-blue-100 mt-0.5">{description}</p>}
         </div>
       )}
 
@@ -197,7 +197,7 @@ export function DataTable<T extends Record<string, any>>({
         <div className="flex flex-wrap items-center gap-2 flex-1">
           {/* Search Box */}
           <div className="relative flex-1 min-w-[160px] sm:min-w-[200px] max-w-full sm:max-w-xs">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-blue-100 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder={searchPlaceholder}
@@ -206,13 +206,13 @@ export function DataTable<T extends Record<string, any>>({
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+              className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
             />
           </div>
 
           {/* Date Range Filters */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
-            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <div className="flex flex-wrap items-center gap-1.5 bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1 text-xs">
+            <Calendar className="w-3.5 h-3.5 text-blue-100 shrink-0" />
             <input
               type="date"
               value={startDate}
@@ -220,9 +220,9 @@ export function DataTable<T extends Record<string, any>>({
                 setStartDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer text-xs"
+              className="bg-transparent text-white focus:outline-none cursor-pointer text-xs"
             />
-            <span className="text-slate-500">to</span>
+            <span className="text-blue-100/80">to</span>
             <input
               type="date"
               value={endDate}
@@ -230,25 +230,25 @@ export function DataTable<T extends Record<string, any>>({
                 setEndDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer text-xs"
+              className="bg-transparent text-white focus:outline-none cursor-pointer text-xs"
             />
           </div>
 
           {/* Branch Filter */}
           {branchOptions.length > 0 && (
-            <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
-              <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-1.5 bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1 text-xs">
+              <Building2 className="w-3.5 h-3.5 text-blue-100 shrink-0" />
               <select
                 value={selectedBranch}
                 onChange={(e) => {
                   setSelectedBranch(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-transparent text-slate-300 focus:outline-none cursor-pointer font-medium text-xs"
+                className="bg-transparent text-white focus:outline-none cursor-pointer font-medium text-xs"
               >
-                <option value="ALL" className="bg-slate-900">All Branches</option>
+                <option value="ALL" className="bg-[#0F1B3E]">All Branches</option>
                 {branchOptions.map((b) => (
-                  <option key={b.id} value={b.id} className="bg-slate-900">
+                  <option key={b.id} value={b.id} className="bg-[#0F1B3E]">
                     {b.name}
                   </option>
                 ))}
@@ -258,19 +258,19 @@ export function DataTable<T extends Record<string, any>>({
 
           {/* Status Filter */}
           {statusOptions.length > 0 && (
-            <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
-              <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <div className="flex items-center gap-1.5 bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1 text-xs">
+              <Filter className="w-3.5 h-3.5 text-blue-100 shrink-0" />
               <select
                 value={selectedStatus}
                 onChange={(e) => {
                   setSelectedStatus(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-transparent text-slate-300 focus:outline-none cursor-pointer font-medium text-xs"
+                className="bg-transparent text-white focus:outline-none cursor-pointer font-medium text-xs"
               >
-                <option value="ALL" className="bg-slate-900">All Statuses</option>
+                <option value="ALL" className="bg-[#0F1B3E]">All Statuses</option>
                 {statusOptions.map((s) => (
-                  <option key={s.code} value={s.code} className="bg-slate-900">
+                  <option key={s.code} value={s.code} className="bg-[#0F1B3E]">
                     {s.label}
                   </option>
                 ))}
@@ -285,22 +285,22 @@ export function DataTable<T extends Record<string, any>>({
           <div className="relative">
             <button
               onClick={() => setShowColumnToggle(!showColumnToggle)}
-              className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              className="flex items-center gap-1.5 bg-[#070E24] hover:bg-[#182855] border border-blue-900/60 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Columns</span>
             </button>
 
             {showColumnToggle && (
-              <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in space-y-1">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 border-b border-slate-800">
+              <div className="absolute right-0 mt-2 w-48 bg-[#0F1B3E] border border-blue-900/60 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in space-y-1">
+                <div className="text-[10px] font-bold text-blue-100 uppercase tracking-wider px-2 py-1 border-b border-blue-900/60">
                   Toggle Columns
                 </div>
                 {columns.map((col) => (
                   <button
                     key={col.key}
                     onClick={() => toggleColumn(col.key)}
-                    className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-300 hover:bg-slate-800 rounded-lg transition-all cursor-pointer"
+                    className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs text-white hover:bg-[#182855] rounded-lg transition-all cursor-pointer"
                   >
                     <span>{col.header}</span>
                     {visibleColumns[col.key] && <Check className="w-3.5 h-3.5 text-cyan-400" />}
@@ -323,9 +323,9 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Main Data Table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800/80">
-        <table className="w-full text-left text-xs text-slate-300">
-          <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider select-none">
+      <div className="overflow-x-auto rounded-xl border border-blue-900/60/80">
+        <table className="w-full text-left text-xs text-white">
+          <thead className="bg-[#070E24] text-blue-100 uppercase text-[10px] tracking-wider select-none">
             <tr>
               {columns
                 .filter((col) => visibleColumns[col.key])
@@ -333,7 +333,7 @@ export function DataTable<T extends Record<string, any>>({
                   <th
                     key={col.key}
                     onClick={() => handleHeaderClick(col.key, col.sortable !== false)}
-                    className={`p-3 font-semibold ${col.sortable !== false ? 'cursor-pointer hover:text-slate-200' : ''}`}
+                    className={`p-3 font-semibold ${col.sortable !== false ? 'cursor-pointer hover:text-white' : ''}`}
                   >
                     <div className="flex items-center gap-1.5">
                       <span>{col.header}</span>
@@ -355,10 +355,10 @@ export function DataTable<T extends Record<string, any>>({
                 ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
+          <tbody className="divide-y divide-slate-800/60 bg-[#0F1B3E]/40">
             {paginatedData.length > 0 ? (
               paginatedData.map((item, rowIdx) => (
-                <tr key={rowIdx} className="hover:bg-slate-800/50 transition-all">
+                <tr key={rowIdx} className="hover:bg-[#182855]/50 transition-all">
                   {columns
                     .filter((col) => visibleColumns[col.key])
                     .map((col) => (
@@ -370,7 +370,7 @@ export function DataTable<T extends Record<string, any>>({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.filter((c) => visibleColumns[c.key]).length} className="p-8 text-center text-slate-500 italic">
+                <td colSpan={columns.filter((c) => visibleColumns[c.key]).length} className="p-8 text-center text-blue-100/80 italic">
                   No matching records found.
                 </td>
               </tr>
@@ -380,11 +380,11 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Bottom Pagination Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-blue-100">
         <div className="text-center sm:text-left">
-          Showing <span className="font-semibold text-slate-200">{sortedData.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}</span> to{' '}
-          <span className="font-semibold text-slate-200">{Math.min(currentPage * pageSize, sortedData.length)}</span> of{' '}
-          <span className="font-semibold text-slate-200">{sortedData.length}</span> entries
+          Showing <span className="font-semibold text-white">{sortedData.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}</span> to{' '}
+          <span className="font-semibold text-white">{Math.min(currentPage * pageSize, sortedData.length)}</span> of{' '}
+          <span className="font-semibold text-white">{sortedData.length}</span> entries
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
@@ -397,7 +397,7 @@ export function DataTable<T extends Record<string, any>>({
                 setPageSize(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-slate-200 font-semibold focus:outline-none text-xs"
+              className="bg-[#070E24] border border-blue-900/60 rounded-lg px-2 py-1 text-white font-semibold focus:outline-none text-xs"
             >
               <option value={10}>10</option>
               <option value={25}>25</option>
@@ -411,18 +411,18 @@ export function DataTable<T extends Record<string, any>>({
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 cursor-pointer"
+              className="p-1.5 rounded-lg bg-[#070E24] border border-blue-900/60 hover:bg-[#182855] disabled:opacity-40 disabled:cursor-not-allowed text-white cursor-pointer"
               aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="px-2 font-semibold text-slate-300 whitespace-nowrap">
+            <span className="px-2 font-semibold text-white whitespace-nowrap">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 cursor-pointer"
+              className="p-1.5 rounded-lg bg-[#070E24] border border-blue-900/60 hover:bg-[#182855] disabled:opacity-40 disabled:cursor-not-allowed text-white cursor-pointer"
               aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4" />

@@ -168,11 +168,11 @@ export const FinanceView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
             <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Finance, Expenses & Payroll</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-blue-100 mt-1">
             Track business operating expenses, route staff debt recoveries, and calculate monthly worker payrolls.
           </p>
         </div>
@@ -187,7 +187,7 @@ export const FinanceView: React.FC = () => {
             </button>
           )}
 
-          <div className="bg-slate-900 border border-slate-800 p-1 rounded-xl flex">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 p-1 rounded-xl flex">
             {(['expenses', 'salaries', 'debts'] as const).map((tab) => (
               <button
                 key={tab}
@@ -195,7 +195,7 @@ export const FinanceView: React.FC = () => {
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
                   activeTab === tab
                     ? 'bg-cyan-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-blue-100 hover:text-white'
                 }`}
               >
                 {tab}
@@ -206,7 +206,7 @@ export const FinanceView: React.FC = () => {
       </div>
 
       {notification && (
-        <div className="bg-slate-900 border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
+        <div className="bg-[#0F1B3E] border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2 shadow-lg animate-fade-in">
           <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
           <span>{notification}</span>
         </div>
@@ -214,41 +214,41 @@ export const FinanceView: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 border border-blue-900/60 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Expenses Recorded</div>
-            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
+            <div className="text-[11px] text-blue-100 uppercase tracking-wider font-semibold">Total Expenses Recorded</div>
+            <div className="text-xl font-extrabold text-white mt-1 font-mono">
               UGX {totalExpensesUgx.toLocaleString()}
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">{expensesList.length} Vouchers Filed</div>
+            <div className="text-[10px] text-blue-100/80 mt-0.5">{expensesList.length} Vouchers Filed</div>
           </div>
-          <div className="p-3 bg-slate-950 text-cyan-400 rounded-xl border border-slate-800 shrink-0">
+          <div className="p-3 bg-[#070E24] text-cyan-400 rounded-xl border border-blue-900/60 shrink-0">
             <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
         </div>
 
-        <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 border border-blue-900/60 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Payroll Salaries Paid</div>
-            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
+            <div className="text-[11px] text-blue-100 uppercase tracking-wider font-semibold">Payroll Salaries Paid</div>
+            <div className="text-xl font-extrabold text-white mt-1 font-mono">
               UGX {totalSalariesPaidUgx.toLocaleString()}
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">{salaryPaymentsList.length} Payslips Disbursed</div>
+            <div className="text-[10px] text-blue-100/80 mt-0.5">{salaryPaymentsList.length} Payslips Disbursed</div>
           </div>
-          <div className="p-3 bg-slate-950 text-cyan-400 rounded-xl border border-slate-800 shrink-0">
+          <div className="p-3 bg-[#070E24] text-cyan-400 rounded-xl border border-blue-900/60 shrink-0">
             <Wallet className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 border border-blue-900/60 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Outstanding Shortage Debts</div>
-            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
+            <div className="text-[11px] text-blue-100 uppercase tracking-wider font-semibold">Outstanding Shortage Debts</div>
+            <div className="text-xl font-extrabold text-white mt-1 font-mono">
               UGX {totalDebtsOutstandingUgx.toLocaleString()}
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">Recoverable from payroll</div>
+            <div className="text-[10px] text-blue-100/80 mt-0.5">Recoverable from payroll</div>
           </div>
-          <div className="p-3 bg-slate-950 text-cyan-400 rounded-xl border border-slate-800">
+          <div className="p-3 bg-[#070E24] text-cyan-400 rounded-xl border border-blue-900/60">
             <AlertCircle className="w-6 h-6" />
           </div>
         </div>
@@ -256,21 +256,21 @@ export const FinanceView: React.FC = () => {
 
       {/* EXPENSES TAB */}
       {activeTab === 'expenses' && (
-        <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+        <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="font-bold text-slate-200 text-sm">Operating Expenses & Vouchers Ledger ({expensesList.length})</h3>
-            <span className="text-xs text-slate-400">Fuel, factory maintenance, driver allowances, utilities</span>
+            <h3 className="font-bold text-white text-sm">Operating Expenses & Vouchers Ledger ({expensesList.length})</h3>
+            <span className="text-xs text-blue-100">Fuel, factory maintenance, driver allowances, utilities</span>
           </div>
 
           {expensesList.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 text-xs space-y-2">
+            <div className="text-center py-12 text-blue-100/80 text-xs space-y-2">
               <Receipt className="w-8 h-8 mx-auto text-slate-600" />
               <p>No expenses recorded yet. Click "Record New Expense" to create a voucher.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
                   <tr>
                     <th className="p-3">Voucher #</th>
                     <th className="p-3">Date</th>
@@ -283,11 +283,11 @@ export const FinanceView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {expensesList.map((exp) => (
-                    <tr key={exp.id} className="hover:bg-slate-900/50">
+                    <tr key={exp.id} className="hover:bg-[#0F1B3E]/50">
                       <td className="p-3 font-mono font-bold text-cyan-400">{exp.voucherNumber}</td>
-                      <td className="p-3 text-slate-400">{exp.date}</td>
+                      <td className="p-3 text-blue-100">{exp.date}</td>
                       <td className="p-3">
-                        <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-slate-300 font-bold">
+                        <span className="bg-[#182855] px-2 py-0.5 rounded text-[10px] font-mono text-white font-bold">
                           {exp.category}
                         </span>
                       </td>
@@ -295,15 +295,15 @@ export const FinanceView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedExpensePopup(exp)}
-                          className="text-left text-slate-200 hover:text-cyan-400 font-semibold max-w-[240px] truncate block cursor-pointer transition-colors underline underline-offset-2"
+                          className="text-left text-white hover:text-cyan-400 font-semibold max-w-[240px] truncate block cursor-pointer transition-colors underline underline-offset-2"
                           title="Click to view full description"
                         >
                           {exp.description}
                         </button>
                       </td>
-                      <td className="p-3 text-slate-400">{exp.paymentMethod}</td>
-                      <td className="p-3 text-slate-400">{exp.approvedBy}</td>
-                      <td className="p-3 text-right font-mono font-bold text-slate-100">
+                      <td className="p-3 text-blue-100">{exp.paymentMethod}</td>
+                      <td className="p-3 text-blue-100">{exp.approvedBy}</td>
+                      <td className="p-3 text-right font-mono font-bold text-white">
                         UGX {exp.amountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -318,17 +318,17 @@ export const FinanceView: React.FC = () => {
       {/* SALARIES TAB */}
       {activeTab === 'salaries' && (
         <div className="space-y-6">
-          <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+          <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="font-bold text-slate-200 text-sm">Monthly Staff Payroll Processing</h3>
-                <p className="text-xs text-slate-400">Compute basic salaries, route commissions, and auto-recover field debts.</p>
+                <h3 className="font-bold text-white text-sm">Monthly Staff Payroll Processing</h3>
+                <p className="text-xs text-blue-100">Compute basic salaries, route commissions, and auto-recover field debts.</p>
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+              <table className="w-full text-left text-xs text-white">
+                <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
                   <tr>
                     <th className="p-3">Worker Full Name</th>
                     <th className="p-3">Department</th>
@@ -344,15 +344,15 @@ export const FinanceView: React.FC = () => {
                       .reduce((sum, d) => sum + d.balanceAmountUgx, 0);
 
                     return (
-                      <tr key={worker.id} className="hover:bg-slate-900/50">
-                        <td className="p-3 font-bold text-slate-100">{worker.fullName}</td>
-                        <td className="p-3 text-slate-400">{worker.department}</td>
-                        <td className="p-3 font-mono text-slate-200 font-semibold">
+                      <tr key={worker.id} className="hover:bg-[#0F1B3E]/50">
+                        <td className="p-3 font-bold text-white">{worker.fullName}</td>
+                        <td className="p-3 text-blue-100">{worker.department}</td>
+                        <td className="p-3 font-mono text-white font-semibold">
                           UGX {worker.basicSalaryUgx.toLocaleString()}
                         </td>
                         <td className="p-3">
                           {activeDebt > 0 ? (
-                            <span className="font-mono text-slate-200 font-bold bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-[11px]">
+                            <span className="font-mono text-white font-bold bg-[#0F1B3E] border border-blue-800/60 px-2 py-0.5 rounded text-[11px]">
                               - UGX {activeDebt.toLocaleString()}
                             </span>
                           ) : (
@@ -380,15 +380,15 @@ export const FinanceView: React.FC = () => {
           </div>
 
           {/* Paid Salary Vouchers History */}
-          <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
-            <h3 className="font-bold text-slate-200 text-sm">Disbursed Salary Payments History ({salaryPaymentsList.length})</h3>
+          <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
+            <h3 className="font-bold text-white text-sm">Disbursed Salary Payments History ({salaryPaymentsList.length})</h3>
 
             {salaryPaymentsList.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 text-xs">No salary payments processed yet.</div>
+              <div className="text-center py-8 text-blue-100/80 text-xs">No salary payments processed yet.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+                <table className="w-full text-left text-xs text-white">
+                  <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
                     <tr>
                       <th className="p-3">Voucher #</th>
                       <th className="p-3">Payment Date</th>
@@ -404,15 +404,15 @@ export const FinanceView: React.FC = () => {
                     {salaryPaymentsList.map((sp) => (
                       <tr key={sp.id}>
                         <td className="p-3 font-mono font-bold text-cyan-400">{sp.voucherNumber}</td>
-                        <td className="p-3 text-slate-400">{sp.paymentDate}</td>
-                        <td className="p-3 font-semibold text-slate-200">{sp.workerName}</td>
-                        <td className="p-3 text-slate-400">{sp.month}</td>
+                        <td className="p-3 text-blue-100">{sp.paymentDate}</td>
+                        <td className="p-3 font-semibold text-white">{sp.workerName}</td>
+                        <td className="p-3 text-blue-100">{sp.month}</td>
                         <td className="p-3 font-mono">UGX {sp.basicSalaryUgx.toLocaleString()}</td>
-                        <td className="p-3 font-mono text-slate-200">+ UGX {(sp.commissionUgx + sp.allowancesUgx).toLocaleString()}</td>
-                        <td className="p-3 font-mono text-slate-400">
+                        <td className="p-3 font-mono text-white">+ UGX {(sp.commissionUgx + sp.allowancesUgx).toLocaleString()}</td>
+                        <td className="p-3 font-mono text-blue-100">
                           {sp.debtDeductedUgx > 0 ? `- UGX ${sp.debtDeductedUgx.toLocaleString()}` : '-'}
                         </td>
-                        <td className="p-3 text-right font-mono font-extrabold text-slate-100">
+                        <td className="p-3 text-right font-mono font-extrabold text-white">
                           UGX {sp.netPaidUgx.toLocaleString()}
                         </td>
                       </tr>
@@ -427,15 +427,15 @@ export const FinanceView: React.FC = () => {
 
       {/* DEBTS TAB */}
       {activeTab === 'debts' && (
-        <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+        <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="font-bold text-slate-200 text-sm">Staff Shortage & Customer Credit Debts ({debtsList.length})</h3>
-            <span className="text-xs text-slate-400">Auto-created on field route shortages</span>
+            <h3 className="font-bold text-white text-sm">Staff Shortage & Customer Credit Debts ({debtsList.length})</h3>
+            <span className="text-xs text-blue-100">Auto-created on field route shortages</span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+            <table className="w-full text-left text-xs text-white">
+              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
                 <tr>
                   <th className="p-3">Debtor Worker</th>
                   <th className="p-3">Source & Reason</th>
@@ -448,18 +448,18 @@ export const FinanceView: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {debtsList.map((debt) => (
-                  <tr key={debt.id} className="hover:bg-slate-900/50">
-                    <td className="p-3 font-bold text-slate-100">{debt.debtorName}</td>
-                    <td className="p-3 text-slate-400">{debt.source}</td>
-                    <td className="p-3 font-semibold text-slate-200 font-mono">UGX {debt.originalAmountUgx.toLocaleString()}</td>
-                    <td className="p-3 text-slate-300 font-mono">UGX {debt.paidAmountUgx.toLocaleString()}</td>
-                    <td className="p-3 font-extrabold text-slate-100 font-mono">UGX {debt.balanceAmountUgx.toLocaleString()}</td>
+                  <tr key={debt.id} className="hover:bg-[#0F1B3E]/50">
+                    <td className="p-3 font-bold text-white">{debt.debtorName}</td>
+                    <td className="p-3 text-blue-100">{debt.source}</td>
+                    <td className="p-3 font-semibold text-white font-mono">UGX {debt.originalAmountUgx.toLocaleString()}</td>
+                    <td className="p-3 text-white font-mono">UGX {debt.paidAmountUgx.toLocaleString()}</td>
+                    <td className="p-3 font-extrabold text-white font-mono">UGX {debt.balanceAmountUgx.toLocaleString()}</td>
                     <td className="p-3">
                       <span
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                           debt.status === 'CLEARED'
-                            ? 'bg-slate-900 border-cyan-500/40 text-cyan-300'
-                            : 'bg-slate-900 border-slate-700 text-slate-300'
+                            ? 'bg-[#0F1B3E] border-cyan-500/40 text-cyan-300'
+                            : 'bg-[#0F1B3E] border-blue-800/60 text-white'
                         }`}
                       >
                         {debt.status}
@@ -489,24 +489,24 @@ export const FinanceView: React.FC = () => {
       {/* Record New Expense Modal */}
       {isExpenseModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-white">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="flex items-center gap-2 font-bold text-cyan-400 text-base">
                 <Receipt className="w-5 h-5" />
                 <span>Record New Business Expense</span>
               </div>
-              <button onClick={() => setIsExpenseModalOpen(false)} className="text-slate-400 hover:text-white text-sm">
+              <button onClick={() => setIsExpenseModalOpen(false)} className="text-blue-100 hover:text-white text-sm">
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleRecordExpenseSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Expense Category</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Expense Category</label>
                 <select
                   value={expenseCategory}
                   onChange={(e) => setExpenseCategory(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold"
                   required
                 >
                   {expenseTypes.map((et) => (
@@ -518,36 +518,36 @@ export const FinanceView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Amount (UGX)</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Amount (UGX)</label>
                 <input
                   type="number"
                   min="100"
                   required
                   value={expenseAmount}
                   onChange={(e) => setExpenseAmount(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-slate-100 font-bold text-base focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 font-mono text-white font-bold text-base focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Description / Purpose</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Description / Purpose</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. 50 Litres Diesel for Isuzu Lorry"
                   value={expenseDesc}
                   onChange={(e) => setExpenseDesc(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Store / Branch</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Store / Branch</label>
                   <select
                     value={expenseStoreId}
                     onChange={(e) => setExpenseStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500"
                   >
                     {stores.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -558,11 +558,11 @@ export const FinanceView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Payment Method</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Payment Method</label>
                   <select
                     value={expensePaymentMethod}
                     onChange={(e) => setExpensePaymentMethod(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500"
                   >
                     {paymentMethodsList.map((pm) => (
                       <option key={pm.id} value={pm.code}>
@@ -573,11 +573,11 @@ export const FinanceView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 border-t border-slate-800 pt-3">
+              <div className="flex gap-2 border-t border-blue-900/60 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsExpenseModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
+                  className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -595,65 +595,65 @@ export const FinanceView: React.FC = () => {
 
       {/* Salary Payslip Modal */}
       {selectedWorkerForSalary && salaryCalc && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
-            <div className="text-center border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 bg-[#070E24]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-white my-auto max-h-[92vh] overflow-y-auto">
+            <div className="text-center border-b border-blue-900/60 pb-3">
               <h3 className="font-extrabold text-base sm:text-lg text-cyan-400">Worker Payslip Calculation</h3>
-              <div className="text-xs text-slate-300 font-bold">{selectedWorkerForSalary.fullName}</div>
-              <div className="text-[11px] text-slate-500">{selectedWorkerForSalary.department} Department</div>
+              <div className="text-xs text-white font-bold">{selectedWorkerForSalary.fullName}</div>
+              <div className="text-[11px] text-blue-100/80">{selectedWorkerForSalary.department} Department</div>
             </div>
 
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Route Commission (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Route Commission (UGX)</label>
                   <input
                     type="number"
                     value={salaryCommission}
                     onChange={(e) => setSalaryCommission(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1.5 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Allowances (UGX)</label>
+                  <label className="block text-[10px] text-blue-100 mb-1">Allowances (UGX)</label>
                   <input
                     type="number"
                     value={salaryAllowances}
                     onChange={(e) => setSalaryAllowances(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 font-mono text-slate-100 font-bold focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1.5 font-mono text-white font-bold focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-1.5">
-                <div className="flex justify-between text-slate-300">
+              <div className="bg-[#070E24] p-3 rounded-2xl border border-blue-900/60 space-y-1.5">
+                <div className="flex justify-between text-white">
                   <span>Basic Salary:</span>
                   <span className="font-bold font-mono">UGX {salaryCalc.basicSalaryUgx.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-white">
                   <span>Commissions + Allowances:</span>
-                  <span className="font-bold font-mono text-slate-200">+ UGX {(salaryCalc.commissionUgx + salaryCalc.allowancesUgx).toLocaleString()}</span>
+                  <span className="font-bold font-mono text-white">+ UGX {(salaryCalc.commissionUgx + salaryCalc.allowancesUgx).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-slate-100 font-extrabold border-t border-slate-800/80 pt-1">
+                <div className="flex justify-between text-white font-extrabold border-t border-blue-900/60/80 pt-1">
                   <span>Gross Pay:</span>
                   <span className="font-mono">UGX {salaryCalc.grossSalaryUgx.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-slate-400 font-bold">
+                <div className="flex justify-between text-blue-100 font-bold">
                   <span>Auto Debt Recovery Deduction:</span>
                   <span className="font-mono">- UGX {salaryCalc.debtDeductionsUgx.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-cyan-400 font-extrabold text-sm border-t border-slate-800/80 pt-1.5">
+                <div className="flex justify-between text-cyan-400 font-extrabold text-sm border-t border-blue-900/60/80 pt-1.5">
                   <span>Net Salary Payable:</span>
                   <span className="font-mono text-base">UGX {salaryCalc.netSalaryUgx.toLocaleString()}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1 font-semibold">Payment Disbursal Method</label>
+                <label className="block text-[10px] text-blue-100 mb-1 font-semibold">Payment Disbursal Method</label>
                 <select
                   value={salaryPaymentMethod}
                   onChange={(e) => setSalaryPaymentMethod(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500"
                 >
                   <option value="MOBILE_MONEY">Mobile Money (MTN / Airtel)</option>
                   <option value="CASH">Physical Cash</option>
@@ -662,10 +662,10 @@ export const FinanceView: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex gap-2 border-t border-slate-800 pt-4">
+            <div className="flex gap-2 border-t border-blue-900/60 pt-4">
               <button
                 onClick={() => setSelectedWorkerForSalary(null)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer"
+                className="bg-[#182855] hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -682,32 +682,32 @@ export const FinanceView: React.FC = () => {
 
       {/* Settle Debt Modal */}
       {settleDebtModalTarget && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 bg-[#070E24]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-50 overflow-y-auto">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-white my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="flex items-center gap-2 font-bold text-cyan-400 text-sm sm:text-base">
                 <CreditCard className="w-5 h-5 shrink-0" />
                 <span>Settle Debt / Record Cash Payment</span>
               </div>
-              <button onClick={() => setSettleDebtModalTarget(null)} className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer">
+              <button onClick={() => setSettleDebtModalTarget(null)} className="text-blue-100 hover:text-white text-sm font-bold cursor-pointer">
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleSettleDebtSubmit} className="space-y-3 text-xs">
               <div>
-                <span className="text-slate-400">Debtor: </span>
-                <span className="text-slate-100 font-bold">{settleDebtModalTarget.debtorName}</span>
+                <span className="text-blue-100">Debtor: </span>
+                <span className="text-white font-bold">{settleDebtModalTarget.debtorName}</span>
               </div>
               <div>
-                <span className="text-slate-400">Total Outstanding Balance: </span>
-                <span className="text-slate-200 font-mono font-bold">
+                <span className="text-blue-100">Total Outstanding Balance: </span>
+                <span className="text-white font-mono font-bold">
                   UGX {settleDebtModalTarget.balanceAmountUgx.toLocaleString()}
                 </span>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Payment Amount (UGX)</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Payment Amount (UGX)</label>
                 <input
                   type="number"
                   min="100"
@@ -715,15 +715,15 @@ export const FinanceView: React.FC = () => {
                   required
                   value={settleAmount}
                   onChange={(e) => setSettleAmount(parseInt(e.target.value) || 0)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 font-mono text-slate-100 font-bold text-base focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 font-mono text-white font-bold text-base focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
-              <div className="flex gap-2 border-t border-slate-800 pt-3">
+              <div className="flex gap-2 border-t border-blue-900/60 pt-3">
                 <button
                   type="button"
                   onClick={() => setSettleDebtModalTarget(null)}
-                  className="px-4 py-2.5 bg-slate-800 text-slate-300 font-bold rounded-xl cursor-pointer"
+                  className="px-4 py-2.5 bg-[#182855] text-white font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -746,57 +746,57 @@ export const FinanceView: React.FC = () => {
           onClick={() => setSelectedExpensePopup(null)}
         >
           <div
-            className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100"
+            className="bg-[#0F1B3E] border border-blue-900/60 rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 shadow-2xl text-white"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="space-y-0.5">
                 <div className="text-cyan-400 font-bold text-sm sm:text-base">
                   {selectedExpensePopup.voucherNumber}
                 </div>
-                <div className="text-slate-400 text-xs">
-                  Category: <span className="text-slate-200 font-medium">{selectedExpensePopup.category}</span>
+                <div className="text-blue-100 text-xs">
+                  Category: <span className="text-white font-medium">{selectedExpensePopup.category}</span>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedExpensePopup(null)}
-                className="text-slate-400 hover:text-slate-100 text-base font-bold p-1 cursor-pointer"
+                className="text-blue-100 hover:text-white text-base font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
-                <span className="text-slate-400 font-semibold">Expense Amount:</span>
-                <span className="font-mono font-bold text-slate-100 text-sm">
+              <div className="bg-[#070E24] border border-blue-900/60 rounded-xl p-3 flex justify-between items-center">
+                <span className="text-blue-100 font-semibold">Expense Amount:</span>
+                <span className="font-mono font-bold text-white text-sm">
                   UGX {selectedExpensePopup.amountUgx.toLocaleString()}
                 </span>
               </div>
 
-              <div className="flex justify-between text-slate-400 text-[11px] px-1">
+              <div className="flex justify-between text-blue-100 text-[11px] px-1">
                 <span>
-                  Approved By: <span className="text-slate-200 font-medium">{selectedExpensePopup.approvedBy}</span>
+                  Approved By: <span className="text-white font-medium">{selectedExpensePopup.approvedBy}</span>
                 </span>
                 <span>
-                  Date: <span className="text-slate-200 font-medium">{selectedExpensePopup.date}</span>
+                  Date: <span className="text-white font-medium">{selectedExpensePopup.date}</span>
                 </span>
               </div>
 
               <div>
-                <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+                <label className="block text-[11px] uppercase tracking-wider text-blue-100 font-semibold mb-1.5">
                   Full Expense Description:
                 </label>
-                <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-slate-200 text-xs leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto font-normal">
+                <div className="bg-[#070E24] border border-blue-900/60 rounded-xl p-3.5 text-white text-xs leading-relaxed whitespace-pre-wrap max-h-56 overflow-y-auto font-normal">
                   {selectedExpensePopup.description}
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-slate-800 pt-3 flex justify-end">
+            <div className="border-t border-blue-900/60 pt-3 flex justify-end">
               <button
                 onClick={() => setSelectedExpensePopup(null)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
+                className="bg-[#182855] hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
               >
                 Close
               </button>

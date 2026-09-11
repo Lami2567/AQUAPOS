@@ -279,11 +279,60 @@ export interface AppState {
   clearCart: () => void;
 }
 
+const ONE_HOUR_MS = 60 * 60 * 1000;
+
+function loadPersistedSession(): {
+  user: User | null;
+  token: string | null;
+  currentBranchId: string;
+  currentStoreId: string;
+} {
+  try {
+    const rawUser = localStorage.getItem('aquapos_user');
+    const token = localStorage.getItem('aquapos_token');
+    const lastActivity = localStorage.getItem('aquapos_last_activity');
+    const currentBranchId = localStorage.getItem('aquapos_current_branch') || '';
+    const currentStoreId = localStorage.getItem('aquapos_current_store') || '';
+
+    if (rawUser && token && lastActivity) {
+      const elapsed = Date.now() - Number(lastActivity);
+      if (elapsed < ONE_HOUR_MS) {
+        // Session is still active; update activity timestamp
+        localStorage.setItem('aquapos_last_activity', Date.now().toString());
+        sessionStorage.setItem('aquapos-auth-token', token);
+        return {
+          user: JSON.parse(rawUser),
+          token,
+          currentBranchId,
+          currentStoreId,
+        };
+      }
+    }
+  } catch (_) {}
+
+  // Expired or invalid session
+  try {
+    localStorage.removeItem('aquapos_user');
+    localStorage.removeItem('aquapos_token');
+    localStorage.removeItem('aquapos_last_activity');
+    sessionStorage.removeItem('aquapos-auth-token');
+  } catch (_) {}
+
+  return {
+    user: null,
+    token: null,
+    currentBranchId: '',
+    currentStoreId: '',
+  };
+}
+
+const initialSession = loadPersistedSession();
+
 export const useStore = create<AppState>((set) => ({
-      user: null,
-      token: null,
-      currentBranchId: '',
-      currentStoreId: '',
+      user: initialSession.user,
+      token: initialSession.token,
+      currentBranchId: initialSession.currentBranchId,
+      currentStoreId: initialSession.currentStoreId,
       isOnline: true,
       syncStatus: 'SYNCED',
       pendingSyncCount: 0,
@@ -362,14 +411,30 @@ export const useStore = create<AppState>((set) => ({
       selectedPaymentMethod: 'CASH' as PaymentMethod,
 
       setUser: (user, token) => {
-        if (token) {
-          try { sessionStorage.setItem('aquapos-auth-token', token); } catch (_) {}
+        if (user && token) {
+          try {
+            localStorage.setItem('aquapos_user', JSON.stringify(user));
+            localStorage.setItem('aquapos_token', token);
+            localStorage.setItem('aquapos_last_activity', Date.now().toString());
+            sessionStorage.setItem('aquapos-auth-token', token);
+          } catch (_) {}
         } else {
-          try { sessionStorage.removeItem('aquapos-auth-token'); } catch (_) {}
+          try {
+            localStorage.removeItem('aquapos_user');
+            localStorage.removeItem('aquapos_token');
+            localStorage.removeItem('aquapos_last_activity');
+            sessionStorage.removeItem('aquapos-auth-token');
+          } catch (_) {}
         }
-        set({ user, token });
+        set({ user, token: token || null });
       },
-      setStore: (currentBranchId, currentStoreId) => set({ currentBranchId, currentStoreId }),
+      setStore: (currentBranchId, currentStoreId) => {
+        try {
+          if (currentBranchId) localStorage.setItem('aquapos_current_branch', currentBranchId);
+          if (currentStoreId) localStorage.setItem('aquapos_current_store', currentStoreId);
+        } catch (_) {}
+        set({ currentBranchId, currentStoreId });
+      },
       setOnlineStatus: (isOnline) => set({ isOnline, syncStatus: isOnline ? 'SYNCED' : 'OFFLINE' }),
       setSyncStatus: (syncStatus, pendingSyncCount) =>
         set((state) => ({

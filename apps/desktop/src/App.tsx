@@ -34,10 +34,51 @@ export const getDefaultNavForRole = (role?: UserRole): NavSelection => {
 };
 
 export const App: React.FC = () => {
-  const { user } = useStore();
+  const { user, setUser } = useStore();
   const [currentNav, setCurrentNav] = useState<NavSelection>(() => getDefaultNavForRole(user?.role));
 
-  // Automatically land user on their role's respective default interface upon login & sync SQLite
+  // 1-Hour Session Activity Tracker: Updates timestamp on user interaction and logs out after 1 hour of inactivity
+  useEffect(() => {
+    if (!user) return;
+
+    const ONE_HOUR_MS = 60 * 60 * 1000;
+
+    let lastTouch = 0;
+    const recordUserActivity = () => {
+      const now = Date.now();
+      if (now - lastTouch > 15000) {
+        lastTouch = now;
+        try {
+          localStorage.setItem('aquapos_last_activity', now.toString());
+        } catch (_) {}
+      }
+    };
+
+    window.addEventListener('mousemove', recordUserActivity);
+    window.addEventListener('keydown', recordUserActivity);
+    window.addEventListener('click', recordUserActivity);
+    window.addEventListener('touchstart', recordUserActivity);
+    window.addEventListener('scroll', recordUserActivity);
+
+    // Check every 15 seconds if session has exceeded 1 hour
+    const checkInterval = setInterval(() => {
+      const lastActivity = Number(localStorage.getItem('aquapos_last_activity') || '0');
+      if (lastActivity && Date.now() - lastActivity >= ONE_HOUR_MS) {
+        setUser(null, null);
+      }
+    }, 15000);
+
+    return () => {
+      window.removeEventListener('mousemove', recordUserActivity);
+      window.removeEventListener('keydown', recordUserActivity);
+      window.removeEventListener('click', recordUserActivity);
+      window.removeEventListener('touchstart', recordUserActivity);
+      window.removeEventListener('scroll', recordUserActivity);
+      clearInterval(checkInterval);
+    };
+  }, [user?.id, setUser]);
+
+  // Automatically sync with cloud & set role navigation
   useEffect(() => {
     if (user) {
       setCurrentNav(getDefaultNavForRole(user.role));
@@ -51,7 +92,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#0B132B] text-white flex flex-col antialiased selection:bg-cyan-500 selection:text-white">
       <Navbar currentNav={currentNav} onSelectNav={setCurrentNav} />
       
       <main className="flex-1">
@@ -90,8 +131,8 @@ export const App: React.FC = () => {
         </ErrorBoundary>
       </main>
 
-      <footer className="border-t border-slate-900 bg-slate-950 py-3 text-center text-xs text-slate-500">
-        Water Business Management System v1.0.0 — Production-grade Offline-First Engine
+      <footer className="border-t border-blue-900/40 bg-[#070D1F] py-3 text-center text-xs text-blue-200/80 font-medium">
+        AquaPOS Water Business Management System v1.0.0 — Production-grade Offline-First Engine
       </footer>
     </div>
   );

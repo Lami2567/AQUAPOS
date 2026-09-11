@@ -29,11 +29,11 @@ export const SyncAuditView: React.FC = () => {
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
             <Database className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Offline Sync & Audit Dashboard</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-blue-100 mt-1">
             Monitor offline transaction queue, bidirectional sync to Neon PostgreSQL, and immutable audit logs.
           </p>
         </div>
@@ -42,7 +42,7 @@ export const SyncAuditView: React.FC = () => {
           <button
             onClick={handleManualSync}
             disabled={!isOnline || syncStatus === 'SYNCING'}
-            className="btn-touch bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
+            className="btn-touch bg-cyan-600 hover:bg-cyan-500 disabled:bg-[#182855] disabled:text-blue-100/80 text-white font-bold text-xs flex items-center gap-1.5 shadow-md cursor-pointer py-2 px-3 sm:px-4 rounded-xl"
           >
             <RefreshCw className={`w-4 h-4 ${syncStatus === 'SYNCING' ? 'animate-spin' : ''}`} />
             <span>{syncStatus === 'SYNCING' ? 'Syncing...' : 'Cloud Sync'}</span>
@@ -75,36 +75,36 @@ export const SyncAuditView: React.FC = () => {
 
       {/* Sync Status KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 border border-blue-900/60 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Network State</div>
+            <div className="text-[11px] text-blue-100 uppercase tracking-wider font-semibold">Network State</div>
             <div className={`text-xl font-extrabold mt-1 font-mono ${isOnline ? 'text-emerald-400' : 'text-amber-400'}`}>
               {isOnline ? 'ONLINE' : 'OFFLINE MODE'}
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">Local SQLite Engine Active</div>
+            <div className="text-[10px] text-blue-100/80 mt-0.5">Local SQLite Engine Active</div>
           </div>
           <div className={`p-3 rounded-xl border ${isOnline ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-amber-950 text-amber-400 border-amber-800'}`}>
             <Server className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 border border-blue-900/60 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Outbox Queue Items</div>
+            <div className="text-[11px] text-blue-100 uppercase tracking-wider font-semibold">Outbox Queue Items</div>
             <div className={`text-xl font-extrabold mt-1 font-mono ${outboxQueue.length > 0 ? 'text-amber-400' : 'text-cyan-400'}`}>
               {outboxQueue.length} Pending
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">Auto-replicates on connect</div>
+            <div className="text-[10px] text-blue-100/80 mt-0.5">Auto-replicates on connect</div>
           </div>
           <div className="p-3 bg-cyan-950 text-cyan-400 rounded-xl border border-cyan-800">
             <RefreshCw className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-panel rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-4 border border-blue-900/60 flex items-center justify-between">
           <div>
-            <div className="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Audit Trail Recorded</div>
-            <div className="text-xl font-extrabold text-slate-100 mt-1 font-mono">
+            <div className="text-[11px] text-blue-100 uppercase tracking-wider font-semibold">Audit Trail Recorded</div>
+            <div className="text-xl font-extrabold text-white mt-1 font-mono">
               {auditLogs.length} Events
             </div>
             <div className="text-[10px] text-emerald-400 mt-0.5 font-semibold">Immutable Hash Ledger</div>
@@ -116,20 +116,20 @@ export const SyncAuditView: React.FC = () => {
       </div>
 
       {/* Outbox Queue Section */}
-      <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+      <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-slate-200 text-sm">Offline Transaction Outbox Queue ({outboxQueue.length})</h3>
-          <span className="text-xs text-slate-400">Guaranteed Exactly-Once Delivery</span>
+          <h3 className="font-bold text-white text-sm">Offline Transaction Outbox Queue ({outboxQueue.length})</h3>
+          <span className="text-xs text-blue-100">Guaranteed Exactly-Once Delivery</span>
         </div>
 
         {outboxQueue.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-xs">
+          <div className="text-center py-8 text-blue-100/80 text-xs">
             All offline transactions have been synchronized to central cloud database! Outbox queue is empty (0 pending).
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+            <table className="w-full text-left text-xs text-white">
+              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
                 <tr>
                   <th className="p-3">Tx UUID</th>
                   <th className="p-3">Operation Type</th>
@@ -140,10 +140,10 @@ export const SyncAuditView: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {outboxQueue.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-900/50">
+                  <tr key={item.id} className="hover:bg-[#0F1B3E]/50">
                     <td className="p-3 font-mono font-bold text-cyan-400">{item.id}</td>
                     <td className="p-3">
-                      <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-slate-200">
+                      <span className="bg-[#182855] px-2 py-0.5 rounded text-[10px] font-mono text-white">
                         {item.type}
                       </span>
                     </td>
@@ -153,7 +153,7 @@ export const SyncAuditView: React.FC = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="p-3 text-right text-slate-400 font-mono">{item.createdAt}</td>
+                    <td className="p-3 text-right text-blue-100 font-mono">{item.createdAt}</td>
                   </tr>
                 ))}
               </tbody>
@@ -163,15 +163,15 @@ export const SyncAuditView: React.FC = () => {
       </div>
 
       {/* Audit Logs Trail */}
-      <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+      <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-slate-200 text-sm">Security Audit Trail ({auditLogs.length})</h3>
-          <span className="text-xs text-slate-400">Tamper-Proof Action History</span>
+          <h3 className="font-bold text-white text-sm">Security Audit Trail ({auditLogs.length})</h3>
+          <span className="text-xs text-blue-100">Tamper-Proof Action History</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+          <table className="w-full text-left text-xs text-white">
+            <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
               <tr>
                 <th className="p-3">Timestamp</th>
                 <th className="p-3">User / Actor</th>
@@ -182,16 +182,16 @@ export const SyncAuditView: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {auditLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-900/50">
-                  <td className="p-3 text-slate-400 font-mono">{log.timestamp}</td>
-                  <td className="p-3 font-semibold text-slate-200">{log.user}</td>
+                <tr key={log.id} className="hover:bg-[#0F1B3E]/50">
+                  <td className="p-3 text-blue-100 font-mono">{log.timestamp}</td>
+                  <td className="p-3 font-semibold text-white">{log.user}</td>
                   <td className="p-3">
                     <span className="bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded text-[10px] font-mono">
                       {log.action}
                     </span>
                   </td>
-                  <td className="p-3 text-slate-400">{log.entity}</td>
-                  <td className="p-3 text-slate-300">{log.details}</td>
+                  <td className="p-3 text-blue-100">{log.entity}</td>
+                  <td className="p-3 text-white">{log.details}</td>
                 </tr>
               ))}
             </tbody>

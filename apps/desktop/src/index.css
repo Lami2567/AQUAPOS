@@ -6,19 +6,26 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  background-color: #070E24;
+  color: #ffffff;
 }
 
-/* Custom Glassmorphism UI tokens */
+/* Global Lucide SVG color defaults */
+svg {
+  color: currentColor;
+}
+
+/* Custom Glassmorphism UI tokens in Dark Blue */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(16, 28, 56, 0.92);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.65);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(19, 31, 61, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 /* Touch-friendly buttons & inputs */
@@ -28,7 +35,7 @@ body {
 
 /* Responsive Table Wrapper with Touch Momentum */
 .table-responsive {
-  @apply overflow-x-auto rounded-xl border border-slate-800/80;
+  @apply overflow-x-auto rounded-xl border border-blue-900/60;
   -webkit-overflow-scrolling: touch;
 }
 

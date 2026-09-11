@@ -235,19 +235,19 @@ export const BackupView: React.FC = () => {
   return (
     <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-slate-900/90 border border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xl">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-[#0F1B3E]/90 border border-blue-900/60 p-4 sm:p-5 rounded-2xl shadow-xl">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="p-2.5 sm:p-3 bg-cyan-950/80 rounded-xl border border-cyan-500/30 text-cyan-400 shrink-0">
             <Database className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <h1 className="text-base sm:text-xl font-bold text-slate-100 flex flex-wrap items-center gap-2">
+            <h1 className="text-base sm:text-xl font-bold text-white flex flex-wrap items-center gap-2">
               <span>Cloud Database Backup & Disaster Recovery</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-emerald-950 border border-emerald-500/30 text-emerald-400 rounded-full">
                 Neon Cloud Live
               </span>
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-blue-100 mt-1">
               Download complete database snapshots to your computer and restore data seamlessly in case of system crashes.
             </p>
           </div>
@@ -267,40 +267,40 @@ export const BackupView: React.FC = () => {
 
       {/* Live Cloud Database Health & Statistics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
-        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
-          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Total Records</div>
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-blue-100 uppercase font-semibold">Total Records</div>
           <div className="text-lg sm:text-xl font-extrabold text-cyan-400 mt-1 font-mono">{totalLocalRecords}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">Across all tables</div>
+          <div className="text-[10px] text-blue-100/80 mt-0.5">Across all tables</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
-          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Sales History</div>
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-blue-100 uppercase font-semibold">Sales History</div>
           <div className="text-lg sm:text-xl font-extrabold text-emerald-400 mt-1 font-mono">{salesHistory.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">Recorded orders</div>
+          <div className="text-[10px] text-blue-100/80 mt-0.5">Recorded orders</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
-          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Products Catalog</div>
-          <div className="text-lg sm:text-xl font-extrabold text-slate-200 mt-1 font-mono">{products.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">{categories.length} categories</div>
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-blue-100 uppercase font-semibold">Products Catalog</div>
+          <div className="text-lg sm:text-xl font-extrabold text-white mt-1 font-mono">{products.length}</div>
+          <div className="text-[10px] text-blue-100/80 mt-0.5">{categories.length} categories</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
-          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Branches & Stores</div>
-          <div className="text-lg sm:text-xl font-extrabold text-slate-200 mt-1 font-mono">{branches.length} / {stores.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">Multi-branch network</div>
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-blue-100 uppercase font-semibold">Branches & Stores</div>
+          <div className="text-lg sm:text-xl font-extrabold text-white mt-1 font-mono">{branches.length} / {stores.length}</div>
+          <div className="text-[10px] text-blue-100/80 mt-0.5">Multi-branch network</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
-          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Expenses & Debts</div>
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-blue-100 uppercase font-semibold">Expenses & Debts</div>
           <div className="text-lg sm:text-xl font-extrabold text-amber-400 mt-1 font-mono">{expensesList.length + debtsList.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">Financial ledgers</div>
+          <div className="text-[10px] text-blue-100/80 mt-0.5">Financial ledgers</div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 p-3 sm:p-4 rounded-xl">
-          <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase font-semibold">Staff & Users</div>
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 p-3 sm:p-4 rounded-xl">
+          <div className="text-[10px] sm:text-[11px] text-blue-100 uppercase font-semibold">Staff & Users</div>
           <div className="text-lg sm:text-xl font-extrabold text-cyan-300 mt-1 font-mono">{usersList.length + workers.length}</div>
-          <div className="text-[10px] text-slate-500 mt-0.5">Active accounts</div>
+          <div className="text-[10px] text-blue-100/80 mt-0.5">Active accounts</div>
         </div>
       </div>
 
@@ -315,34 +315,34 @@ export const BackupView: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         
         {/* Left Card: Backup Generator */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-lg flex flex-col justify-between">
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 rounded-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-lg flex flex-col justify-between">
           <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-3 pb-3 border-b border-blue-900/60">
               <div className="p-2.5 bg-cyan-950 rounded-xl text-cyan-400 border border-cyan-800/40">
                 <ArrowDownToLine className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-100">1. Generate & Download Backup</h2>
-                <p className="text-xs text-slate-400">Save a complete, verified snapshot file to your local computer.</p>
+                <h2 className="text-sm font-bold text-white">1. Generate & Download Backup</h2>
+                <p className="text-xs text-blue-100">Save a complete, verified snapshot file to your local computer.</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-white leading-relaxed">
               Exporting creates an encrypted, structured JSON backup containing all 21 tables: Branches, Products, Prices, Users, Customer Sales, Expenses, Debts, Stock Ledgers, and Staff settings.
             </p>
 
-            <div className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 space-y-2 text-xs">
-              <div className="flex items-center justify-between text-slate-400">
+            <div className="bg-[#070E24]/80 border border-blue-900/60/80 rounded-xl p-4 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-blue-100">
                 <span>Storage Engine:</span>
                 <span className="text-cyan-300 font-semibold">Neon Cloud PostgreSQL</span>
               </div>
-              <div className="flex items-center justify-between text-slate-400">
+              <div className="flex items-center justify-between text-blue-100">
                 <span>Backup Format:</span>
-                <span className="text-slate-200 font-mono">AQUAPOS JSON (.json)</span>
+                <span className="text-white font-mono">AQUAPOS JSON (.json)</span>
               </div>
-              <div className="flex items-center justify-between text-slate-400">
+              <div className="flex items-center justify-between text-blue-100">
                 <span>Last Backup Export:</span>
-                <span className="text-slate-300 font-mono">{lastBackupTime || 'None recorded this session'}</span>
+                <span className="text-white font-mono">{lastBackupTime || 'None recorded this session'}</span>
               </div>
             </div>
           </div>
@@ -358,15 +358,15 @@ export const BackupView: React.FC = () => {
         </div>
 
         {/* Right Card: Disaster Recovery & Restore */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-lg flex flex-col justify-between">
+        <div className="bg-[#0F1B3E]/80 border border-blue-900/60 rounded-2xl p-6 space-y-5 shadow-lg flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-3 pb-3 border-b border-blue-900/60">
               <div className="p-2.5 bg-emerald-950 rounded-xl text-emerald-400 border border-emerald-800/40">
                 <ArrowUpFromLine className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-100">2. Disaster Recovery & Upload</h2>
-                <p className="text-xs text-slate-400">Upload a previous backup file to restore the entire system state.</p>
+                <h2 className="text-sm font-bold text-white">2. Disaster Recovery & Upload</h2>
+                <p className="text-xs text-blue-100">Upload a previous backup file to restore the entire system state.</p>
               </div>
             </div>
 
@@ -382,27 +382,27 @@ export const BackupView: React.FC = () => {
             {/* Upload Box / Dropzone */}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-slate-700 hover:border-cyan-500/60 bg-slate-950/60 hover:bg-slate-950 rounded-2xl p-6 text-center cursor-pointer transition-all space-y-2 group"
+              className="border-2 border-dashed border-blue-800/60 hover:border-cyan-500/60 bg-[#070E24]/60 hover:bg-[#070E24] rounded-2xl p-6 text-center cursor-pointer transition-all space-y-2 group"
             >
-              <div className="mx-auto w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 group-hover:text-cyan-400 group-hover:bg-cyan-950/50 transition-colors">
+              <div className="mx-auto w-10 h-10 rounded-full bg-[#0F1B3E] flex items-center justify-center text-blue-100 group-hover:text-cyan-400 group-hover:bg-cyan-950/50 transition-colors">
                 <Upload className="w-5 h-5" />
               </div>
-              <div className="text-xs font-semibold text-slate-300">
+              <div className="text-xs font-semibold text-white">
                 {selectedBackupFile ? selectedBackupFile.name : 'Click to Browse or Drag Backup File Here'}
               </div>
-              <div className="text-[10px] text-slate-500">Supports standard .json backup snapshots</div>
+              <div className="text-[10px] text-blue-100/80">Supports standard .json backup snapshots</div>
             </div>
 
             {/* File Inspection / Status Feedback */}
             {restoreStatus.type === 'ready' && restoreStatus.details && (
-              <div className="bg-slate-950 border border-emerald-500/30 rounded-xl p-4 space-y-2 text-xs animate-fade-in">
+              <div className="bg-[#070E24] border border-emerald-500/30 rounded-xl p-4 space-y-2 text-xs animate-fade-in">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
                   <FileCheck className="w-4 h-4" />
                   <span>Valid Backup Package Detected</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400 pt-1">
-                  <div>Exported On: <span className="text-slate-200">{restoreStatus.details.exportedAt}</span></div>
-                  <div>Exported By: <span className="text-slate-200">{restoreStatus.details.exportedBy}</span></div>
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-blue-100 pt-1">
+                  <div>Exported On: <span className="text-white">{restoreStatus.details.exportedAt}</span></div>
+                  <div>Exported By: <span className="text-white">{restoreStatus.details.exportedBy}</span></div>
                   <div>Sales Orders: <span className="text-emerald-400 font-mono font-bold">{restoreStatus.details.counts?.sales || 0}</span></div>
                   <div>Products: <span className="text-cyan-400 font-mono font-bold">{restoreStatus.details.counts?.products || 0}</span></div>
                 </div>
@@ -437,14 +437,14 @@ export const BackupView: React.FC = () => {
       </div>
 
       {/* Security & Reliability Advisory Footer */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="bg-[#0F1B3E]/60 border border-blue-900/60/80 rounded-xl p-4 text-xs text-blue-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <ShieldCheck className="w-5 h-5 text-cyan-400 shrink-0" />
           <span>
             <strong>Disaster Recovery Guarantee:</strong> Cloud backups contain full relational keys and can be restored onto any fresh server instance with 100% data integrity.
           </span>
         </div>
-        <div className="text-[11px] text-slate-500 whitespace-nowrap">
+        <div className="text-[11px] text-blue-100/80 whitespace-nowrap">
           Engine: Neon PostgreSQL 16
         </div>
       </div>

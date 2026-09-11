@@ -201,11 +201,11 @@ export const StockView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
             <Package className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
             <span>Stock Ledger & Transfers</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-blue-100 mt-1">
             Immutable stock ledger tracking, goods intake receipts, damages, and branch-to-branch supply transfers.
           </p>
         </div>
@@ -215,7 +215,7 @@ export const StockView: React.FC = () => {
           {canAdjustStock && (
             <button
               onClick={() => handleOpenAdjustModal()}
-              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 shadow-sm cursor-pointer"
+              className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#182855] hover:bg-slate-700 text-cyan-400 border border-blue-800/60 shadow-sm cursor-pointer"
               title="Change or correct stock quantity"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -235,7 +235,7 @@ export const StockView: React.FC = () => {
             className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               canReceiveStock
                 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-950 cursor-pointer'
-                : 'bg-slate-900 text-slate-500 border border-slate-800 opacity-60 cursor-not-allowed'
+                : 'bg-[#0F1B3E] text-blue-100/80 border border-blue-900/60 opacity-60 cursor-not-allowed'
             }`}
             title={canReceiveStock ? 'Record new goods intake receipt' : 'Restricted to STOREKEEPER & ADMIN'}
           >
@@ -248,7 +248,7 @@ export const StockView: React.FC = () => {
             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'inventory'
                 ? 'bg-cyan-600 text-white shadow-md'
-                : 'bg-slate-900 text-slate-400 border border-slate-800'
+                : 'bg-[#0F1B3E] text-blue-100 border border-blue-900/60'
             }`}
           >
             Balances
@@ -258,7 +258,7 @@ export const StockView: React.FC = () => {
             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'transfers'
                 ? 'bg-cyan-600 text-white shadow-md'
-                : 'bg-slate-900 text-slate-400 border border-slate-800'
+                : 'bg-[#0F1B3E] text-blue-100 border border-blue-900/60'
             }`}
           >
             Transfers ({stockTransfersList.length})
@@ -278,11 +278,11 @@ export const StockView: React.FC = () => {
           <div className="flex items-center gap-3">
             <Lock className="w-5 h-5 text-rose-400 flex-shrink-0" />
             <div>
-              <div className="font-bold text-slate-100">Role Security Enforcement</div>
+              <div className="font-bold text-white">Role Security Enforcement</div>
               <div>{permissionError}</div>
             </div>
           </div>
-          <button onClick={() => setPermissionError(null)} className="text-slate-400 hover:text-white text-xs font-bold cursor-pointer">
+          <button onClick={() => setPermissionError(null)} className="text-blue-100 hover:text-white text-xs font-bold cursor-pointer">
             Dismiss
           </button>
         </div>
@@ -290,20 +290,20 @@ export const StockView: React.FC = () => {
 
       {activeTab === 'inventory' ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs">
-            <span className="text-slate-400">
-              Showing: <strong className="text-slate-200">{storeFilterMode === 'BRANCH' ? 'Selected Branch Stores' : 'All Company Warehouses'}</strong> ({visibleStores.length} Stores)
+          <div className="flex items-center justify-between bg-[#0F1B3E]/60 p-2.5 rounded-xl border border-blue-900/60 text-xs">
+            <span className="text-blue-100">
+              Showing: <strong className="text-white">{storeFilterMode === 'BRANCH' ? 'Selected Branch Stores' : 'All Company Warehouses'}</strong> ({visibleStores.length} Stores)
             </span>
             <div className="flex gap-1">
               <button
                 onClick={() => setStoreFilterMode('BRANCH')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'BRANCH' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'BRANCH' ? 'bg-cyan-600 text-white' : 'text-blue-100 hover:text-white'}`}
               >
                 Current Branch Only
               </button>
               <button
                 onClick={() => setStoreFilterMode('ALL')}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'ALL' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer ${storeFilterMode === 'ALL' ? 'bg-cyan-600 text-white' : 'text-blue-100 hover:text-white'}`}
               >
                 All Branches
               </button>
@@ -312,13 +312,13 @@ export const StockView: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {visibleStores.map((store) => (
-            <div key={store.id} className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-800/80 pb-2.5">
+            <div key={store.id} className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-3">
+              <div className="flex justify-between items-center border-b border-blue-900/60/80 pb-2.5">
                 <div>
-                  <h3 className="font-bold text-slate-200 text-sm">{store.name}</h3>
+                  <h3 className="font-bold text-white text-sm">{store.name}</h3>
                   <span className="text-[10px] text-cyan-400 font-mono">Code: {store.code}</span>
                 </div>
-                <span className="bg-slate-800 text-slate-300 text-[10px] px-2 py-0.5 rounded font-mono">
+                <span className="bg-[#182855] text-white text-[10px] px-2 py-0.5 rounded font-mono">
                   {store.type}
                 </span>
               </div>
@@ -331,11 +331,11 @@ export const StockView: React.FC = () => {
                   return (
                     <div
                       key={prod.id}
-                      className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex justify-between items-center gap-2"
+                      className="bg-[#0F1B3E]/80 p-3 rounded-xl border border-blue-900/60 flex justify-between items-center gap-2"
                     >
                       <div className="flex-1 min-w-0">
-                        <div className="font-bold text-slate-200 truncate">{prod.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono truncate">{prod.unitOfMeasure} • SKU: {prod.sku}</div>
+                        <div className="font-bold text-white truncate">{prod.name}</div>
+                        <div className="text-[10px] text-blue-100 font-mono truncate">{prod.unitOfMeasure} • SKU: {prod.sku}</div>
                       </div>
                       <div className="text-right shrink-0">
                         <div className={`font-extrabold text-base font-mono ${isLowStock ? 'text-amber-400' : 'text-cyan-400'}`}>
@@ -348,7 +348,7 @@ export const StockView: React.FC = () => {
                           {canAdjustStock && (
                             <button
                               onClick={() => handleOpenAdjustModal(store.id, prod.id)}
-                              className="text-[10px] text-slate-300 hover:text-cyan-300 font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2 py-0.5 rounded-lg transition-all cursor-pointer inline-flex items-center gap-1"
+                              className="text-[10px] text-white hover:text-cyan-300 font-semibold bg-[#182855] hover:bg-slate-700 border border-blue-800/60 px-2 py-0.5 rounded-lg transition-all cursor-pointer inline-flex items-center gap-1"
                               title="Update stock count"
                             >
                               <SlidersHorizontal className="w-2.5 h-2.5 text-cyan-400" />
@@ -366,11 +366,11 @@ export const StockView: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+        <div className="glass-panel rounded-2xl p-5 border border-blue-900/60 space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-bold text-slate-200 text-sm">Branch Stock Transfers</h3>
-              <p className="text-[11px] text-slate-400">
+              <h3 className="font-bold text-white text-sm">Branch Stock Transfers</h3>
+              <p className="text-[11px] text-blue-100">
                 Strict 6-Stage Workflow: Draft ➔ Approved ➔ Dispatched ➔ In Transit ➔ Received ➔ Confirmed
               </p>
             </div>
@@ -386,7 +386,7 @@ export const StockView: React.FC = () => {
               className={`btn-touch text-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold ${
                 canTransferStock
                   ? 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-950 cursor-pointer'
-                  : 'bg-slate-900 text-slate-500 border border-slate-800 opacity-60 cursor-not-allowed'
+                  : 'bg-[#0F1B3E] text-blue-100/80 border border-blue-900/60 opacity-60 cursor-not-allowed'
               }`}
             >
               {canTransferStock ? <Plus className="w-4 h-4" /> : <Lock className="w-3.5 h-3.5" />}
@@ -395,8 +395,8 @@ export const StockView: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800">
+            <table className="w-full text-left text-xs text-white">
+              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
                 <tr>
                   <th className="p-3">Ref #</th>
                   <th className="p-3">Source Store</th>
@@ -410,18 +410,18 @@ export const StockView: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {stockTransfersList.map((trf) => (
-                  <tr key={trf.id} className="hover:bg-slate-900/50">
+                  <tr key={trf.id} className="hover:bg-[#0F1B3E]/50">
                     <td className="p-3 font-bold text-cyan-400 font-mono">{trf.transferNumber}</td>
-                    <td className="p-3 font-semibold text-slate-200">{trf.sourceStoreName}</td>
-                    <td className="p-3 text-slate-300">{trf.destStoreName}</td>
+                    <td className="p-3 font-semibold text-white">{trf.sourceStoreName}</td>
+                    <td className="p-3 text-white">{trf.destStoreName}</td>
                     <td className="p-3">{trf.productName}</td>
-                    <td className="p-3 font-bold text-slate-100 font-mono">{trf.quantity.toLocaleString()}</td>
-                    <td className="p-3 text-slate-400">{trf.vehicleName}</td>
+                    <td className="p-3 font-bold text-white font-mono">{trf.quantity.toLocaleString()}</td>
+                    <td className="p-3 text-blue-100">{trf.vehicleName}</td>
                     <td className="p-3">
                       <span
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                           trf.status === 'DRAFT'
-                            ? 'bg-slate-800 border-slate-600 text-slate-300'
+                            ? 'bg-[#182855] border-slate-600 text-white'
                             : trf.status === 'APPROVED'
                             ? 'bg-blue-950 border-blue-500/40 text-blue-400'
                             : trf.status === 'DISPATCHED' || trf.status === 'IN_TRANSIT'
@@ -500,15 +500,15 @@ export const StockView: React.FC = () => {
       {/* Goods Intake Modal */}
       {isReceiptModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl text-white my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="flex items-center gap-2 font-bold text-emerald-400 text-sm sm:text-base">
                 <Inbox className="w-5 h-5 shrink-0" />
                 <span>Receive Goods / Production Intake</span>
               </div>
               <button
                 onClick={() => setIsReceiptModalOpen(false)}
-                className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer"
+                className="text-blue-100 hover:text-white text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -517,11 +517,11 @@ export const StockView: React.FC = () => {
             <form onSubmit={handleGoodsIntakeSubmit} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Receiving Store</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Receiving Store</label>
                   <select
                     value={intakeStoreId}
                     onChange={(e) => setIntakeStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                     required
                   >
                     {stores.map((s) => (
@@ -533,7 +533,7 @@ export const StockView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Product SKU</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Product SKU</label>
                   <select
                     value={intakeProductId}
                     onChange={(e) => {
@@ -541,7 +541,7 @@ export const StockView: React.FC = () => {
                       const prod = products.find((p) => p.id === e.target.value);
                       if (prod) setIntakeUnitCost(prod.costPriceUgx);
                     }}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                     required
                   >
                     {products.map((p) => (
@@ -555,55 +555,55 @@ export const StockView: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Quantity Received</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Quantity Received</label>
                   <input
                     type="number"
                     min="1"
                     required
                     value={intakeQty}
                     onChange={(e) => setIntakeQty(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono font-bold text-emerald-400 focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono font-bold text-emerald-400 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Unit Cost Price (UGX)</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Unit Cost Price (UGX)</label>
                   <input
                     type="number"
                     min="0"
                     required
                     value={intakeUnitCost}
                     onChange={(e) => setIntakeUnitCost(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Production Batch Reference #</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Production Batch Reference #</label>
                 <input
                   type="text"
                   required
                   value={intakeBatchRef}
                   onChange={(e) => setIntakeBatchRef(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono focus:outline-none"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Intake Notes</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Intake Notes</label>
                 <input
                   type="text"
                   value={intakeNotes}
                   onChange={(e) => setIntakeNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
-              <div className="flex gap-2 border-t border-slate-800 pt-3">
+              <div className="flex gap-2 border-t border-blue-900/60 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsReceiptModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
+                  className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -622,15 +622,15 @@ export const StockView: React.FC = () => {
       {/* Create Draft Transfer Modal */}
       {isTransferModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl text-slate-100 my-auto max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl text-white my-auto max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="flex items-center gap-2 font-bold text-cyan-400 text-sm sm:text-base">
                 <ArrowRightLeft className="w-5 h-5 shrink-0" />
                 <span>Create Draft Branch Stock Transfer</span>
               </div>
               <button
                 onClick={() => setIsTransferModalOpen(false)}
-                className="text-slate-400 hover:text-white text-sm font-bold cursor-pointer"
+                className="text-blue-100 hover:text-white text-sm font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -639,11 +639,11 @@ export const StockView: React.FC = () => {
             <form onSubmit={handleCreateTransferSubmit} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Source Store (From)</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Source Store (From)</label>
                   <select
                     value={transferSourceStoreId}
                     onChange={(e) => setTransferSourceStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                     required
                   >
                     {stores.map((s) => (
@@ -655,11 +655,11 @@ export const StockView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Destination Store (To)</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Destination Store (To)</label>
                   <select
                     value={transferDestStoreId}
                     onChange={(e) => setTransferDestStoreId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                     required
                   >
                     {stores.map((s) => (
@@ -673,11 +673,11 @@ export const StockView: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Product</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Product</label>
                   <select
                     value={transferProductId}
                     onChange={(e) => setTransferProductId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                     required
                   >
                     {products.map((p) => (
@@ -689,27 +689,27 @@ export const StockView: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Transfer Quantity</label>
+                  <label className="block text-blue-100 mb-1 font-semibold">Transfer Quantity</label>
                   <input
                     type="number"
                     min="1"
                     required
                     value={transferQty}
                     onChange={(e) => setTransferQty(parseInt(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-mono font-bold text-cyan-400 focus:outline-none"
+                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-mono font-bold text-cyan-400 focus:outline-none"
                   />
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-blue-100/80">
                     Avail in source: {inventoryStock[transferSourceStoreId]?.[transferProductId] || 0} units
                   </span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Transport Delivery Vehicle</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Transport Delivery Vehicle</label>
                 <select
                   value={transferVehicleName}
                   onChange={(e) => setTransferVehicleName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none"
                   required
                 >
                   {vehicles.map((v) => (
@@ -720,11 +720,11 @@ export const StockView: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex gap-2 border-t border-slate-800 pt-3">
+              <div className="flex gap-2 border-t border-blue-900/60 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsTransferModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
+                  className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -743,24 +743,24 @@ export const StockView: React.FC = () => {
       {/* Stock Level Adjustment Modal */}
       {isAdjustModalOpen && canAdjustStock && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto my-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-2xl sm:rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto my-auto">
+            <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-slate-800 rounded-xl border border-slate-700 text-cyan-400">
+                <div className="p-2 bg-[#182855] rounded-xl border border-blue-800/60 text-cyan-400">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-100 text-sm sm:text-base">
+                  <h3 className="font-bold text-white text-sm sm:text-base">
                     Update Stock Quantity
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-blue-100 mt-0.5">
                     Correct stock counts for products in the selected store.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAdjustModalOpen(false)}
-                className="text-slate-500 hover:text-slate-300 cursor-pointer p-1"
+                className="text-blue-100/80 hover:text-white cursor-pointer p-1"
                 aria-label="Close modal"
               >
                 <XCircle className="w-5 h-5" />
@@ -770,7 +770,7 @@ export const StockView: React.FC = () => {
             <form onSubmit={handleStockAdjustmentSubmit} className="space-y-3.5 text-xs">
               {/* Store Selector */}
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Store / Warehouse</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Store / Warehouse</label>
                 <select
                   value={adjustStoreId}
                   onChange={(e) => {
@@ -778,7 +778,7 @@ export const StockView: React.FC = () => {
                     setAdjustStoreId(newStore);
                     setAdjustNewQty(inventoryStock[newStore]?.[adjustProductId] || 0);
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-cyan-500"
                   required
                 >
                   {stores.map((s) => (
@@ -791,7 +791,7 @@ export const StockView: React.FC = () => {
 
               {/* Product Selector */}
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Product</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Product</label>
                 <select
                   value={adjustProductId}
                   onChange={(e) => {
@@ -799,7 +799,7 @@ export const StockView: React.FC = () => {
                     setAdjustProductId(newProd);
                     setAdjustNewQty(inventoryStock[adjustStoreId]?.[newProd] || 0);
                   }}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2.5 text-white font-semibold focus:outline-none focus:border-cyan-500"
                   required
                 >
                   {products.map((p) => (
@@ -817,12 +817,12 @@ export const StockView: React.FC = () => {
 
                 return (
                   <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3 bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
+                    <div className="grid grid-cols-2 gap-3 bg-[#070E24]/80 p-3 rounded-2xl border border-blue-900/60">
                       <div>
-                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Current Stock in Store</div>
-                        <div className="text-lg sm:text-xl font-extrabold font-mono text-slate-200 mt-0.5">
+                        <div className="text-[10px] text-blue-100 font-semibold uppercase">Current Stock in Store</div>
+                        <div className="text-lg sm:text-xl font-extrabold font-mono text-white mt-0.5">
                           {currentRecordedQty.toLocaleString()}{' '}
-                          <span className="text-xs text-slate-400 font-normal">units</span>
+                          <span className="text-xs text-blue-100 font-normal">units</span>
                         </div>
                       </div>
 
@@ -836,15 +836,15 @@ export const StockView: React.FC = () => {
                           required
                           value={adjustNewQty}
                           onChange={(e) => setAdjustNewQty(parseInt(e.target.value) || 0)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-100 font-mono font-extrabold text-base focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-[#0F1B3E] border border-blue-800/60 rounded-xl px-3 py-1.5 text-white font-mono font-extrabold text-base focus:outline-none focus:border-cyan-500"
                           autoFocus
                         />
                       </div>
                     </div>
 
                     {/* Calculated Change Badge */}
-                    <div className="p-2.5 rounded-xl border border-slate-800 bg-slate-950 flex items-center justify-between text-xs text-slate-300">
-                      <div className="font-semibold flex items-center gap-1.5 text-slate-400">
+                    <div className="p-2.5 rounded-xl border border-blue-900/60 bg-[#070E24] flex items-center justify-between text-xs text-white">
+                      <div className="font-semibold flex items-center gap-1.5 text-blue-100">
                         <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400" />
                         <span>Quantity Change:</span>
                       </div>
@@ -858,11 +858,11 @@ export const StockView: React.FC = () => {
 
               {/* Adjustment Reason */}
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Reason for Change *</label>
+                <label className="block text-blue-100 mb-1 font-semibold">Reason for Change *</label>
                 <select
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-semibold focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none focus:border-cyan-500"
                   required
                 >
                   <option value="Correction of entry mistake">Correction of entry mistake</option>
@@ -875,24 +875,24 @@ export const StockView: React.FC = () => {
 
               {/* Notes */}
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">
-                  Additional Notes <span className="text-slate-500 font-normal">(Optional)</span>
+                <label className="block text-blue-100 mb-1 font-semibold">
+                  Additional Notes <span className="text-blue-100/80 font-normal">(Optional)</span>
                 </label>
                 <textarea
                   rows={2}
                   placeholder="e.g. Corrected quantity after counting warehouse items."
                   value={adjustNotes}
                   onChange={(e) => setAdjustNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-cyan-500 text-xs"
+                  className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl p-2.5 text-white focus:outline-none focus:border-cyan-500 text-xs"
                 />
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 border-t border-slate-800 pt-3">
+              <div className="flex gap-2 border-t border-blue-900/60 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsAdjustModalOpen(false)}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl cursor-pointer"
+                  className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
