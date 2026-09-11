@@ -94,6 +94,7 @@ export const CloseFieldSessionSchema = z.object({
   mobileMoneyUgx: z.number().int().nonnegative().default(0),
   bankDepositUgx: z.number().int().nonnegative().default(0),
   approvedExpensesUgx: z.number().int().nonnegative().default(0),
+  expenseDescription: z.string().optional(),
   cashRemainingUgx: z.number().int().nonnegative().default(0),
   notes: z.string().optional(),
 });

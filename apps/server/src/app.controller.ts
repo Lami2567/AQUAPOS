@@ -144,6 +144,17 @@ export class AppController {
     return this.posService.voidSale(id, req.user.sub, body.reason, req.headers['x-device-id'] || 'device-01');
   }
 
+  @Roles(UserRole.SUPER_ADMIN, UserRole.BRANCH_MANAGER, UserRole.ACCOUNTANT, UserRole.CASHIER, UserRole.AUDITOR)
+  @Get('pos/sales')
+  async getSales(
+    @Query('storeId') storeId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('search') search?: string
+  ) {
+    return this.posService.getSalesRecords(storeId, startDate, endDate, search);
+  }
+
   // Field Sales & Reconciliation
   @Roles(UserRole.SUPER_ADMIN, UserRole.BRANCH_MANAGER, UserRole.FIELD_SALESPERSON)
   @Post('field-sales/sessions/start')
@@ -172,7 +183,8 @@ export class AppController {
       req.user.sub,
       req.headers['x-device-id'] || 'device-01',
       body.notes,
-      body.returnStoreId
+      body.returnStoreId,
+      body.expenseDescription
     );
   }
 

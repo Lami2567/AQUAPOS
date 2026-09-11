@@ -322,6 +322,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       `ALTER TABLE IF EXISTS field_reconciliations ALTER COLUMN return_store_id SET DATA TYPE TEXT USING return_store_id::TEXT;`,
       `ALTER TABLE IF EXISTS field_reconciliations ALTER COLUMN reconciled_by SET DATA TYPE TEXT USING reconciled_by::TEXT;`,
       `ALTER TABLE IF EXISTS field_reconciliations ADD COLUMN IF NOT EXISTS return_store_id TEXT;`,
+      `ALTER TABLE IF EXISTS field_sessions ADD COLUMN IF NOT EXISTS approved_expenses_ugx BIGINT DEFAULT 0;`,
+      `ALTER TABLE IF EXISTS field_sessions ADD COLUMN IF NOT EXISTS expense_description TEXT;`,
+      `ALTER TABLE IF EXISTS field_reconciliations ADD COLUMN IF NOT EXISTS approved_expenses_ugx BIGINT DEFAULT 0;`,
+      `ALTER TABLE IF EXISTS field_reconciliations ADD COLUMN IF NOT EXISTS expense_description TEXT;`,
+      `ALTER TABLE IF EXISTS expenses ADD COLUMN IF NOT EXISTS field_session_id TEXT;`,
     ];
 
     for (const stmt of migrationStatements) {
@@ -371,9 +376,27 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       if (!fsCols.some((c) => c.name === 'return_store_id')) {
         this.sqliteDb.exec(`ALTER TABLE field_sessions ADD COLUMN return_store_id TEXT`);
       }
+      if (!fsCols.some((c) => c.name === 'approved_expenses_ugx')) {
+        this.sqliteDb.exec(`ALTER TABLE field_sessions ADD COLUMN approved_expenses_ugx INTEGER DEFAULT 0`);
+      }
+      if (!fsCols.some((c) => c.name === 'expense_description')) {
+        this.sqliteDb.exec(`ALTER TABLE field_sessions ADD COLUMN expense_description TEXT`);
+      }
+
       const frCols = this.sqliteDb.prepare(`PRAGMA table_info(field_reconciliations)`).all() as any[];
       if (!frCols.some((c) => c.name === 'return_store_id')) {
         this.sqliteDb.exec(`ALTER TABLE field_reconciliations ADD COLUMN return_store_id TEXT`);
+      }
+      if (!frCols.some((c) => c.name === 'approved_expenses_ugx')) {
+        this.sqliteDb.exec(`ALTER TABLE field_reconciliations ADD COLUMN approved_expenses_ugx INTEGER DEFAULT 0`);
+      }
+      if (!frCols.some((c) => c.name === 'expense_description')) {
+        this.sqliteDb.exec(`ALTER TABLE field_reconciliations ADD COLUMN expense_description TEXT`);
+      }
+
+      const expCols = this.sqliteDb.prepare(`PRAGMA table_info(expenses)`).all() as any[];
+      if (!expCols.some((c) => c.name === 'field_session_id')) {
+        this.sqliteDb.exec(`ALTER TABLE expenses ADD COLUMN field_session_id TEXT`);
       }
     } catch (e) {}
 

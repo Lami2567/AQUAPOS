@@ -58,6 +58,7 @@ export interface ExpenseRecord {
   paymentMethod: string;
   approvedBy: string;
   date: string;
+  createdAt?: string;
 }
 
 export interface DebtRecord {
@@ -70,6 +71,8 @@ export interface DebtRecord {
   status: 'OUTSTANDING' | 'PARTIALLY_PAID' | 'CLEARED';
   date: string;
   reason?: string;
+  approvedBy?: string;
+  createdAt?: string;
 }
 
 export interface SalaryPaymentRecord {
@@ -546,49 +549,63 @@ export const useStore = create<AppState>((set) => ({
             updatedAt: sys.updatedAt || sys.updated_at || new Date().toISOString(),
           }));
 
-          const mergedSales = upsertEntities(state.salesHistory, centralData.sales, (s: any) => ({
-            id: s.id,
-            receiptNumber: s.receiptNumber || s.receipt_number || `REC-${s.id}`,
-            storeId: s.storeId || s.store_id || '',
-            cashierId: s.cashierId || s.cashier_id || '',
-            items: Array.isArray(s.items) ? s.items : (typeof s.items === 'string' ? (() => { try { return JSON.parse(s.items); } catch(e) { return []; } })() : []),
-            subtotalUgx: Number(s.subtotalUgx ?? s.totalAmountUgx ?? s.total_amount_ugx ?? 0),
-            totalAmountUgx: Number(s.totalAmountUgx ?? s.total_amount_ugx ?? 0),
-            overallDiscountUgx: Number(s.overallDiscountUgx ?? s.discount_amount_ugx ?? 0),
-            netAmountUgx: Number(s.netAmountUgx ?? s.net_amount_ugx ?? 0),
-            paidAmountUgx: Number(s.paidAmountUgx ?? s.paid_amount_ugx ?? 0),
-            changeAmountUgx: Number(s.changeAmountUgx ?? s.change_amount_ugx ?? 0),
-            paymentMethod: s.paymentMethod || s.payment_method || 'CASH',
-            customerName: s.customerName || s.customer_name || '',
-            customerPhone: s.customerPhone || s.customer_phone || '',
-            date: s.date || (s.created_at ? s.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
-            createdAt: s.createdAt || s.created_at || new Date().toISOString(),
-          }));
+          const mergedSales = upsertEntities(state.salesHistory, centralData.sales, (s: any) => {
+            const local = state.salesHistory.find((l) => l.id === s.id);
+            const remoteItems = Array.isArray(s.items) && s.items.length > 0 ? s.items : (typeof s.items === 'string' ? (() => { try { return JSON.parse(s.items); } catch(e) { return []; } })() : []);
+            const items = remoteItems.length > 0 ? remoteItems : (local?.items || []);
+            return {
+              id: s.id,
+              receiptNumber: s.receiptNumber || s.receipt_number || `REC-${s.id}`,
+              storeId: s.storeId || s.store_id || '',
+              cashierId: s.cashierId || s.cashier_id || '',
+              items,
+              subtotalUgx: Number(s.subtotalUgx ?? s.totalAmountUgx ?? s.total_amount_ugx ?? 0),
+              totalAmountUgx: Number(s.totalAmountUgx ?? s.total_amount_ugx ?? 0),
+              overallDiscountUgx: Number(s.overallDiscountUgx ?? s.discount_amount_ugx ?? 0),
+              netAmountUgx: Number(s.netAmountUgx ?? s.net_amount_ugx ?? 0),
+              paidAmountUgx: Number(s.paidAmountUgx ?? s.paid_amount_ugx ?? 0),
+              changeAmountUgx: Number(s.changeAmountUgx ?? s.change_amount_ugx ?? 0),
+              paymentMethod: s.paymentMethod || s.payment_method || 'CASH',
+              customerName: s.customerName || s.customer_name || '',
+              customerPhone: s.customerPhone || s.customer_phone || '',
+              date: s.date || (s.created_at ? s.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+              createdAt: s.createdAt || s.created_at || new Date().toISOString(),
+            };
+          });
 
-          const mergedExpenses = upsertEntities(state.expensesList, centralData.expenses, (e: any) => ({
-            id: e.id,
-            voucherNumber: e.voucherNumber || e.voucher_number || `EXP-${e.id}`,
-            category: e.category || 'GENERAL',
-            description: e.description || '',
-            amountUgx: Number(e.amountUgx ?? e.amount_ugx ?? 0),
-            branchId: e.branchId || e.branch_id || '',
-            storeId: e.storeId || e.store_id || '',
-            paymentMethod: e.paymentMethod || e.payment_method || 'CASH',
-            approvedBy: e.approvedBy || e.approved_by || 'Manager',
-            date: e.date || (e.created_at ? e.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
-          }));
+          const mergedExpenses = upsertEntities(state.expensesList, centralData.expenses, (e: any) => {
+            const local = state.expensesList.find((l) => l.id === e.id);
+            return {
+              id: e.id,
+              voucherNumber: e.voucherNumber || e.voucher_number || `EXP-${e.id}`,
+              category: e.category || 'GENERAL',
+              description: e.description || '',
+              amountUgx: Number(e.amountUgx ?? e.amount_ugx ?? 0),
+              branchId: e.branchId || e.branch_id || '',
+              storeId: e.storeId || e.store_id || '',
+              paymentMethod: e.paymentMethod || e.payment_method || 'CASH',
+              approvedBy: e.approvedBy || e.approved_by || local?.approvedBy || 'Manager',
+              date: e.date || (e.created_at ? e.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+              createdAt: e.createdAt || e.created_at || local?.createdAt || new Date().toISOString(),
+            };
+          });
 
-          const mergedDebts = upsertEntities(state.debtsList, centralData.debts, (d: any) => ({
-            id: d.id,
-            debtorName: d.debtorName || d.debtor_customer_name || 'Customer',
-            source: d.source || d.source_type || 'MANUAL',
-            originalAmountUgx: Number(d.originalAmountUgx ?? d.original_amount_ugx ?? 0),
-            paidAmountUgx: Number(d.paidAmountUgx ?? d.paid_amount_ugx ?? 0),
-            balanceAmountUgx: Number(d.balanceAmountUgx ?? d.balance_amount_ugx ?? 0),
-            status: d.status || (Number(d.balance_amount_ugx || 0) === 0 ? 'CLEARED' : 'OUTSTANDING'),
-            date: d.date || (d.created_at ? d.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
-            reason: d.reason || '',
-          }));
+          const mergedDebts = upsertEntities(state.debtsList, centralData.debts, (d: any) => {
+            const local = state.debtsList.find((l) => l.id === d.id);
+            return {
+              id: d.id,
+              debtorName: d.debtorName || d.debtor_customer_name || 'Customer',
+              source: d.source || d.source_type || 'MANUAL',
+              originalAmountUgx: Number(d.originalAmountUgx ?? d.original_amount_ugx ?? 0),
+              paidAmountUgx: Number(d.paidAmountUgx ?? d.paid_amount_ugx ?? 0),
+              balanceAmountUgx: Number(d.balanceAmountUgx ?? d.balance_amount_ugx ?? 0),
+              status: d.status || (Number(d.balance_amount_ugx || 0) === 0 ? 'CLEARED' : 'OUTSTANDING'),
+              date: d.date || (d.created_at ? d.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+              createdAt: d.createdAt || d.created_at || local?.createdAt || new Date().toISOString(),
+              approvedBy: d.approvedBy || d.approved_by || local?.approvedBy || 'Branch Manager',
+              reason: d.reason || '',
+            };
+          });
 
           const mergedSalaries = upsertEntities(state.salaryPaymentsList, centralData.salaryPayments, (sp: any) => ({
             id: sp.id,
@@ -630,8 +647,8 @@ export const useStore = create<AppState>((set) => ({
               startTime: fs.startTime || fs.start_time || local?.startTime || new Date().toISOString(),
               endTime: fs.endTime || fs.end_time || local?.endTime || '',
               items,
-              approvedExpensesUgx: fs.approvedExpensesUgx || fs.approved_expenses_ugx || local?.approvedExpensesUgx,
-              expenseDescription: fs.expenseDescription || fs.expense_description || local?.expenseDescription,
+              approvedExpensesUgx: fs.approvedExpensesUgx !== undefined ? Number(fs.approvedExpensesUgx) : (fs.approved_expenses_ugx !== undefined ? Number(fs.approved_expenses_ugx) : (local?.approvedExpensesUgx ?? 0)),
+              expenseDescription: fs.expenseDescription || fs.expense_description || local?.expenseDescription || '',
             };
           });
 

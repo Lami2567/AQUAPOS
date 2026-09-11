@@ -173,5 +173,81 @@ export class PosService {
       return { success: true, message: `Sale ${sale.receipt_number} voided successfully.` };
     });
   }
+
+  public async getSalesRecords(
+    storeId?: string,
+    startDate?: string,
+    endDate?: string,
+    search?: string
+  ) {
+    let sql = `SELECT * FROM sales WHERE 1=1`;
+    const params: any[] = [];
+
+    if (storeId && storeId !== 'ALL') {
+      sql += ` AND store_id = ?`;
+      params.push(storeId);
+    }
+    if (startDate) {
+      sql += ` AND (created_at >= ? OR date >= ?)`;
+      params.push(startDate, startDate);
+    }
+    if (endDate) {
+      sql += ` AND (created_at <= ? OR date <= ?)`;
+      params.push(`${endDate} 23:59:59`, endDate);
+    }
+    if (search) {
+      sql += ` AND (receipt_number LIKE ? OR customer_name LIKE ? OR payment_reference LIKE ?)`;
+      const term = `%${search}%`;
+      params.push(term, term, term);
+    }
+
+    sql += ` ORDER BY created_at DESC LIMIT 500`;
+
+    const rawSales = await this.dbService.query<any>(sql, params);
+    const saleIds = rawSales.map((s) => s.id).filter(Boolean);
+    let allSaleItems: any[] = [];
+    if (saleIds.length > 0) {
+      try {
+        allSaleItems = await this.dbService.query<any>(
+          `SELECT * FROM sale_items WHERE sale_id IN (${saleIds.map(() => '?').join(',')})`,
+          saleIds
+        );
+      } catch (e) {}
+    }
+    const itemsMap = new Map<string, any[]>();
+    for (const it of allSaleItems) {
+      if (!itemsMap.has(it.sale_id)) itemsMap.set(it.sale_id, []);
+      itemsMap.get(it.sale_id)!.push({
+        id: it.id,
+        productId: it.product_id,
+        name: it.product_name,
+        quantity: Number(it.quantity || 0),
+        unitPriceUgx: Number(it.unit_price_ugx || 0),
+        discountUgx: Number(it.discount_ugx || 0),
+        subtotalUgx: Number(it.subtotal_ugx || 0),
+      });
+    }
+
+    return rawSales.map((s) => ({
+      id: s.id,
+      receiptNumber: s.receipt_number,
+      storeId: s.store_id,
+      cashierId: s.cashier_id,
+      customerName: s.customer_name || '',
+      customerPhone: s.customer_phone || '',
+      totalAmountUgx: Number(s.total_amount_ugx || 0),
+      discountAmountUgx: Number(s.discount_amount_ugx || 0),
+      netAmountUgx: Number(s.net_amount_ugx || 0),
+      paidAmountUgx: Number(s.paid_amount_ugx || 0),
+      changeAmountUgx: Number(s.change_amount_ugx || 0),
+      paymentMethod: s.payment_method,
+      paymentReference: s.payment_reference,
+      isVoided: Boolean(s.is_voided),
+      voidedBy: s.voided_by,
+      voidReason: s.void_reason,
+      createdAt: s.created_at,
+      items: itemsMap.get(s.id) || [],
+    }));
+  }
 }
 

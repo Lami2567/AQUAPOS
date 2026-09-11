@@ -93,7 +93,8 @@ export class FieldSalesService {
     reconciledBy: string,
     deviceId: string,
     notes?: string,
-    returnStoreId?: string
+    returnStoreId?: string,
+    expenseDescription?: string
   ) {
     return await this.dbService.transaction(async () => {
       const session = await this.dbService.queryOne<any>(`SELECT * FROM field_sessions WHERE id = ?`, [fieldSessionId]);
@@ -175,10 +176,11 @@ export class FieldSalesService {
 
       const reconciliationId = uuidv4();
       const isStockEqValid = totalIssued === (totalSold + totalReturned + totalDamaged + totalMissing);
+      const finalExpenseDescription = (expenseDescription || notes || '').trim() || null;
 
       await this.dbService.execute(
-        `INSERT INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, expense_description, reconciled_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           reconciliationId,
           fieldSessionId,
@@ -200,6 +202,7 @@ export class FieldSalesService {
           moneyRes.isBalanced ? 1 : 0,
           moneyRes.status,
           notes || null,
+          finalExpenseDescription,
           reconciledBy,
         ]
       );
@@ -255,6 +258,7 @@ export class FieldSalesService {
       // Record approved expenses in expenses table
       if (approvedExpensesUgx > 0) {
         const store = await this.dbService.queryOne<any>(`SELECT branch_id FROM stores WHERE id = ?`, [session.store_id]);
+        const expDesc = (expenseDescription || notes || '').trim() || `Field Route Approved Expenses (${session.session_number})`;
         await this.dbService.execute(
           `INSERT INTO expenses (id, branch_id, store_id, field_session_id, category, amount_ugx, description, approved_by)
            VALUES (?, ?, ?, ?, 'FIELD_EXPENSE', ?, ?, ?)`,
@@ -264,7 +268,7 @@ export class FieldSalesService {
             session.store_id,
             fieldSessionId,
             approvedExpensesUgx,
-            `Field Route Approved Expenses (${session.session_number})`,
+            expDesc,
             reconciledBy,
           ]
         );
@@ -291,8 +295,8 @@ export class FieldSalesService {
       }
 
       await this.dbService.execute(
-        `UPDATE field_sessions SET status = ?, return_store_id = ?, end_time = CURRENT_TIMESTAMP WHERE id = ?`,
-        [FieldSessionStatus.RECONCILED, targetReturnStoreId, fieldSessionId]
+        `UPDATE field_sessions SET status = ?, return_store_id = ?, end_time = CURRENT_TIMESTAMP, approved_expenses_ugx = ?, expense_description = ? WHERE id = ?`,
+        [FieldSessionStatus.RECONCILED, targetReturnStoreId, approvedExpensesUgx, finalExpenseDescription, fieldSessionId]
       );
 
       return {

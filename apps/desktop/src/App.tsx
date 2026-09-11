@@ -56,7 +56,9 @@ export const App: React.FC = () => {
       
       <main className="flex-1">
         <ErrorBoundary>
-          {currentNav.domain === 'dashboard' && <DashboardReportsView />}
+          {currentNav.domain === 'dashboard' && (
+            <DashboardReportsView currentNav={currentNav} onSelectNav={setCurrentNav} />
+          )}
           
           {currentNav.domain === 'operations' && (
             <>
@@ -73,7 +75,9 @@ export const App: React.FC = () => {
           {currentNav.domain === 'branches' && <AdminConfigView />}
           {currentNav.domain === 'people' && <AdminConfigView />}
           {currentNav.domain === 'finance' && <FinanceView />}
-          {currentNav.domain === 'reports' && <DashboardReportsView />}
+          {currentNav.domain === 'reports' && (
+            <DashboardReportsView currentNav={currentNav} onSelectNav={setCurrentNav} />
+          )}
           
           {currentNav.domain === 'system' && (
             <>

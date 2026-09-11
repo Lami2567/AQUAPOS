@@ -283,6 +283,7 @@ export interface FieldSessionReconciliation {
   reconciledBy: string;
   reconciledAt: string;
   returnStoreId?: string;
+  expenseDescription?: string;
 }
 
 export interface FieldSession {
@@ -298,6 +299,8 @@ export interface FieldSession {
   endTime?: string;
   items: FieldSessionItem[];
   reconciliation?: FieldSessionReconciliation;
+  approvedExpensesUgx?: number;
+  expenseDescription?: string;
   createdBy: string;
   createdAt: string;
 }

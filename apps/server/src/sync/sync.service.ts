@@ -189,7 +189,39 @@ export class SyncService {
     }
 
     // Recent sales, expenses, debts, field sessions, transfers
-    const sales = await this.dbService.query<any>('SELECT * FROM sales ORDER BY created_at DESC LIMIT 200');
+    const rawSales = await this.dbService.query<any>('SELECT * FROM sales ORDER BY created_at DESC LIMIT 500');
+    const saleIds = rawSales.map((s) => s.id).filter(Boolean);
+    let allSaleItems: any[] = [];
+    if (saleIds.length > 0) {
+      try {
+        allSaleItems = await this.dbService.query<any>(
+          `SELECT * FROM sale_items WHERE sale_id IN (${saleIds.map(() => '?').join(',')})`,
+          saleIds
+        );
+      } catch (err: any) {
+        this.logger.warn('Failed to query sale_items in pullCentralData: ' + err.message);
+      }
+    }
+    const itemsBySaleId = new Map<string, any[]>();
+    for (const item of allSaleItems) {
+      if (!itemsBySaleId.has(item.sale_id)) {
+        itemsBySaleId.set(item.sale_id, []);
+      }
+      itemsBySaleId.get(item.sale_id)!.push({
+        id: item.id,
+        productId: item.product_id,
+        name: item.product_name,
+        quantity: Number(item.quantity || 0),
+        unitPriceUgx: Number(item.unit_price_ugx || 0),
+        discountUgx: Number(item.discount_ugx || 0),
+        subtotalUgx: Number(item.subtotal_ugx || 0),
+      });
+    }
+
+    const sales = rawSales.map((s) => ({
+      ...s,
+      items: itemsBySaleId.get(s.id) || [],
+    }));
     const expenses = await this.dbService.query<any>('SELECT * FROM expenses ORDER BY created_at DESC LIMIT 200');
     const debts = await this.dbService.query<any>('SELECT * FROM debts ORDER BY created_at DESC LIMIT 200');
     let salaryPayments: any[] = [];
@@ -198,7 +230,15 @@ export class SyncService {
     } catch (e) {
       salaryPayments = [];
     }
-    const rawSessions = await this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
+    const rawSessions = await this.dbService.query<any>(`
+      SELECT 
+        fs.*,
+        COALESCE(NULLIF(fs.approved_expenses_ugx, 0), fr.approved_expenses_ugx, 0) as approved_expenses_ugx,
+        COALESCE(NULLIF(fs.expense_description, ''), NULLIF(fr.expense_description, ''), NULLIF(fr.notes, ''), '') as expense_description
+      FROM field_sessions fs
+      LEFT JOIN field_reconciliations fr ON fr.field_session_id = fs.id
+      ORDER BY fs.created_at DESC LIMIT 100
+    `);
     const sessionIds = rawSessions.map((s) => s.id).filter(Boolean);
     let allSessionItems: any[] = [];
     if (sessionIds.length > 0) {
@@ -229,20 +269,39 @@ export class SyncService {
       });
     }
 
-    const fieldSessions = rawSessions.map((fs) => ({
-      id: fs.id,
-      sessionNumber: fs.session_number,
-      storeId: fs.store_id,
-      returnStoreId: fs.return_store_id || fs.store_id,
-      vehicleId: fs.vehicle_id,
-      workerId: fs.worker_id,
-      status: fs.status,
-      startTime: fs.start_time,
-      endTime: fs.end_time,
-      createdBy: fs.created_by,
-      createdAt: fs.created_at,
-      items: itemsBySessionId.get(fs.id) || [],
-    }));
+    // Secondary fallback from expenses table if needed
+    const expByFsId = new Map<string, { amount: number; description: string }>();
+    for (const exp of expenses) {
+      const fsId = exp.field_session_id || (exp.id && exp.id.startsWith('exp-fs-') ? exp.id.replace('exp-fs-', '') : null);
+      if (fsId && !expByFsId.has(fsId)) {
+        expByFsId.set(fsId, {
+          amount: Number(exp.amount_ugx || 0),
+          description: exp.description || '',
+        });
+      }
+    }
+
+    const fieldSessions = rawSessions.map((fs) => {
+      const fallbackExp = expByFsId.get(fs.id);
+      const approvedExpensesUgx = Number(fs.approved_expenses_ugx || fs.approvedExpensesUgx || fallbackExp?.amount || 0);
+      const expenseDescription = fs.expense_description || fs.expenseDescription || fallbackExp?.description || '';
+      return {
+        id: fs.id,
+        sessionNumber: fs.session_number,
+        storeId: fs.store_id,
+        returnStoreId: fs.return_store_id || fs.store_id,
+        vehicleId: fs.vehicle_id,
+        workerId: fs.worker_id,
+        status: fs.status,
+        startTime: fs.start_time,
+        endTime: fs.end_time,
+        approvedExpensesUgx,
+        expenseDescription,
+        createdBy: fs.created_by,
+        createdAt: fs.created_at,
+        items: itemsBySessionId.get(fs.id) || [],
+      };
+    });
 
     let stockTransfers: any[] = [];
     try {
@@ -705,9 +764,12 @@ export class SyncService {
               if (!isNaN(d.getTime())) safeEndTime = d.toISOString();
             }
 
+            const expAmount = Number(p.approvedExpensesUgx || 0);
+            const expenseDesc = (p.expenseDescription || p.notes || '').trim() || null;
+
             await this.dbService.execute(
-              `UPDATE field_sessions SET status = 'RECONCILED', return_store_id = ?, end_time = ? WHERE id = ?`,
-              [returnStoreId, safeEndTime, fsId]
+              `UPDATE field_sessions SET status = 'RECONCILED', return_store_id = ?, end_time = ?, approved_expenses_ugx = ?, expense_description = ? WHERE id = ?`,
+              [returnStoreId, safeEndTime, expAmount, expenseDesc, fsId]
             );
 
             let totalSoldUnits = 0;
@@ -834,19 +896,20 @@ export class SyncService {
             }
 
             // Record approved field expenses
-            const expAmount = Number(p.approvedExpensesUgx || 0);
             if (expAmount > 0) {
               const expId = `exp-fs-${fsId}`;
+              const safeExpDesc = (p.expenseDescription || p.notes || '').trim() || `Approved Route Expenses (${sessionNum})`;
               await this.dbService.execute(
-                `INSERT OR REPLACE INTO expenses (id, branch_id, store_id, category, amount_ugx, description, approved_by, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT OR REPLACE INTO expenses (id, branch_id, store_id, field_session_id, category, amount_ugx, description, approved_by, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                   expId,
                   branchId,
                   storeId || null,
+                  fsId,
                   'FIELD_EXPENSE',
                   expAmount,
-                  p.expenseDescription || `Approved Route Expenses (${sessionNum})`,
+                  safeExpDesc,
                   workerName,
                   p.date || p.endTime || new Date().toISOString(),
                 ]
@@ -885,7 +948,7 @@ export class SyncService {
 
             if (existingRecon) {
               await this.dbService.execute(
-                `UPDATE field_reconciliations SET return_store_id = ?, total_issued_units = ?, total_sold_units = ?, total_returned_units = ?, total_damaged_units = ?, total_missing_units = ?, is_stock_equation_valid = ?, expected_sales_ugx = ?, cash_collected_ugx = ?, mobile_money_ugx = ?, bank_deposit_ugx = ?, approved_expenses_ugx = ?, cash_remaining_ugx = ?, total_accounted_money_ugx = ?, money_variance_ugx = ?, is_money_equation_valid = ?, status = ?, notes = ?, reconciled_by = ? WHERE id = ?`,
+                `UPDATE field_reconciliations SET return_store_id = ?, total_issued_units = ?, total_sold_units = ?, total_returned_units = ?, total_damaged_units = ?, total_missing_units = ?, is_stock_equation_valid = ?, expected_sales_ugx = ?, cash_collected_ugx = ?, mobile_money_ugx = ?, bank_deposit_ugx = ?, approved_expenses_ugx = ?, cash_remaining_ugx = ?, total_accounted_money_ugx = ?, money_variance_ugx = ?, is_money_equation_valid = ?, status = ?, notes = ?, expense_description = ?, reconciled_by = ? WHERE id = ?`,
                 [
                   returnStoreId,
                   Number(p.totalIssuedUnits || 0),
@@ -905,14 +968,15 @@ export class SyncService {
                   variance === 0 ? 1 : 0,
                   variance < 0 ? 'SHORTAGE_FLAGGED' : (variance > 0 ? 'SURPLUS_FLAGGED' : 'BALANCED'),
                   p.notes || null,
+                  expenseDesc,
                   p.reconciledBy || workerName,
                   existingRecon.id,
                 ]
               );
             } else {
               await this.dbService.execute(
-                `INSERT INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, reconciled_by)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO field_reconciliations (id, field_session_id, return_store_id, total_issued_units, total_sold_units, total_returned_units, total_damaged_units, total_missing_units, is_stock_equation_valid, expected_sales_ugx, cash_collected_ugx, mobile_money_ugx, bank_deposit_ugx, approved_expenses_ugx, cash_remaining_ugx, total_accounted_money_ugx, money_variance_ugx, is_money_equation_valid, status, notes, expense_description, reconciled_by)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                   uuidv4(),
                   fsId,
@@ -934,6 +998,7 @@ export class SyncService {
                   variance === 0 ? 1 : 0,
                   variance < 0 ? 'SHORTAGE_FLAGGED' : (variance > 0 ? 'SURPLUS_FLAGGED' : 'BALANCED'),
                   p.notes || null,
+                  expenseDesc,
                   p.reconciledBy || workerName,
                 ]
               );

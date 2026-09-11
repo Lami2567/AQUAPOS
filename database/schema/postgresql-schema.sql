@@ -191,6 +191,8 @@ CREATE TABLE IF NOT EXISTS field_sessions (
   status VARCHAR(30) NOT NULL,
   start_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   end_time TIMESTAMPTZ,
+  approved_expenses_ugx BIGINT DEFAULT 0,
+  expense_description TEXT,
   created_by TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -223,6 +225,7 @@ CREATE TABLE IF NOT EXISTS field_reconciliations (
   mobile_money_ugx BIGINT NOT NULL,
   bank_deposit_ugx BIGINT NOT NULL,
   approved_expenses_ugx BIGINT NOT NULL,
+  expense_description TEXT,
   cash_remaining_ugx BIGINT NOT NULL,
   total_accounted_money_ugx BIGINT NOT NULL,
   money_variance_ugx BIGINT NOT NULL,
