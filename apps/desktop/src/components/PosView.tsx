@@ -153,13 +153,13 @@ export const PosView: React.FC = () => {
     <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 select-none pb-20 lg:pb-6">
       
       {/* Mobile / Tablet View Switcher (< lg) */}
-      <div className="lg:hidden flex items-center bg-[#0F1B3E] border border-blue-900/60 p-1 rounded-2xl shadow-md">
+      <div className="lg:hidden flex items-center bg-[#0F1B3E] border border-white/15 p-1 rounded-2xl shadow-md">
         <button
           onClick={() => setMobileTab('catalog')}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
             mobileTab === 'catalog'
-              ? 'bg-cyan-600 text-white shadow-md'
-              : 'text-blue-100 hover:text-white'
+              ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+              : 'text-white/80 hover:text-white'
           }`}
         >
           <ShoppingBag className="w-3.5 h-3.5" />
@@ -169,12 +169,12 @@ export const PosView: React.FC = () => {
           onClick={() => setMobileTab('cart')}
           className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
             mobileTab === 'cart'
-              ? 'bg-cyan-600 text-white shadow-md'
-              : 'text-blue-100 hover:text-white'
+              ? 'bg-white text-[#070E24] font-bold text-white shadow-md'
+              : 'text-white/80 hover:text-white'
           }`}
         >
           <span>Cart Order</span>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${mobileTab === 'cart' ? 'bg-cyan-800 text-white' : 'bg-cyan-950 text-cyan-400 border border-cyan-800/40'}`}>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${mobileTab === 'cart' ? 'bg-white/25 text-white text-white' : 'bg-white/10 text-white border border-white/15'}`}>
             {cart.length}
           </span>
         </button>
@@ -187,14 +187,14 @@ export const PosView: React.FC = () => {
           {/* Search & Category Filter Bar */}
           <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center justify-between">
             <div className="relative w-full sm:w-64 md:w-72">
-              <Search className="w-4 h-4 absolute left-3 top-3 text-blue-100" />
+              <Search className="w-4 h-4 absolute left-3 top-3 text-white/80" />
               <input
                 id="pos-search-input"
                 type="text"
                 placeholder="Search SKU or name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-500"
+                className="w-full bg-[#070E24] border border-white/15 rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -205,8 +205,8 @@ export const PosView: React.FC = () => {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     activeCategory === cat
-                      ? 'bg-cyan-600 text-white shadow-md shadow-cyan-900/30'
-                      : 'bg-[#0F1B3E] text-blue-100 hover:text-white border border-blue-900/60'
+                      ? 'bg-white text-[#070E24] font-bold text-white shadow-md shadow-cyan-900/30'
+                      : 'bg-[#0F1B3E] text-white/80 hover:text-white border border-white/15'
                   }`}
                 >
                   {cat === 'ALL' ? 'All' : cat.replace('_', ' ')}
@@ -234,40 +234,40 @@ export const PosView: React.FC = () => {
                       sellingPriceUgx: unitPrice,
                     })
                   }
-                  className={`glass-card rounded-2xl p-3.5 sm:p-4 transition-all duration-200 flex flex-col justify-between group border border-blue-900/60 ${
+                  className={`rounded-3xl p-5 sm:p-6 bg-[#0F1B3E] border border-white/15 hover:border-white/35 shadow-lg transition-all duration-200 flex flex-col justify-between group border border-white/15 ${
                     isOutOfStock
                       ? 'opacity-60 cursor-not-allowed bg-[#070E24]/60'
-                      : 'cursor-pointer hover:border-cyan-500/50 hover:bg-[#182855]/80 active:scale-[0.99]'
+                      : 'cursor-pointer hover:border-white/20 hover:bg-[#182855]/80 active:scale-[0.99]'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-500/30 font-mono">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-white/10 px-2 py-0.5 rounded-md border border-white/20 font-mono">
                         {product.sku}
                       </span>
                       <span
                         className={`text-xs font-medium px-2 py-0.5 rounded-md border font-mono ${
                           isOutOfStock
-                            ? 'text-rose-400 bg-rose-950/60 border-rose-500/30'
+                            ? 'text-white bg-white/10 border-white/20'
                             : stock <= product.minStockAlert
-                            ? 'text-amber-400 bg-amber-950/60 border-amber-500/30'
-                            : 'text-emerald-400 bg-emerald-950/60 border-emerald-500/20'
+                            ? 'text-white bg-white/10 border-white/20'
+                            : 'text-white bg-white/10 border-white/20'
                         }`}
                       >
                         Stock: {stock.toLocaleString()}
                       </span>
                     </div>
 
-                    <h3 className="font-bold text-white text-sm sm:text-base group-hover:text-cyan-300 transition-colors line-clamp-1">
+                    <h3 className="font-bold text-white text-sm sm:text-base group-hover:text-white/90 transition-colors line-clamp-1">
                       {product.name}
                     </h3>
-                    <p className="text-[11px] text-blue-100 mt-0.5">{product.unitOfMeasure}</p>
+                    <p className="text-[11px] text-white/80 mt-0.5">{product.unitOfMeasure}</p>
                   </div>
 
-                  <div className="mt-3 sm:mt-4 flex items-center justify-between border-t border-blue-900/60/80 pt-2.5 sm:pt-3">
+                  <div className="mt-3 sm:mt-4 flex items-center justify-between border-t border-white/15/80 pt-2.5 sm:pt-3">
                     <div>
-                      <div className="text-[10px] text-blue-100">Unit Price</div>
-                      <div className="text-base sm:text-lg font-extrabold text-cyan-400 font-mono">
+                      <div className="text-[10px] text-white/80">Unit Price</div>
+                      <div className="text-base sm:text-lg font-extrabold text-white font-mono">
                         UGX {unitPrice.toLocaleString()}
                       </div>
                     </div>
@@ -276,8 +276,8 @@ export const PosView: React.FC = () => {
                       disabled={isOutOfStock}
                       className={`btn-touch p-2 sm:p-2.5 rounded-xl font-bold flex items-center gap-1 text-xs cursor-pointer ${
                         isOutOfStock
-                          ? 'bg-[#182855] text-blue-100/80 cursor-not-allowed'
-                          : 'bg-cyan-600 group-hover:bg-cyan-500 text-white shadow-md'
+                          ? 'bg-[#182855] text-white/70 cursor-not-allowed'
+                          : 'bg-white text-[#070E24] font-bold group-hover:bg-white text-[#070E24] text-white shadow-md'
                       }`}
                     >
                       <Plus className="w-4 h-4" />
@@ -292,22 +292,22 @@ export const PosView: React.FC = () => {
 
         {/* Cart & Checkout Panel (Visible on desktop or when mobileTab === 'cart') */}
         <div className={`lg:col-span-5 space-y-4 ${mobileTab === 'catalog' ? 'hidden lg:block' : 'block'}`}>
-          <div className="glass-panel rounded-3xl p-4 sm:p-5 border border-blue-900/60 flex flex-col justify-between min-h-[500px] lg:min-h-[580px] shadow-2xl">
+          <div className="glass-panel rounded-3xl p-4 sm:p-5 border border-white/15 flex flex-col justify-between min-h-[500px] lg:min-h-[580px] shadow-2xl">
             
             <div className="space-y-3 sm:space-y-4">
-              <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
+              <div className="flex items-center justify-between border-b border-white/15 pb-3">
                 <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-cyan-400" />
+                  <ShoppingBag className="w-5 h-5 text-white" />
                   <h2 className="font-extrabold text-white text-base">Current Cart Order</h2>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs bg-cyan-950 text-cyan-400 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                  <span className="text-xs bg-white/10 text-white border border-white/20 px-2.5 py-0.5 rounded-full font-bold">
                     {cart.length} item(s)
                   </span>
                   {cart.length > 0 && (
                     <button
                       onClick={clearCart}
-                      className="text-xs text-rose-400 hover:text-rose-300 transition-colors font-semibold"
+                      className="text-xs text-white hover:text-white/90 transition-colors font-semibold"
                     >
                       Clear
                     </button>
@@ -320,11 +320,11 @@ export const PosView: React.FC = () => {
                 {cart.map((item) => (
                   <div
                     key={item.productId}
-                    className="bg-[#070E24]/80 border border-blue-900/60/80 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between"
+                    className="bg-[#070E24]/80 border border-white/15/80 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between"
                   >
                     <div className="flex-1 pr-2">
                       <div className="font-bold text-white text-xs line-clamp-1">{item.name}</div>
-                      <div className="text-[11px] text-cyan-400 font-mono">
+                      <div className="text-[11px] text-white font-mono">
                         UGX {item.unitPriceUgx.toLocaleString()} x {item.quantity}
                       </div>
                     </div>
@@ -332,7 +332,7 @@ export const PosView: React.FC = () => {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => updateCartQty(item.productId, item.quantity - 1)}
-                        className="p-1 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white border border-blue-900/60 cursor-pointer"
+                        className="p-1 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white border border-white/15 cursor-pointer"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="w-3.5 h-3.5" />
@@ -342,14 +342,14 @@ export const PosView: React.FC = () => {
                       </span>
                       <button
                         onClick={() => updateCartQty(item.productId, item.quantity + 1)}
-                        className="p-1 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white border border-blue-900/60 cursor-pointer"
+                        className="p-1 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white border border-white/15 cursor-pointer"
                         aria-label="Increase quantity"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => removeFromCart(item.productId)}
-                        className="p-1 text-rose-400 hover:text-rose-300 ml-1 cursor-pointer"
+                        className="p-1 text-white hover:text-white/90 ml-1 cursor-pointer"
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -359,7 +359,7 @@ export const PosView: React.FC = () => {
                 ))}
 
                 {cart.length === 0 && (
-                  <div className="text-center py-8 sm:py-12 text-blue-100/80 text-xs space-y-1">
+                  <div className="text-center py-8 sm:py-12 text-white/70 text-xs space-y-1">
                     <ShoppingBag className="w-7 h-7 mx-auto text-slate-600" />
                     <p>Cart is empty. Click a product to add it.</p>
                   </div>
@@ -369,30 +369,30 @@ export const PosView: React.FC = () => {
               {/* Customer Inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
                 <div>
-                  <label className="block text-[10px] text-blue-100 mb-1">Customer Name</label>
+                  <label className="block text-[10px] text-white/80 mb-1">Customer Name</label>
                   <input
                     type="text"
                     placeholder="Walk-in Customer"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-white/15 rounded-xl px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-white/30"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-blue-100 mb-1">Phone Number</label>
+                  <label className="block text-[10px] text-white/80 mb-1">Phone Number</label>
                   <input
                     type="text"
                     placeholder="+256 700..."
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-[#070E24] border border-white/15 rounded-xl px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-white/30"
                   />
                 </div>
               </div>
 
               {/* Payment Method Selector */}
               <div className="space-y-1">
-                <label className="block text-[10px] text-blue-100 uppercase tracking-wider font-bold">
+                <label className="block text-[10px] text-white/80 uppercase tracking-wider font-bold">
                   Payment Method
                 </label>
                 <div className="grid grid-cols-3 gap-1.5 text-xs">
@@ -403,8 +403,8 @@ export const PosView: React.FC = () => {
                       onClick={() => setPaymentMethod(pm)}
                       className={`py-2 px-1 rounded-xl font-bold border transition-all text-center text-[10px] cursor-pointer ${
                         selectedPaymentMethod === pm
-                          ? 'bg-cyan-600 border-cyan-400 text-white shadow-md'
-                          : 'bg-[#070E24] border-blue-900/60 text-blue-100 hover:text-white'
+                          ? 'bg-white text-[#070E24] font-bold border-white/25 text-white shadow-md'
+                          : 'bg-[#070E24] border-white/15 text-white/80 hover:text-white'
                       }`}
                     >
                       {pm.replace('_', ' ')}
@@ -415,20 +415,20 @@ export const PosView: React.FC = () => {
             </div>
 
             {/* Checkout Totals & Button */}
-            <div className="border-t border-blue-900/60 pt-3 space-y-2 text-xs mt-3">
-              <div className="flex justify-between text-blue-100">
+            <div className="border-t border-white/15 pt-3 space-y-2 text-xs mt-3">
+              <div className="flex justify-between text-white/80">
                 <span>Subtotal:</span>
                 <span className="font-mono">UGX {summary.grossTotalUgx.toLocaleString()}</span>
               </div>
               {overallDiscountUgx > 0 && (
-                <div className="flex justify-between text-rose-400">
+                <div className="flex justify-between text-white">
                   <span>Discount:</span>
                   <span className="font-mono">- UGX {overallDiscountUgx.toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between text-white font-extrabold text-sm sm:text-base border-t border-blue-900/60 pt-1">
+              <div className="flex justify-between text-white font-extrabold text-sm sm:text-base border-t border-white/15 pt-1">
                 <span>Total Payable:</span>
-                <span className="text-cyan-400 font-mono">UGX {summary.netAmountUgx.toLocaleString()}</span>
+                <span className="text-white font-mono">UGX {summary.netAmountUgx.toLocaleString()}</span>
               </div>
 
               <button
@@ -436,7 +436,7 @@ export const PosView: React.FC = () => {
                 disabled={cart.length === 0}
                 className={`w-full py-3 sm:py-3.5 rounded-2xl font-extrabold text-xs tracking-wider uppercase transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer ${
                   cart.length === 0
-                    ? 'bg-[#182855] text-blue-100/80 cursor-not-allowed'
+                    ? 'bg-[#182855] text-white/70 cursor-not-allowed'
                     : 'bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white shadow-cyan-950 active:scale-[0.99]'
                 }`}
               >
@@ -452,17 +452,17 @@ export const PosView: React.FC = () => {
 
       {/* Floating Bottom Cart Bar on Mobile when on Catalog tab and Cart has items */}
       {mobileTab === 'catalog' && cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-3 left-3 right-3 z-40 bg-[#0F1B3E]/95 backdrop-blur-md border border-cyan-500/40 p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-fade-in">
+        <div className="lg:hidden fixed bottom-3 left-3 right-3 z-40 bg-[#0F1B3E]/95 backdrop-blur-md border border-white/20 p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-fade-in">
           <div>
-            <div className="text-[10px] text-blue-100 font-semibold">{cart.length} item(s) in cart</div>
-            <div className="text-sm font-extrabold text-cyan-400 font-mono">
+            <div className="text-[10px] text-white/80 font-semibold">{cart.length} item(s) in cart</div>
+            <div className="text-sm font-extrabold text-white font-mono">
               UGX {summary.netAmountUgx.toLocaleString()}
             </div>
           </div>
 
           <button
             onClick={() => setMobileTab('cart')}
-            className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-950 cursor-pointer"
+            className="bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-950 cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>View Cart & Checkout</span>
@@ -473,15 +473,15 @@ export const PosView: React.FC = () => {
       {/* Receipt Modal */}
       {completedReceipt && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 animate-fade-in overflow-y-auto">
-          <div className="bg-[#0F1B3E] border border-blue-900/60 rounded-3xl max-w-sm w-full p-5 sm:p-6 space-y-4 shadow-2xl text-white my-auto">
-            <div className="text-center space-y-1 border-b border-blue-900/60 pb-3">
-              <div className="font-extrabold text-cyan-400 text-base">AQUAPOS RECEIPT</div>
-              <div className="text-xs text-blue-100 font-mono">{completedReceipt.receiptNumber}</div>
-              <div className="text-[10px] text-blue-100/80">{completedReceipt.timestamp}</div>
+          <div className="bg-[#0F1B3E] border border-white/15 rounded-3xl max-w-sm w-full p-5 sm:p-6 space-y-4 shadow-2xl text-white my-auto">
+            <div className="text-center space-y-1 border-b border-white/15 pb-3">
+              <div className="font-extrabold text-white text-base">AQUAPOS RECEIPT</div>
+              <div className="text-xs text-white/80 font-mono">{completedReceipt.receiptNumber}</div>
+              <div className="text-[10px] text-white/70">{completedReceipt.timestamp}</div>
             </div>
 
             <div className="space-y-2 text-xs">
-              <div className="border-b border-blue-900/60 pb-2 space-y-1 max-h-40 overflow-y-auto pr-1">
+              <div className="border-b border-white/15 pb-2 space-y-1 max-h-40 overflow-y-auto pr-1">
                 {completedReceipt.items.map((it: any) => (
                   <div key={it.productId} className="flex justify-between font-mono text-[11px]">
                     <span>{it.quantity}x {it.name}</span>
@@ -491,25 +491,25 @@ export const PosView: React.FC = () => {
               </div>
 
               <div className="space-y-1 font-mono text-xs">
-                <div className="flex justify-between font-extrabold text-emerald-400 pt-1">
+                <div className="flex justify-between font-extrabold text-white pt-1">
                   <span>TOTAL PAID:</span>
                   <span>UGX {completedReceipt.summary.netAmountUgx.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-[11px] text-blue-100">
+                <div className="flex justify-between text-[11px] text-white/80">
                   <span>Payment Method:</span>
                   <span>{completedReceipt.paymentMethod}</span>
                 </div>
-                <div className="flex justify-between text-[11px] text-blue-100">
+                <div className="flex justify-between text-[11px] text-white/80">
                   <span>Customer:</span>
                   <span>{completedReceipt.customerName}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 border-t border-blue-900/60 pt-3">
+            <div className="flex gap-2 border-t border-white/15 pt-3">
               <button
                 onClick={() => setCompletedReceipt(null)}
-                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                className="flex-1 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" /> Done / Print
               </button>

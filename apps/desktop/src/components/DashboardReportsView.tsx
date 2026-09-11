@@ -344,7 +344,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
   };
 
   const reportsList = [
-    { id: 'PROFITABILITY', title: 'Gross & Net Profitability Summary (After Expenses & Debts)' },
+    { id: 'PROFITABILITY', title: 'Profit & Loss Statement (After Expenses & Debts)' },
     { id: 'DAILY_SALES', title: 'Daily Sales Report' },
     { id: 'MONTHLY_SALES', title: 'Monthly Sales Summary' },
     { id: 'STOCK_BALANCE', title: 'Stock Balance & Inventory Valuation' },
@@ -358,27 +358,27 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
     <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto space-y-4 sm:space-y-6 select-none">
       
       {/* Header & Navigation Tabs */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-blue-900/60/80 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/15/80 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 shrink-0" />
+            <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-white shrink-0" />
             <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
               Business Reports & Analytics
             </h1>
           </div>
-          <p className="text-xs text-blue-100 mt-1">
+          <p className="text-xs text-white/70 mt-1">
             Real-time multi-store operations tracking, sales audit service, expense vouchers, debt recovery, and stock grid.
           </p>
         </div>
 
         {/* Tab Navigation Pill Bar */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-[#0F1B3E]/90 p-1.5 rounded-2xl border border-blue-900/60">
+        <div className="flex flex-wrap items-center gap-1.5 bg-[#0F1B3E]/90 p-1.5 rounded-2xl border border-white/15">
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'dashboard'
-                ? 'bg-cyan-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
             <PieChart className="w-3.5 h-3.5" />
@@ -389,11 +389,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('sales_service')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'sales_service'
-                ? 'bg-cyan-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-cyan-400" />
+            <ShoppingBag className="w-3.5 h-3.5 text-white" />
             <span>Sales Service</span>
           </button>
 
@@ -401,11 +401,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('expenses')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'expenses'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
-            <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+            <TrendingDown className="w-3.5 h-3.5 text-white" />
             <span>Expenses</span>
           </button>
 
@@ -413,11 +413,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('debts')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'debts'
-                ? 'bg-amber-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
-            <DollarSign className="w-3.5 h-3.5 text-amber-400" />
+            <DollarSign className="w-3.5 h-3.5 text-white" />
             <span>Debts</span>
           </button>
 
@@ -425,11 +425,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('stock_grid')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'stock_grid'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
-            <Package className="w-3.5 h-3.5 text-emerald-400" />
+            <Package className="w-3.5 h-3.5 text-white" />
             <span>Stock Grid</span>
           </button>
 
@@ -437,11 +437,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('digital_collections')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'digital_collections'
-                ? 'bg-purple-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
-            <Wallet className="w-3.5 h-3.5 text-purple-400" />
+            <Wallet className="w-3.5 h-3.5 text-white" />
             <span>Digital Collections</span>
           </button>
 
@@ -449,8 +449,8 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             onClick={() => setActiveTab('reports')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'reports'
-                ? 'bg-cyan-600 text-white shadow-md'
-                : 'text-blue-100 hover:text-white hover:bg-[#182855]/50'
+                ? 'bg-white text-[#070E24] font-black text-white shadow-md'
+                : 'text-white/70 hover:text-white hover:bg-[#182855]/50'
             }`}
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -460,13 +460,13 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
       </div>
 
       {/* Global Store Switcher Bar */}
-      <div className="bg-[#0F1B3E]/80 border border-blue-900/60 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-inner">
+      <div className="bg-[#0F1B3E]/80 border border-white/15 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-inner">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-cyan-950/80 border border-cyan-500/30 rounded-lg text-cyan-400">
+          <div className="p-1.5 bg-white/10 border border-white/20 rounded-lg text-white">
             <Store className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-blue-100 font-extrabold">Active Store Filter</div>
+            <div className="text-[10px] uppercase tracking-wider text-white/70 font-extrabold">Active Store Filter</div>
             <div className="text-xs font-bold text-white">
               {selectedStoreId === 'ALL' ? 'Consolidated All Stores' : stores.find((s) => s.id === selectedStoreId)?.name || 'Selected Store'}
             </div>
@@ -474,11 +474,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] text-blue-100 font-medium">Switch Store:</span>
+          <span className="text-[11px] text-white/70 font-medium">Switch Store:</span>
           <select
             value={selectedStoreId}
             onChange={(e) => setSelectedStoreId(e.target.value)}
-            className="bg-[#070E24] border border-blue-800/60 hover:border-cyan-500 rounded-xl px-3 py-1.5 text-xs text-white font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer"
+            className="bg-[#070E24] border border-white/20 hover:border-white/30 rounded-xl px-3 py-1.5 text-xs text-white font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer"
           >
             <option value="ALL">🏢 All Stores (Consolidated View)</option>
             {activeBranchStores.map((st) => (
@@ -489,15 +489,15 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </select>
 
           {/* Quick Date Scope Selector */}
-          <div className="flex items-center gap-1.5 bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1 text-xs">
-            <Calendar className="w-3.5 h-3.5 text-blue-100" />
+          <div className="flex items-center gap-1.5 bg-[#070E24] border border-white/15 rounded-xl px-2.5 py-1 text-xs">
+            <Calendar className="w-3.5 h-3.5 text-white/70" />
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="bg-transparent text-white text-xs focus:outline-none"
             />
-            <span className="text-blue-100/80">to</span>
+            <span className="text-white/60">to</span>
             <input
               type="date"
               value={endDate}
@@ -514,207 +514,242 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
               <span>Financial Overview & Real-Time Performance</span>
-              <span className="text-[11px] font-normal text-blue-100/80">(Click any card to open its detailed operations view)</span>
+              <span className="text-[11px] font-normal text-white/60">(Click any card to open its detailed operations view)</span>
             </h2>
           </div>
 
           {/* Primary 4 Metric Cards (Clickable) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             
             {/* Card 1: Total Sales */}
             <div
               onClick={() => setActiveTab('sales_service')}
-              className="glass-card rounded-2xl p-4.5 border border-blue-900/60 bg-[#0F1B3E]/90 hover:border-cyan-500/60 hover:shadow-xl hover:shadow-cyan-950/40 hover:-translate-y-0.5 transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
-              title="Click to view Sales Service & Track Every Operation"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[175px]"
+              title="Click to view Sales Operations Service"
             >
-              <div className="absolute top-2 right-2 text-[10px] font-bold text-cyan-400/80 bg-cyan-950/60 border border-cyan-500/30 rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                <span>View Sales</span>
-                <ArrowRight className="w-2.5 h-2.5" />
-              </div>
-
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="group-hover:text-cyan-300 transition-colors">Total Sales (Gross Revenue)</span>
-                <div className="p-1.5 rounded-lg bg-cyan-950/80 text-cyan-400 border border-cyan-500/20">
-                  <TrendingUp className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Total Sales (Gross Revenue)
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <TrendingUp className="w-6 h-6 text-white" />
                 </div>
               </div>
 
-              <div className="text-2xl font-extrabold text-cyan-400 mt-2.5 font-mono tracking-tight">
-                UGX {totalSalesUgx.toLocaleString()}
+              <div className="my-2">
+                <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight">
+                  UGX {totalSalesUgx.toLocaleString()}
+                </div>
               </div>
 
-              <div className="text-[11px] text-blue-100 mt-1 flex items-center justify-between">
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
                 <span>Today: UGX {todaysSalesUgx.toLocaleString()}</span>
-                <span className="font-semibold text-cyan-300 group-hover:underline">({filteredSales.length} Orders) →</span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>{filteredSales.length} Orders</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </div>
             </div>
 
             {/* Card 2: Total Expenses */}
             <div
               onClick={() => setActiveTab('expenses')}
-              className="glass-card rounded-2xl p-4.5 border border-blue-900/60 bg-[#0F1B3E]/90 hover:border-rose-500/60 hover:shadow-xl hover:shadow-rose-950/40 hover:-translate-y-0.5 transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
-              title="Click to view Expense Records, Approvers & Full Descriptions"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[175px]"
+              title="Click to view Expense Records & Descriptions"
             >
-              <div className="absolute top-2 right-2 text-[10px] font-bold text-rose-400/80 bg-rose-950/60 border border-rose-500/30 rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                <span>View Expenses</span>
-                <ArrowRight className="w-2.5 h-2.5" />
-              </div>
-
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="group-hover:text-rose-300 transition-colors">Total Expenses</span>
-                <div className="p-1.5 rounded-lg bg-rose-950/80 text-rose-400 border border-rose-500/20">
-                  <TrendingDown className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Total Expenses
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <TrendingDown className="w-6 h-6 text-white" />
                 </div>
               </div>
 
-              <div className="text-2xl font-extrabold text-rose-400 mt-2.5 font-mono tracking-tight">
-                UGX {expensesUgx.toLocaleString()}
+              <div className="my-2">
+                <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight">
+                  UGX {expensesUgx.toLocaleString()}
+                </div>
               </div>
 
-              <div className="text-[11px] text-blue-100 mt-1 flex items-center justify-between">
-                <span>{filteredExpenses.length} Vouchers Recorded</span>
-                <span className="font-semibold text-rose-300 group-hover:underline">View Descriptions →</span>
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
+                <span>{filteredExpenses.length} Expenses Logged</span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>View Details</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </div>
             </div>
 
             {/* Card 3: Outstanding Debts */}
             <div
               onClick={() => setActiveTab('debts')}
-              className="glass-card rounded-2xl p-4.5 border border-blue-900/60 bg-[#0F1B3E]/90 hover:border-amber-500/60 hover:shadow-xl hover:shadow-amber-950/40 hover:-translate-y-0.5 transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden"
-              title="Click to view Debt Records & Shortage Information"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[175px]"
+              title="Click to view Debt Records & Recovery"
             >
-              <div className="absolute top-2 right-2 text-[10px] font-bold text-amber-400/80 bg-amber-950/60 border border-amber-500/30 rounded-md px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                <span>View Debts</span>
-                <ArrowRight className="w-2.5 h-2.5" />
-              </div>
-
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="group-hover:text-amber-300 transition-colors">Outstanding Debts</span>
-                <div className="p-1.5 rounded-lg bg-amber-950/80 text-amber-400 border border-amber-500/20">
-                  <DollarSign className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Outstanding Debts
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <DollarSign className="w-6 h-6 text-white" />
                 </div>
               </div>
 
-              <div className="text-2xl font-extrabold text-amber-400 mt-2.5 font-mono tracking-tight">
-                UGX {outstandingDebtsUgx.toLocaleString()}
+              <div className="my-2">
+                <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight">
+                  UGX {outstandingDebtsUgx.toLocaleString()}
+                </div>
               </div>
 
-              <div className="text-[11px] text-blue-100 mt-1 flex items-center justify-between">
-                <span>Uncollected Credit Balances</span>
-                <span className="font-semibold text-amber-300 group-hover:underline">View Debt Info →</span>
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
+                <span>Credit Balances</span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>Debts List</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </div>
             </div>
 
             {/* Card 4: Net Profit Realized */}
             <div
               onClick={() => setActiveTab('profitability')}
-              className={`glass-card rounded-2xl p-4.5 border transition-all cursor-pointer group active:scale-[0.99] relative overflow-hidden hover:shadow-xl ${
-                netProfitUgx >= 0
-                  ? 'border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-400 hover:shadow-emerald-950/40'
-                  : 'border-rose-500/40 bg-rose-950/20 hover:border-rose-400 hover:shadow-rose-950/40'
-              }`}
-              title="Click to view Net Realized Profit Calculation & Statement"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[175px]"
+              title="Click to view Profit & Loss Statement"
             >
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="text-white font-bold">Net Profit (After Exp. & Debts)</span>
-                <div className={`p-1.5 rounded-lg border ${netProfitUgx >= 0 ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/20' : 'bg-rose-950/80 text-rose-400 border-rose-500/20'}`}>
-                  <PieChart className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Net Profit (After Exp. & Debts)
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <PieChart className="w-6 h-6 text-white" />
                 </div>
               </div>
 
-              <div className={`text-2xl font-extrabold mt-2.5 font-mono tracking-tight ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                UGX {netProfitUgx.toLocaleString()}
+              <div className="my-2">
+                <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight">
+                  UGX {netProfitUgx.toLocaleString()}
+                </div>
               </div>
 
-              <div className="text-[11px] text-white mt-1 font-semibold flex items-center justify-between">
-                <span>Margin: <span className="text-cyan-400 font-bold">{profitMarginPercent}%</span></span>
-                <span className="text-emerald-300 group-hover:underline">P&L Statement →</span>
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
+                <span>Margin: <span className="text-white font-bold">{profitMarginPercent}%</span></span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>P&L Statement</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </div>
             </div>
 
           </div>
 
           {/* Secondary 3 Operational Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
             
             {/* Card 5: Current Stock Levels */}
             <div
               onClick={() => setActiveTab('stock_grid')}
-              className="glass-card rounded-2xl p-4 border border-blue-900/60 bg-[#0F1B3E]/70 hover:border-emerald-500/60 hover:shadow-lg transition-all cursor-pointer group active:scale-[0.99]"
-              title="Click to view Current Stock Levels in Grid View Style (Rows & Columns)"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[160px]"
+              title="Click to view Current Stock in Grid View"
             >
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="group-hover:text-emerald-300 transition-colors">Current Stock Levels</span>
-                <div className="p-1 rounded-lg bg-emerald-950/80 text-emerald-400 border border-emerald-500/20">
-                  <Package className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Current Stock Levels
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <Package className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <div className="text-xl font-extrabold text-white mt-2 font-mono">
-                {currentStockCartons.toLocaleString()} <span className="text-xs font-normal text-blue-100">Cartons / Units</span>
+
+              <div className="my-2">
+                <div className="text-2xl font-extrabold text-white font-mono">
+                  {currentStockCartons.toLocaleString()}{' '}
+                  <span className="text-xs font-normal text-white/60">Cartons / Units</span>
+                </div>
               </div>
-              <div className="text-[11px] mt-1 font-semibold flex items-center justify-between">
-                <span className={lowStockCount > 0 ? 'text-amber-400' : 'text-emerald-400'}>
-                  {lowStockCount > 0 ? `${lowStockCount} Low Stock Alert(s)` : 'Healthy Inventory ✓'}
+
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
+                <span>{lowStockCount > 0 ? `${lowStockCount} Low Stock Alert(s)` : 'Healthy Inventory ✓'}</span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>Stock Grid</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
-                <span className="text-cyan-400 group-hover:underline font-bold">Grid View (Rows & Cols) →</span>
               </div>
             </div>
 
             {/* Card 6: Digital Collections */}
             <div
               onClick={() => setActiveTab('digital_collections')}
-              className="glass-card rounded-2xl p-4 border border-blue-900/60 bg-[#0F1B3E]/70 hover:border-purple-500/60 hover:shadow-lg transition-all cursor-pointer group active:scale-[0.99]"
-              title="Click to view Digital Collections, Transactions, Cashier & Exact Timestamps"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[160px]"
+              title="Click to view Mobile Money & Bank Collections"
             >
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="group-hover:text-purple-300 transition-colors">Digital Collections</span>
-                <div className="p-1 rounded-lg bg-purple-950/80 text-purple-400 border border-purple-500/20">
-                  <Wallet className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Digital Collections
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <Wallet className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <div className="text-xl font-extrabold text-purple-400 mt-2 font-mono">
-                UGX {(mobileMoneyUgx + bankedMoneyUgx).toLocaleString()}
+
+              <div className="my-2">
+                <div className="text-2xl font-extrabold text-white font-mono">
+                  UGX {(mobileMoneyUgx + bankedMoneyUgx).toLocaleString()}
+                </div>
               </div>
-              <div className="text-[11px] text-blue-100 mt-1 flex items-center justify-between">
+
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
                 <span>MoMo: UGX {mobileMoneyUgx.toLocaleString()} • Bank: UGX {bankedMoneyUgx.toLocaleString()}</span>
-                <span className="text-purple-300 group-hover:underline font-bold">View Times →</span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>View Details</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </div>
             </div>
 
-            {/* Card 7: Sync & Backup Status */}
+            {/* Card 7: Sync & Cloud Status */}
             <div
               onClick={() => {
                 setSelectedReportType('AUDIT_LOG');
                 setActiveTab('reports');
               }}
-              className="glass-card rounded-2xl p-4 border border-blue-900/60 bg-[#0F1B3E]/70 hover:border-cyan-500/60 hover:shadow-lg transition-all cursor-pointer group active:scale-[0.99]"
+              className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[160px]"
               title="Click to view Audit Log & Backup Status"
             >
-              <div className="flex justify-between items-center text-blue-100 text-xs font-semibold">
-                <span className="group-hover:text-cyan-300 transition-colors">Sync & Backup Status</span>
-                <div className="p-1 rounded-lg bg-cyan-950/80 text-emerald-400 border border-emerald-500/20">
-                  <Database className="w-4 h-4" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-white/80 tracking-wide">
+                  Cloud Sync & Database
+                </span>
+                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-md group-hover:bg-white/20 transition-all">
+                  <Database className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <div className="text-sm font-extrabold text-emerald-400 mt-2 truncate font-mono">
-                {isOnline ? 'ONLINE (Neon Postgres Cloud)' : 'OFFLINE (Local SQLite)'}
+
+              <div className="my-2">
+                <div className="text-xl font-extrabold text-white truncate font-mono">
+                  {isOnline ? 'Online (Postgres Cloud)' : 'Offline (Local SQLite)'}
+                </div>
               </div>
-              <div className="text-[11px] text-blue-100 mt-1 flex items-center justify-between">
-                <span>{pendingSyncCount} Pending Sync Queue</span>
-                <span className="text-cyan-400 group-hover:underline font-bold">Audit Reports →</span>
+
+              <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
+                <span>{pendingSyncCount} Pending Sync Items</span>
+                <span className="font-bold text-white group-hover:underline flex items-center gap-1">
+                  <span>Audit Trail</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
               </div>
             </div>
 
           </div>
 
           {/* Branch Performance Summary */}
-          <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-blue-900/60 space-y-3">
+          <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-white/15 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-cyan-400" />
+                <Building2 className="w-4 h-4 text-white" />
                 <span>Branch Stock & Store Breakdown</span>
               </h3>
-              <span className="text-xs text-blue-100">{branches.length} Registered Branches</span>
+              <span className="text-xs text-white/70">{branches.length} Registered Branches</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -735,18 +770,18 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       setSelectedBranch(b.id);
                       setActiveTab('stock_grid');
                     }}
-                    className="bg-[#070E24] border border-blue-900/60 hover:border-cyan-500/50 rounded-xl p-3.5 flex justify-between items-center cursor-pointer transition-all hover:bg-[#0F1B3E]/50"
+                    className="bg-[#070E24] border border-white/15 hover:border-white/20 rounded-xl p-3.5 flex justify-between items-center cursor-pointer transition-all hover:bg-[#0F1B3E]/50"
                   >
                     <div>
                       <div className="font-bold text-white text-sm flex items-center gap-1.5">
                         <span>{b.name}</span>
-                        <span className="text-[10px] text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded border border-cyan-800/40 font-mono">{b.code}</span>
+                        <span className="text-[10px] text-white bg-white/10 px-1.5 py-0.5 rounded border border-white/15 font-mono">{b.code}</span>
                       </div>
-                      <div className="text-blue-100 text-[11px] mt-0.5">{b.location} • {branchStores.length} Active Store(s)</div>
+                      <div className="text-white/70 text-[11px] mt-0.5">{b.location} • {branchStores.length} Active Store(s)</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-extrabold text-cyan-400 text-sm font-mono">{branchStock.toLocaleString()} Units</div>
-                      <div className="text-emerald-400 text-[10px] font-semibold">Click for Stock Grid →</div>
+                      <div className="font-extrabold text-white text-sm font-mono">{branchStock.toLocaleString()} Units</div>
+                      <div className="text-white text-[10px] font-semibold">Click for Stock Grid →</div>
                     </div>
                   </div>
                 );
@@ -758,24 +793,24 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 2: SALES SERVICE */}
       {activeTab === 'sales_service' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-900/60 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-3">
             <div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('dashboard')}
-                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-blue-100 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white/70 hover:text-white transition-colors cursor-pointer"
                   title="Back to Overview"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
-                <h2 className="text-base sm:text-lg font-bold text-cyan-400 flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-cyan-400" />
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-white" />
                   <span>Sales Operations Service</span>
                 </h2>
               </div>
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Real-time tracking of every operation performed in the system: time, date, products bought, customer name, and store switcher.
               </p>
             </div>
@@ -784,7 +819,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'operations', subView: 'pos' })}
-                  className="px-3 py-1.5 bg-cyan-600/80 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <Store className="w-3.5 h-3.5" />
                   <span>Open Store POS</span>
@@ -792,7 +827,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Sales CSV</span>
@@ -801,24 +836,24 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Quick Metrics Bar for Sales */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-white/15">
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Sales Revenue</div>
-              <div className="text-base font-extrabold text-cyan-400 font-mono">UGX {totalSalesUgx.toLocaleString()}</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Sales Revenue</div>
+              <div className="text-base font-extrabold text-white font-mono">UGX {totalSalesUgx.toLocaleString()}</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Completed Orders</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Completed Orders</div>
               <div className="text-base font-extrabold text-white font-mono">{filteredSales.length} Transactions</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Digital Receipts</div>
-              <div className="text-base font-extrabold text-purple-400 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Digital Receipts</div>
+              <div className="text-base font-extrabold text-white font-mono">
                 {filteredSales.filter((s) => s.paymentMethod !== 'CASH').length} Digital Payments
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Avg Order Value</div>
-              <div className="text-base font-extrabold text-emerald-400 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Avg Order Value</div>
+              <div className="text-base font-extrabold text-white font-mono">
                 UGX {filteredSales.length > 0 ? Math.round(totalSalesUgx / filteredSales.length).toLocaleString() : 0}
               </div>
             </div>
@@ -827,13 +862,13 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           {/* Search & Filter Controls */}
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-blue-100 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-white/70 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search sales by customer name, receipt #, phone, or product..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full bg-[#070E24] border border-white/15 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -841,7 +876,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               <select
                 value={paymentMethodFilter}
                 onChange={(e) => setPaymentMethodFilter(e.target.value)}
-                className="bg-[#070E24] border border-blue-900/60 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer"
+                className="bg-[#070E24] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-white/30 cursor-pointer"
               >
                 <option value="ALL">All Payment Methods</option>
                 <option value="CASH">Cash</option>
@@ -853,9 +888,9 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Sales Operations Table */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+          <div className="overflow-x-auto rounded-xl border border-white/15">
             <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+              <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                 <tr>
                   <th className="p-3">Receipt / Ref</th>
                   <th className="p-3">Time & Date Bought</th>
@@ -874,30 +909,30 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                   return (
                     <tr key={s.id} className="hover:bg-[#0F1B3E]/40 transition-colors">
-                      <td className="p-3 font-mono font-bold text-cyan-400">
+                      <td className="p-3 font-mono font-bold text-white">
                         {s.receiptNumber}
                       </td>
                       <td className="p-3 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-white font-semibold">
-                          <Calendar className="w-3.5 h-3.5 text-blue-100 shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 text-white/70 shrink-0" />
                           <span>{timeInfo.date}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-blue-100 mt-0.5">
-                          <Clock className="w-3 h-3 text-cyan-400 shrink-0" />
+                        <div className="flex items-center gap-1 text-[11px] text-white/70 mt-0.5">
+                          <Clock className="w-3 h-3 text-white shrink-0" />
                           <span>{timeInfo.time}</span>
                         </div>
                       </td>
                       <td className="p-3">
                         <div className="font-semibold text-white">{storeObj ? storeObj.name : s.storeId}</div>
-                        <div className="text-[10px] text-blue-100">{storeObj ? storeObj.code : ''}</div>
+                        <div className="text-[10px] text-white/70">{storeObj ? storeObj.code : ''}</div>
                       </td>
                       <td className="p-3">
                         <div className="font-bold text-white flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-cyan-400" />
+                          <User className="w-3.5 h-3.5 text-white" />
                           <span>{s.customerName || 'Walk-in Customer'}</span>
                         </div>
                         {s.customerPhone && (
-                          <div className="text-[10px] text-blue-100 flex items-center gap-1 mt-0.5">
+                          <div className="text-[10px] text-white/70 flex items-center gap-1 mt-0.5">
                             <Phone className="w-3 h-3" />
                             <span>{s.customerPhone}</span>
                           </div>
@@ -908,21 +943,21 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                           <div className="space-y-1">
                             {s.items.slice(0, 2).map((it, idx) => (
                               <div key={idx} className="text-white text-[11px] truncate flex items-center justify-between">
-                                <span><span className="font-bold text-cyan-400">{it.quantity}x</span> {it.name}</span>
-                                <span className="text-blue-100 font-mono text-[10px]">UGX {(it.quantity * it.unitPriceUgx).toLocaleString()}</span>
+                                <span><span className="font-bold text-white">{it.quantity}x</span> {it.name}</span>
+                                <span className="text-white/70 font-mono text-[10px]">UGX {(it.quantity * it.unitPriceUgx).toLocaleString()}</span>
                               </div>
                             ))}
                             {s.items.length > 2 && (
                               <button
                                 onClick={() => setSelectedSaleForModal(s)}
-                                className="text-[10px] text-cyan-400 font-bold hover:underline cursor-pointer flex items-center gap-1"
+                                className="text-[10px] text-white font-bold hover:underline cursor-pointer flex items-center gap-1"
                               >
                                 +{s.items.length - 2} more product(s) (Click to view)
                               </button>
                             )}
                           </div>
                         ) : (
-                          <span className="text-blue-100/80 italic text-[11px]">Water Products Sale</span>
+                          <span className="text-white/60 italic text-[11px]">Water Products Sale</span>
                         )}
                       </td>
                       <td className="p-3">
@@ -930,19 +965,19 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                           s.paymentMethod === 'CASH'
                             ? 'bg-[#182855] text-white'
                             : s.paymentMethod === 'MOBILE_MONEY'
-                            ? 'bg-purple-950 text-purple-300 border border-purple-800'
-                            : 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                            ? 'bg-white/10 text-white/90 border border-white/20'
+                            : 'bg-white/10 text-white/90 border border-white/20'
                         }`}>
                           {s.paymentMethod}
                         </span>
                       </td>
-                      <td className="p-3 text-right font-mono font-extrabold text-cyan-400 text-sm">
+                      <td className="p-3 text-right font-mono font-extrabold text-white text-sm">
                         UGX {s.totalAmountUgx.toLocaleString()}
                       </td>
                       <td className="p-3 text-center">
                         <button
                           onClick={() => setSelectedSaleForModal(s)}
-                          className="p-1.5 bg-[#182855] hover:bg-cyan-600 hover:text-white rounded-lg text-white transition-colors cursor-pointer"
+                          className="p-1.5 bg-[#182855] hover:bg-white text-[#070E24] font-black hover:text-white rounded-lg text-white transition-colors cursor-pointer"
                           title="View Complete Products & Receipt Breakdown"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -954,7 +989,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                 {filteredSales.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-blue-100/80">
+                    <td colSpan={8} className="p-8 text-center text-white/60">
                       No sales recorded for this store or date scope.
                     </td>
                   </tr>
@@ -968,24 +1003,24 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 3: EXPENSES */}
       {activeTab === 'expenses' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-900/60 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-3">
             <div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('dashboard')}
-                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-blue-100 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white/70 hover:text-white transition-colors cursor-pointer"
                   title="Back to Overview"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
-                <h2 className="text-base sm:text-lg font-bold text-rose-400 flex items-center gap-2">
-                  <TrendingDown className="w-5 h-5 text-rose-400" />
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <TrendingDown className="w-5 h-5 text-white" />
                   <span>Expenses Records & Voucher Ledger</span>
                 </h2>
               </div>
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Records of operational expenses, who approved/spent the money, time recorded, and clickable description cells with instant pop-up modals.
               </p>
             </div>
@@ -994,7 +1029,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'operations', subView: 'expenses' })}
-                  className="px-3 py-1.5 bg-rose-600/80 hover:bg-rose-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
                   <span>Open Expense Manager</span>
@@ -1002,7 +1037,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Expenses CSV</span>
@@ -1011,43 +1046,43 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Quick Expense Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-white/15">
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Spent</div>
-              <div className="text-base font-extrabold text-rose-400 font-mono">UGX {expensesUgx.toLocaleString()}</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Spent</div>
+              <div className="text-base font-extrabold text-white font-mono">UGX {expensesUgx.toLocaleString()}</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Vouchers</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Vouchers</div>
               <div className="text-base font-extrabold text-white font-mono">{filteredExpenses.length} Records</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Scope Scope</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Scope Scope</div>
               <div className="text-xs font-bold text-white truncate">
                 {selectedStoreId === 'ALL' ? 'All Stores' : stores.find((s) => s.id === selectedStoreId)?.name || 'Filtered'}
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Interactive Feature</div>
-              <div className="text-xs font-bold text-rose-300">Click Description Cell for Pop-up Modal ✓</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Interactive Feature</div>
+              <div className="text-xs font-bold text-white/90">Click Description Cell for Pop-up Modal ✓</div>
             </div>
           </div>
 
           {/* Search bar */}
           <div className="relative">
-            <Search className="w-4 h-4 text-blue-100 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-white/70 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search expenses by voucher #, keyword, description, or approver..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500"
+              className="w-full bg-[#070E24] border border-white/15 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
             />
           </div>
 
           {/* Expenses Table with Clickable Description Cell */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+          <div className="overflow-x-auto rounded-xl border border-white/15">
             <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+              <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                 <tr>
                   <th className="p-3">Voucher #</th>
                   <th className="p-3">Date & Time Recorded</th>
@@ -1064,22 +1099,22 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                   return (
                     <tr key={exp.id} className="hover:bg-[#0F1B3E]/40 transition-colors">
-                      <td className="p-3 font-mono font-bold text-rose-400 whitespace-nowrap">
+                      <td className="p-3 font-mono font-bold text-white whitespace-nowrap">
                         {exp.voucherNumber}
                       </td>
                       <td className="p-3 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-white font-semibold">
-                          <Calendar className="w-3.5 h-3.5 text-blue-100 shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 text-white/70 shrink-0" />
                           <span>{timeInfo.date}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-blue-100 mt-0.5">
-                          <Clock className="w-3 h-3 text-rose-400 shrink-0" />
+                        <div className="flex items-center gap-1 text-[11px] text-white/70 mt-0.5">
+                          <Clock className="w-3 h-3 text-white shrink-0" />
                           <span>{timeInfo.time}</span>
                         </div>
                       </td>
                       <td className="p-3">
                         <div className="font-bold text-white flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-rose-400" />
+                          <User className="w-3.5 h-3.5 text-white" />
                           <span>{exp.approvedBy || 'Manager'}</span>
                         </div>
                       </td>
@@ -1093,25 +1128,25 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       <td className="p-3 max-w-xs">
                         <div
                           onClick={() => setSelectedExpenseForModal(exp)}
-                          className="bg-[#070E24]/80 hover:bg-[#182855]/90 border border-blue-900/60 hover:border-rose-500/50 p-2 rounded-xl cursor-pointer transition-all group flex items-start justify-between gap-2"
+                          className="bg-[#070E24]/80 hover:bg-[#182855]/90 border border-white/15 hover:border-white/20 p-2 rounded-xl cursor-pointer transition-all group flex items-start justify-between gap-2"
                           title="Click to open full description pop-up modal"
                         >
                           <span className="text-white text-xs truncate">
                             {exp.description || 'No detailed description provided.'}
                           </span>
-                          <span className="shrink-0 p-1 bg-rose-950/80 text-rose-400 rounded-md border border-rose-500/20 group-hover:scale-110 transition-transform">
+                          <span className="shrink-0 p-1 bg-white/10 text-white rounded-md border border-white/20 group-hover:scale-110 transition-transform">
                             <Eye className="w-3.5 h-3.5" />
                           </span>
                         </div>
                       </td>
 
                       <td className="p-3 whitespace-nowrap">
-                        <span className="text-[11px] text-blue-100 font-medium">
+                        <span className="text-[11px] text-white/70 font-medium">
                           {exp.paymentMethod || 'CASH'}
                         </span>
                       </td>
 
-                      <td className="p-3 text-right font-mono font-extrabold text-rose-400 text-sm whitespace-nowrap">
+                      <td className="p-3 text-right font-mono font-extrabold text-white text-sm whitespace-nowrap">
                         UGX {exp.amountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -1120,7 +1155,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                 {filteredExpenses.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-blue-100/80">
+                    <td colSpan={7} className="p-8 text-center text-white/60">
                       No expenses filed for this store or date scope.
                     </td>
                   </tr>
@@ -1134,24 +1169,24 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 4: DEBTS */}
       {activeTab === 'debts' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-900/60 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-3">
             <div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('dashboard')}
-                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-blue-100 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white/70 hover:text-white transition-colors cursor-pointer"
                   title="Back to Overview"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
-                <h2 className="text-base sm:text-lg font-bold text-amber-400 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-amber-400" />
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-white" />
                   <span>Debts & Credit Recovery Records</span>
                 </h2>
               </div>
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Outstanding customer & worker debts, who approved the credit, date/time recorded, and clickable reason cells with pop-up modal.
               </p>
             </div>
@@ -1160,7 +1195,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'finance', subView: 'debts' })}
-                  className="px-3 py-1.5 bg-amber-600/80 hover:bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <CreditCard className="w-3.5 h-3.5" />
                   <span>Open Debts Manager</span>
@@ -1168,7 +1203,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Debts CSV</span>
@@ -1177,45 +1212,45 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Quick Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-white/15">
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Outstanding Balance</div>
-              <div className="text-base font-extrabold text-amber-400 font-mono">UGX {outstandingDebtsUgx.toLocaleString()}</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Outstanding Balance</div>
+              <div className="text-base font-extrabold text-white font-mono">UGX {outstandingDebtsUgx.toLocaleString()}</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Uncollected Count</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Uncollected Count</div>
               <div className="text-base font-extrabold text-white font-mono">
                 {debtsList.filter((d) => d.status !== 'CLEARED').length} Accounts
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Recovered to Date</div>
-              <div className="text-base font-extrabold text-emerald-400 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Recovered to Date</div>
+              <div className="text-base font-extrabold text-white font-mono">
                 UGX {debtsList.reduce((sum, d) => sum + d.paidAmountUgx, 0).toLocaleString()}
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Interactive Feature</div>
-              <div className="text-xs font-bold text-amber-300">Click Reason Cell for Pop-up Modal ✓</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Interactive Feature</div>
+              <div className="text-xs font-bold text-white/90">Click Reason Cell for Pop-up Modal ✓</div>
             </div>
           </div>
 
           {/* Search bar */}
           <div className="relative">
-            <Search className="w-4 h-4 text-blue-100 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-white/70 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search debts by debtor name, source, or reason notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#070E24] border border-white/15 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
             />
           </div>
 
           {/* Debts Table with Clickable Reason Cell */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+          <div className="overflow-x-auto rounded-xl border border-white/15">
             <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+              <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                 <tr>
                   <th className="p-3">Debtor Name</th>
                   <th className="p-3">Time & Date Recorded</th>
@@ -1235,16 +1270,16 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                   return (
                     <tr key={d.id} className="hover:bg-[#0F1B3E]/40 transition-colors">
                       <td className="p-3 font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
-                        <User className="w-3.5 h-3.5 text-amber-400" />
+                        <User className="w-3.5 h-3.5 text-white" />
                         <span>{d.debtorName}</span>
                       </td>
                       <td className="p-3 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-white font-semibold">
-                          <Calendar className="w-3.5 h-3.5 text-blue-100 shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 text-white/70 shrink-0" />
                           <span>{timeInfo.date}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-blue-100 mt-0.5">
-                          <Clock className="w-3 h-3 text-amber-400 shrink-0" />
+                        <div className="flex items-center gap-1 text-[11px] text-white/70 mt-0.5">
+                          <Clock className="w-3 h-3 text-white shrink-0" />
                           <span>{timeInfo.time}</span>
                         </div>
                       </td>
@@ -1261,13 +1296,13 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       <td className="p-3 max-w-xs">
                         <div
                           onClick={() => setSelectedDebtForModal(d)}
-                          className="bg-[#070E24]/80 hover:bg-[#182855]/90 border border-blue-900/60 hover:border-amber-500/50 p-2 rounded-xl cursor-pointer transition-all group flex items-start justify-between gap-2"
+                          className="bg-[#070E24]/80 hover:bg-[#182855]/90 border border-white/15 hover:border-white/20 p-2 rounded-xl cursor-pointer transition-all group flex items-start justify-between gap-2"
                           title="Click to open full debt reason pop-up modal"
                         >
                           <span className="text-white text-xs truncate">
                             {d.reason || 'No detailed notes recorded.'}
                           </span>
-                          <span className="shrink-0 p-1 bg-amber-950/80 text-amber-400 rounded-md border border-amber-500/20 group-hover:scale-110 transition-transform">
+                          <span className="shrink-0 p-1 bg-white/10 text-white rounded-md border border-white/20 group-hover:scale-110 transition-transform">
                             <Eye className="w-3.5 h-3.5" />
                           </span>
                         </div>
@@ -1276,22 +1311,22 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       <td className="p-3 whitespace-nowrap">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           d.status === 'CLEARED'
-                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                            ? 'bg-white/10 text-white border border-white/20'
                             : d.status === 'PARTIALLY_PAID'
-                            ? 'bg-cyan-950 text-cyan-400 border border-cyan-800'
-                            : 'bg-amber-950 text-amber-400 border border-amber-800'
+                            ? 'bg-white/10 text-white border border-white/20'
+                            : 'bg-white/10 text-white border border-white/20'
                         }`}>
                           {d.status}
                         </span>
                       </td>
 
-                      <td className="p-3 text-right font-mono text-blue-100 whitespace-nowrap">
+                      <td className="p-3 text-right font-mono text-white/70 whitespace-nowrap">
                         UGX {d.originalAmountUgx.toLocaleString()}
                       </td>
-                      <td className="p-3 text-right font-mono text-emerald-400 whitespace-nowrap">
+                      <td className="p-3 text-right font-mono text-white whitespace-nowrap">
                         UGX {d.paidAmountUgx.toLocaleString()}
                       </td>
-                      <td className="p-3 text-right font-mono font-extrabold text-amber-400 text-sm whitespace-nowrap">
+                      <td className="p-3 text-right font-mono font-extrabold text-white text-sm whitespace-nowrap">
                         UGX {d.balanceAmountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -1300,7 +1335,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                 {filteredDebts.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="p-8 text-center text-blue-100/80">
+                    <td colSpan={9} className="p-8 text-center text-white/60">
                       No debts or credit balances found for this period.
                     </td>
                   </tr>
@@ -1314,24 +1349,24 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 5: CURRENT STOCK LEVELS (GRID VIEW: ROWS & COLUMNS) */}
       {activeTab === 'stock_grid' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-900/60 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-3">
             <div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('dashboard')}
-                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-blue-100 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white/70 hover:text-white transition-colors cursor-pointer"
                   title="Back to Overview"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
-                <h2 className="text-base sm:text-lg font-bold text-emerald-400 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-emerald-400" />
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <Package className="w-5 h-5 text-white" />
                   <span>Current Stock Levels (Grid View: Rows & Columns)</span>
                 </h2>
               </div>
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Real-time store inventory matrix showing physical units, min alert triggers, cost/retail valuations, and stock health status.
               </p>
             </div>
@@ -1340,7 +1375,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'inventory', subView: 'stock' })}
-                  className="px-3 py-1.5 bg-emerald-600/80 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <Layers className="w-3.5 h-3.5" />
                   <span>Stock Management</span>
@@ -1348,7 +1383,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Stock CSV</span>
@@ -1357,22 +1392,22 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Quick Metrics for Stock */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-white/15">
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Physical Units</div>
-              <div className="text-base font-extrabold text-emerald-400 font-mono">{currentStockCartons.toLocaleString()} Units</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Physical Units</div>
+              <div className="text-base font-extrabold text-white font-mono">{currentStockCartons.toLocaleString()} Units</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Inventory Valuation (Cost)</div>
-              <div className="text-base font-extrabold text-cyan-400 font-mono">UGX {totalStockValuationCost.toLocaleString()}</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Inventory Valuation (Cost)</div>
+              <div className="text-base font-extrabold text-white font-mono">UGX {totalStockValuationCost.toLocaleString()}</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Low Stock Triggers</div>
-              <div className="text-base font-extrabold text-amber-400 font-mono">{lowStockCount} Items</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Low Stock Triggers</div>
+              <div className="text-base font-extrabold text-white font-mono">{lowStockCount} Items</div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Stock Outages</div>
-              <div className="text-base font-extrabold text-rose-400 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Stock Outages</div>
+              <div className="text-base font-extrabold text-white font-mono">
                 {stockGridRows.filter((r) => r.quantity <= 0).length} Items
               </div>
             </div>
@@ -1381,13 +1416,13 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           {/* Filter Controls */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-blue-100 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-white/70 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search by product name, SKU, or store..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#070E24] border border-blue-900/60 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#070E24] border border-white/15 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -1396,8 +1431,8 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                 onClick={() => setLowStockOnly(!lowStockOnly)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   lowStockOnly
-                    ? 'bg-amber-950/80 border-amber-500 text-amber-300'
-                    : 'bg-[#070E24] border-blue-900/60 text-blue-100 hover:text-white'
+                    ? 'bg-white/10 border-white/30 text-white/90'
+                    : 'bg-[#070E24] border-white/15 text-white/70 hover:text-white'
                 }`}
               >
                 {lowStockOnly ? 'Showing Low Stock Only ✓' : 'Filter Low Stock Only'}
@@ -1406,9 +1441,9 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Grid View Table: Rows and Columns */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60 shadow-xl">
+          <div className="overflow-x-auto rounded-xl border border-white/15 shadow-xl">
             <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+              <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                 <tr>
                   <th className="p-3">Product Name & Spec</th>
                   <th className="p-3">SKU</th>
@@ -1427,9 +1462,9 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                   <tr key={`${row.storeId}-${row.productId}-${idx}`} className="hover:bg-[#0F1B3E]/50 transition-colors">
                     <td className="p-3">
                       <div className="font-bold text-white">{row.productName}</div>
-                      <div className="text-[10px] text-blue-100">{row.packaging}</div>
+                      <div className="text-[10px] text-white/70">{row.packaging}</div>
                     </td>
-                    <td className="p-3 font-mono text-cyan-400 font-semibold">{row.sku}</td>
+                    <td className="p-3 font-mono text-white font-semibold">{row.sku}</td>
                     <td className="p-3">
                       <span className="px-2 py-0.5 bg-[#182855] text-white rounded text-[10px] font-semibold">
                         {row.category}
@@ -1437,30 +1472,30 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                     </td>
                     <td className="p-3">
                       <div className="font-semibold text-white">{row.storeName}</div>
-                      <div className="text-[10px] text-blue-100">{row.branchName}</div>
+                      <div className="text-[10px] text-white/70">{row.branchName}</div>
                     </td>
                     <td className="p-3 text-right font-mono font-extrabold text-white text-sm">
                       {row.quantity.toLocaleString()}
                     </td>
-                    <td className="p-3 text-right font-mono text-blue-100">
+                    <td className="p-3 text-right font-mono text-white/70">
                       {row.minStockAlert}
                     </td>
-                    <td className="p-3 text-right font-mono text-blue-100">
+                    <td className="p-3 text-right font-mono text-white/70">
                       UGX {row.costPriceUgx.toLocaleString()}
                     </td>
-                    <td className="p-3 text-right font-mono text-cyan-300">
+                    <td className="p-3 text-right font-mono text-white/90">
                       UGX {row.sellingPriceUgx.toLocaleString()}
                     </td>
-                    <td className="p-3 text-right font-mono font-bold text-emerald-400">
+                    <td className="p-3 text-right font-mono font-bold text-white">
                       UGX {row.valuationCostUgx.toLocaleString()}
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wider ${
                         row.status === 'IN_STOCK'
-                          ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                          ? 'bg-white/10 text-white border border-white/20'
                           : row.status === 'LOW_STOCK'
-                          ? 'bg-amber-950 text-amber-400 border border-amber-800 animate-pulse'
-                          : 'bg-rose-950 text-rose-400 border border-rose-800'
+                          ? 'bg-white/10 text-white border border-white/20 animate-pulse'
+                          : 'bg-white/10 text-white border border-white/20'
                       }`}>
                         {row.status.replace('_', ' ')}
                       </span>
@@ -1470,7 +1505,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                 {stockGridRows.length === 0 && (
                   <tr>
-                    <td colSpan={10} className="p-8 text-center text-blue-100/80">
+                    <td colSpan={10} className="p-8 text-center text-white/60">
                       No products matching the active filters.
                     </td>
                   </tr>
@@ -1484,24 +1519,24 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 6: DIGITAL COLLECTIONS */}
       {activeTab === 'digital_collections' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-900/60 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-3">
             <div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('dashboard')}
-                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-blue-100 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white/70 hover:text-white transition-colors cursor-pointer"
                   title="Back to Overview"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
-                <h2 className="text-base sm:text-lg font-bold text-purple-400 flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-purple-400" />
+                <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <Wallet className="w-5 h-5 text-white" />
                   <span>Digital Collections (Mobile Money & Bank Transfers)</span>
                 </h2>
               </div>
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Records of all cashless digital transactions: who processed the transaction, the customer, when it was done, and at what exact time.
               </p>
             </div>
@@ -1510,7 +1545,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               {onSelectNav && (
                 <button
                   onClick={() => onSelectNav({ domain: 'finance', subView: 'bank_mobile' })}
-                  className="px-3 py-1.5 bg-purple-600/80 hover:bg-purple-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                  className="px-3 py-1.5 bg-white/20 hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
                 >
                   <Landmark className="w-3.5 h-3.5" />
                   <span>Bank & Cash Accounts</span>
@@ -1518,7 +1553,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               )}
               <button
                 onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+                className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Digital CSV</span>
@@ -1527,27 +1562,27 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Quick Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-blue-900/60">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#070E24] p-3 rounded-xl border border-white/15">
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Digital Collections</div>
-              <div className="text-base font-extrabold text-purple-400 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Digital Collections</div>
+              <div className="text-base font-extrabold text-white font-mono">
                 UGX {(mobileMoneyUgx + bankedMoneyUgx).toLocaleString()}
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Mobile Money (MTN / Airtel)</div>
-              <div className="text-base font-extrabold text-purple-300 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Mobile Money (MTN / Airtel)</div>
+              <div className="text-base font-extrabold text-white/90 font-mono">
                 UGX {mobileMoneyUgx.toLocaleString()}
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Bank Deposits & EFT</div>
-              <div className="text-base font-extrabold text-cyan-400 font-mono">
+              <div className="text-[10px] uppercase font-bold text-white/70">Bank Deposits & EFT</div>
+              <div className="text-base font-extrabold text-white font-mono">
                 UGX {bankedMoneyUgx.toLocaleString()}
               </div>
             </div>
             <div className="p-2">
-              <div className="text-[10px] uppercase font-bold text-blue-100">Total Digital Transactions</div>
+              <div className="text-[10px] uppercase font-bold text-white/70">Total Digital Transactions</div>
               <div className="text-base font-extrabold text-white font-mono">
                 {digitalCollections.length} Processed
               </div>
@@ -1555,9 +1590,9 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Digital Collections Table */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+          <div className="overflow-x-auto rounded-xl border border-white/15">
             <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+              <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                 <tr>
                   <th className="p-3">Receipt / Ref</th>
                   <th className="p-3">Payment Channel</th>
@@ -1576,14 +1611,14 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                   return (
                     <tr key={s.id} className="hover:bg-[#0F1B3E]/40 transition-colors">
-                      <td className="p-3 font-mono font-bold text-purple-400 whitespace-nowrap">
+                      <td className="p-3 font-mono font-bold text-white whitespace-nowrap">
                         {s.receiptNumber}
                       </td>
                       <td className="p-3 whitespace-nowrap">
                         <span className={`px-2.5 py-1 rounded-lg text-xs font-extrabold flex items-center gap-1.5 w-fit ${
                           s.paymentMethod === 'MOBILE_MONEY'
-                            ? 'bg-purple-950 text-purple-300 border border-purple-800'
-                            : 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                            ? 'bg-white/10 text-white/90 border border-white/20'
+                            : 'bg-white/10 text-white/90 border border-white/20'
                         }`}>
                           {s.paymentMethod === 'MOBILE_MONEY' ? <Smartphone className="w-3.5 h-3.5" /> : <Landmark className="w-3.5 h-3.5" />}
                           <span>{s.paymentMethod}</span>
@@ -1591,16 +1626,16 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       </td>
                       <td className="p-3">
                         <div className="font-bold text-white flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-purple-400" />
+                          <User className="w-3.5 h-3.5 text-white" />
                           <span>{s.customerName || 'Walk-in Customer'}</span>
                         </div>
                         {s.customerPhone && (
-                          <div className="text-[10px] text-blue-100 mt-0.5">{s.customerPhone}</div>
+                          <div className="text-[10px] text-white/70 mt-0.5">{s.customerPhone}</div>
                         )}
                       </td>
                       <td className="p-3">
                         <div className="font-semibold text-white flex items-center gap-1">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-white" />
                           <span>{s.cashierId ? `Cashier (${s.cashierId.slice(-6)})` : 'Store Operator'}</span>
                         </div>
                       </td>
@@ -1609,18 +1644,18 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                       </td>
                       <td className="p-3 whitespace-nowrap">
                         <div className="flex items-center gap-1.5 text-white font-semibold">
-                          <Calendar className="w-3.5 h-3.5 text-blue-100 shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 text-white/70 shrink-0" />
                           <span>{timeInfo.date}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-purple-300 mt-0.5 font-mono">
-                          <Clock className="w-3 h-3 text-purple-400 shrink-0" />
+                        <div className="flex items-center gap-1 text-[11px] text-white/90 mt-0.5 font-mono">
+                          <Clock className="w-3 h-3 text-white shrink-0" />
                           <span>{timeInfo.time}</span>
                         </div>
                       </td>
                       <td className="p-3 max-w-xs truncate text-white">
                         {s.items.map((it) => `${it.quantity}x ${it.name}`).join(', ') || 'Sale Items'}
                       </td>
-                      <td className="p-3 text-right font-mono font-extrabold text-purple-300 text-sm whitespace-nowrap">
+                      <td className="p-3 text-right font-mono font-extrabold text-white/90 text-sm whitespace-nowrap">
                         UGX {s.totalAmountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -1629,7 +1664,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
                 {digitalCollections.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-blue-100/80">
+                    <td colSpan={8} className="p-8 text-center text-white/60">
                       No digital payments (Mobile Money / Bank) recorded for this period.
                     </td>
                   </tr>
@@ -1643,25 +1678,25 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 7: PROFITABILITY STATEMENT */}
       {activeTab === 'profitability' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
-          <div className="flex items-center justify-between border-b border-blue-900/60 pb-3">
+          <div className="flex items-center justify-between border-b border-white/15 pb-3">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-blue-100 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-[#0F1B3E] hover:bg-[#182855] text-white/70 hover:text-white transition-colors cursor-pointer"
                 title="Back to Overview"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
-              <h2 className="text-base sm:text-lg font-bold text-emerald-400 flex items-center gap-2">
-                <PieChart className="w-5 h-5 text-emerald-400" />
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <PieChart className="w-5 h-5 text-white" />
                 <span>Net Realized Profit Statement (After Expenses & Debts)</span>
               </h2>
             </div>
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+              className="px-3 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export P&L CSV</span>
@@ -1669,9 +1704,9 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Statement Table */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+          <div className="overflow-x-auto rounded-xl border border-white/15">
             <table className="w-full text-left text-xs text-white">
-              <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+              <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                 <tr>
                   <th className="p-3.5">Financial Metric</th>
                   <th className="p-3.5">Accounting Description</th>
@@ -1680,47 +1715,47 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               </thead>
               <tbody className="divide-y divide-slate-800/60 font-medium">
                 <tr className="hover:bg-[#0F1B3E]/30">
-                  <td className="p-3.5 font-bold text-cyan-400 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-cyan-400" />
+                  <td className="p-3.5 font-bold text-white flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-white" />
                     <span>Gross Sales Revenue</span>
                   </td>
-                  <td className="p-3.5 text-blue-100">Total revenue from store POS and field route sales</td>
-                  <td className="p-3.5 text-right font-mono font-extrabold text-cyan-400 text-sm">
+                  <td className="p-3.5 text-white/70">Total revenue from store POS and field route sales</td>
+                  <td className="p-3.5 text-right font-mono font-extrabold text-white text-sm">
                     UGX {totalSalesUgx.toLocaleString()}
                   </td>
                 </tr>
 
                 <tr className="hover:bg-[#0F1B3E]/30">
-                  <td className="p-3.5 font-bold text-rose-400 flex items-center gap-2">
-                    <TrendingDown className="w-4 h-4 text-rose-400" />
+                  <td className="p-3.5 font-bold text-white flex items-center gap-2">
+                    <TrendingDown className="w-4 h-4 text-white" />
                     <span>Operational Expenses</span>
                   </td>
-                  <td className="p-3.5 text-blue-100">Total vouchers paid for fuel, utilities, route allowances & maintenance</td>
-                  <td className="p-3.5 text-right font-mono font-extrabold text-rose-400 text-sm">
+                  <td className="p-3.5 text-white/70">Total vouchers paid for fuel, utilities, route allowances & maintenance</td>
+                  <td className="p-3.5 text-right font-mono font-extrabold text-white text-sm">
                     - UGX {expensesUgx.toLocaleString()}
                   </td>
                 </tr>
 
                 <tr className="hover:bg-[#0F1B3E]/30">
-                  <td className="p-3.5 font-bold text-amber-400 flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-amber-400" />
+                  <td className="p-3.5 font-bold text-white flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-white" />
                     <span>Outstanding Uncollected Debts</span>
                   </td>
-                  <td className="p-3.5 text-blue-100">Uncollected customer credit and route cash shortages</td>
-                  <td className="p-3.5 text-right font-mono font-extrabold text-amber-400 text-sm">
+                  <td className="p-3.5 text-white/70">Uncollected customer credit and route cash shortages</td>
+                  <td className="p-3.5 text-right font-mono font-extrabold text-white text-sm">
                     - UGX {outstandingDebtsUgx.toLocaleString()}
                   </td>
                 </tr>
 
-                <tr className="bg-[#0F1B3E]/90 font-extrabold text-sm border-t-2 border-blue-800/60">
-                  <td className={`p-4 flex items-center gap-2 ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <tr className="bg-[#0F1B3E]/90 font-extrabold text-sm border-t-2 border-white/20">
+                  <td className={`p-4 flex items-center gap-2 ${netProfitUgx >= 0 ? 'text-white' : 'text-white'}`}>
                     <Receipt className="w-5 h-5" />
                     <span>Net Realized Profit Realized</span>
                   </td>
                   <td className="p-4 text-white text-xs font-normal">
                     Equation: Gross Sales - Expenses - Debts (Net Margin: {profitMarginPercent}%)
                   </td>
-                  <td className={`p-4 text-right font-mono text-base ${netProfitUgx >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <td className={`p-4 text-right font-mono text-base ${netProfitUgx >= 0 ? 'text-white' : 'text-white'}`}>
                     UGX {netProfitUgx.toLocaleString()}
                   </td>
                 </tr>
@@ -1733,22 +1768,22 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
       {/* TAB 8: REPORTS CENTER */}
       {activeTab === 'reports' && (
-        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-blue-900/60 space-y-4 sm:space-y-6">
+        <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4 sm:space-y-6">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-900/60 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-4">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-cyan-400 flex items-center gap-2">
-                <FileSpreadsheet className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <FileSpreadsheet className="w-5 h-5 text-white" />
                 <span>Reports & Audit Center</span>
               </h2>
-              <p className="text-xs text-blue-100 mt-1">
+              <p className="text-xs text-white/70 mt-1">
                 Generate and export detailed CSV reports across sales, inventory, expenses, debts, and system audit trails.
               </p>
             </div>
 
             <button
               onClick={handleExportCSV}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+              className="px-3.5 py-2 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export {selectedReportType} CSV</span>
@@ -1756,13 +1791,13 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
           </div>
 
           {/* Filtering Controls */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[#070E24] p-4 rounded-xl border border-blue-900/60">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[#070E24] p-4 rounded-xl border border-white/15">
             <div>
-              <label className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">Report Selection</label>
+              <label className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Report Selection</label>
               <select
                 value={selectedReportType}
                 onChange={(e) => setSelectedReportType(e.target.value)}
-                className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold mt-1 focus:outline-none focus:border-cyan-500 cursor-pointer"
+                className="w-full bg-[#0F1B3E] border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold mt-1 focus:outline-none focus:border-white/30 cursor-pointer"
               >
                 {reportsList.map((r) => (
                   <option key={r.id} value={r.id}>{r.title}</option>
@@ -1771,11 +1806,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">Store Scope</label>
+              <label className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Store Scope</label>
               <select
                 value={selectedStoreId}
                 onChange={(e) => setSelectedStoreId(e.target.value)}
-                className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold mt-1 focus:outline-none focus:border-cyan-500 cursor-pointer"
+                className="w-full bg-[#0F1B3E] border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold mt-1 focus:outline-none focus:border-white/30 cursor-pointer"
               >
                 <option value="ALL">All Stores (Consolidated)</option>
                 {stores.map((s) => (
@@ -1785,31 +1820,31 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">Start Date</label>
+              <label className="text-[10px] font-bold text-white/70 uppercase tracking-wider">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1 text-xs text-white font-semibold mt-1"
+                className="w-full bg-[#0F1B3E] border border-white/15 rounded-lg px-2.5 py-1 text-xs text-white font-semibold mt-1"
               />
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">End Date</label>
+              <label className="text-[10px] font-bold text-white/70 uppercase tracking-wider">End Date</label>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full bg-[#0F1B3E] border border-blue-900/60 rounded-lg px-2.5 py-1 text-xs text-white font-semibold mt-1"
+                className="w-full bg-[#0F1B3E] border border-white/15 rounded-lg px-2.5 py-1 text-xs text-white font-semibold mt-1"
               />
             </div>
           </div>
 
           {/* Dynamic Table Preview */}
-          <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+          <div className="overflow-x-auto rounded-xl border border-white/15">
             {selectedReportType === 'AUDIT_LOG' ? (
               <table className="w-full text-left text-xs text-white">
-                <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+                <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                   <tr>
                     <th className="p-3">Timestamp</th>
                     <th className="p-3">User</th>
@@ -1821,23 +1856,23 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                 <tbody className="divide-y divide-slate-800/60">
                   {auditLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-[#0F1B3E]/40">
-                      <td className="p-3 font-mono text-blue-100">{log.timestamp}</td>
+                      <td className="p-3 font-mono text-white/70">{log.timestamp}</td>
                       <td className="p-3 font-bold text-white">{log.user}</td>
-                      <td className="p-3 font-semibold text-cyan-400">{log.action}</td>
+                      <td className="p-3 font-semibold text-white">{log.action}</td>
                       <td className="p-3 text-white">{log.entity}</td>
-                      <td className="p-3 text-blue-100">{log.details}</td>
+                      <td className="p-3 text-white/70">{log.details}</td>
                     </tr>
                   ))}
                   {auditLogs.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-blue-100/80">No audit logs recorded yet.</td>
+                      <td colSpan={5} className="p-8 text-center text-white/60">No audit logs recorded yet.</td>
                     </tr>
                   )}
                 </tbody>
               </table>
             ) : selectedReportType === 'EXPENSES' ? (
               <table className="w-full text-left text-xs text-white">
-                <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+                <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                   <tr>
                     <th className="p-3">Voucher #</th>
                     <th className="p-3">Date</th>
@@ -1850,12 +1885,12 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                 <tbody className="divide-y divide-slate-800/60">
                   {filteredExpenses.map((exp) => (
                     <tr key={exp.id}>
-                      <td className="p-3 font-mono font-bold text-rose-400">{exp.voucherNumber}</td>
-                      <td className="p-3 text-blue-100">{exp.date}</td>
+                      <td className="p-3 font-mono font-bold text-white">{exp.voucherNumber}</td>
+                      <td className="p-3 text-white/70">{exp.date}</td>
                       <td className="p-3 font-semibold text-white">{exp.category}</td>
                       <td className="p-3 text-white">{exp.approvedBy}</td>
-                      <td className="p-3 text-blue-100">{exp.description}</td>
-                      <td className="p-3 text-right font-mono font-bold text-rose-400">
+                      <td className="p-3 text-white/70">{exp.description}</td>
+                      <td className="p-3 text-right font-mono font-bold text-white">
                         UGX {exp.amountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -1864,7 +1899,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               </table>
             ) : selectedReportType === 'STOCK_BALANCE' ? (
               <table className="w-full text-left text-xs text-white">
-                <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+                <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                   <tr>
                     <th className="p-3">Product</th>
                     <th className="p-3">SKU</th>
@@ -1878,18 +1913,18 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                   {stockGridRows.map((r, i) => (
                     <tr key={i}>
                       <td className="p-3 font-bold text-white">{r.productName}</td>
-                      <td className="p-3 font-mono text-cyan-400">{r.sku}</td>
+                      <td className="p-3 font-mono text-white">{r.sku}</td>
                       <td className="p-3 text-white">{r.storeName}</td>
                       <td className="p-3 text-right font-mono font-bold text-white">{r.quantity}</td>
-                      <td className="p-3 text-right font-mono text-blue-100">UGX {r.sellingPriceUgx.toLocaleString()}</td>
-                      <td className="p-3 text-right font-mono font-bold text-emerald-400">UGX {r.valuationCostUgx.toLocaleString()}</td>
+                      <td className="p-3 text-right font-mono text-white/70">UGX {r.sellingPriceUgx.toLocaleString()}</td>
+                      <td className="p-3 text-right font-mono font-bold text-white">UGX {r.valuationCostUgx.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
               <table className="w-full text-left text-xs text-white">
-                <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+                <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                   <tr>
                     <th className="p-3">Receipt / Ref</th>
                     <th className="p-3">Date</th>
@@ -1901,13 +1936,13 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                 <tbody className="divide-y divide-slate-800/60">
                   {filteredSales.map((s) => (
                     <tr key={s.id}>
-                      <td className="p-3 font-mono font-bold text-cyan-400">{s.receiptNumber}</td>
-                      <td className="p-3 text-blue-100">{s.date}</td>
+                      <td className="p-3 font-mono font-bold text-white">{s.receiptNumber}</td>
+                      <td className="p-3 text-white/70">{s.date}</td>
                       <td className="p-3 font-bold text-white">{s.customerName || 'Walk-in'}</td>
                       <td className="p-3 text-white">
                         {s.items.map((it) => `${it.quantity}x ${it.name}`).join(', ') || 'Water Product'}
                       </td>
-                      <td className="p-3 text-right font-mono font-bold text-cyan-400">
+                      <td className="p-3 text-right font-mono font-bold text-white">
                         UGX {s.totalAmountUgx.toLocaleString()}
                       </td>
                     </tr>
@@ -1923,26 +1958,26 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
       {/* POP-UP MODAL 1: EXPENSE FULL DESCRIPTION */}
       {selectedExpenseForModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#0F1B3E] border border-rose-500/50 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl shadow-rose-950/40">
+          <div className="bg-[#0F1B3E] border border-white/20 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl shadow-rose-950/40">
             
             {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-blue-900/60 flex items-center justify-between bg-[#070E24]/60">
+            <div className="px-5 py-4 border-b border-white/15 flex items-center justify-between bg-[#070E24]/60">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-rose-950/80 text-rose-400 rounded-xl border border-rose-500/30">
+                <div className="p-2 bg-white/10 text-white rounded-xl border border-white/20">
                   <TrendingDown className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
                     Expense Details & Voucher Summary
                   </h3>
-                  <div className="text-xs font-mono text-rose-400">
+                  <div className="text-xs font-mono text-white">
                     {selectedExpenseForModal.voucherNumber} • {selectedExpenseForModal.category}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedExpenseForModal(null)}
-                className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-[#182855] transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-[#182855] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1953,40 +1988,40 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               
               {/* Full Description Box */}
               <div>
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-blue-100 block mb-1.5">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-white/70 block mb-1.5">
                   Complete Expense Description
                 </label>
-                <div className="bg-[#070E24] border border-blue-900/60 rounded-xl p-3.5 text-white leading-relaxed break-words whitespace-pre-wrap font-medium select-text">
+                <div className="bg-[#070E24] border border-white/15 rounded-xl p-3.5 text-white leading-relaxed break-words whitespace-pre-wrap font-medium select-text">
                   {selectedExpenseForModal.description || 'No detailed description was recorded for this voucher.'}
                 </div>
               </div>
 
               {/* Financial & Authority Details Grid */}
-              <div className="grid grid-cols-2 gap-3 bg-[#070E24]/60 p-3.5 rounded-xl border border-blue-900/60/80">
+              <div className="grid grid-cols-2 gap-3 bg-[#070E24]/60 p-3.5 rounded-xl border border-white/15/80">
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Approved / Spent By:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Approved / Spent By:</span>
                   <span className="font-bold text-white flex items-center gap-1 mt-0.5">
-                    <User className="w-3.5 h-3.5 text-rose-400" />
+                    <User className="w-3.5 h-3.5 text-white" />
                     <span>{selectedExpenseForModal.approvedBy || 'Manager'}</span>
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Amount (UGX):</span>
-                  <span className="font-mono font-extrabold text-rose-400 text-sm mt-0.5 block">
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Amount (UGX):</span>
+                  <span className="font-mono font-extrabold text-white text-sm mt-0.5 block">
                     UGX {selectedExpenseForModal.amountUgx.toLocaleString()}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Time & Date Recorded:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Time & Date Recorded:</span>
                   <span className="text-white font-semibold mt-0.5 block">
                     {formatDateTime(selectedExpenseForModal.createdAt, selectedExpenseForModal.date).display}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Payment Method:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Payment Method:</span>
                   <span className="font-bold text-white mt-0.5 block">
                     {selectedExpenseForModal.paymentMethod || 'CASH'}
                   </span>
@@ -1996,18 +2031,18 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
 
             {/* Modal Footer */}
-            <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-blue-900/60 flex items-center justify-between">
+            <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-white/15 flex items-center justify-between">
               <button
                 onClick={() => handleCopy(selectedExpenseForModal.description)}
                 className="px-3 py-1.5 bg-[#182855] hover:bg-slate-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedText ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedText ? 'Copied Description' : 'Copy Description'}</span>
               </button>
 
               <button
                 onClick={() => setSelectedExpenseForModal(null)}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
+                className="px-4 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
               >
                 Close
               </button>
@@ -2020,26 +2055,26 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
       {/* POP-UP MODAL 2: DEBT REASON & INFORMATION */}
       {selectedDebtForModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#0F1B3E] border border-amber-500/50 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl shadow-amber-950/40">
+          <div className="bg-[#0F1B3E] border border-white/20 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl shadow-amber-950/40">
             
             {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-blue-900/60 flex items-center justify-between bg-[#070E24]/60">
+            <div className="px-5 py-4 border-b border-white/15 flex items-center justify-between bg-[#070E24]/60">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-amber-950/80 text-amber-400 rounded-xl border border-amber-500/30">
+                <div className="p-2 bg-white/10 text-white rounded-xl border border-white/20">
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
                     Debt Information & Reason
                   </h3>
-                  <div className="text-xs font-mono text-amber-400">
+                  <div className="text-xs font-mono text-white">
                     {selectedDebtForModal.debtorName} • {selectedDebtForModal.source}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedDebtForModal(null)}
-                className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-[#182855] transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-[#182855] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2050,61 +2085,61 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               
               {/* Full Reason Box */}
               <div>
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-blue-100 block mb-1.5">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-white/70 block mb-1.5">
                   Debt Reason / Shortage Notes
                 </label>
-                <div className="bg-[#070E24] border border-blue-900/60 rounded-xl p-3.5 text-white leading-relaxed break-words whitespace-pre-wrap font-medium select-text">
+                <div className="bg-[#070E24] border border-white/15 rounded-xl p-3.5 text-white leading-relaxed break-words whitespace-pre-wrap font-medium select-text">
                   {selectedDebtForModal.reason || 'No detailed notes recorded for this debt record.'}
                 </div>
               </div>
 
               {/* Debt Balances Grid */}
-              <div className="grid grid-cols-3 gap-2 bg-[#070E24]/60 p-3 rounded-xl border border-blue-900/60">
+              <div className="grid grid-cols-3 gap-2 bg-[#070E24]/60 p-3 rounded-xl border border-white/15">
                 <div className="text-center p-1.5">
-                  <div className="text-[10px] uppercase text-blue-100 font-bold">Original Debt</div>
+                  <div className="text-[10px] uppercase text-white/70 font-bold">Original Debt</div>
                   <div className="font-mono font-bold text-white mt-1">
                     UGX {selectedDebtForModal.originalAmountUgx.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="text-center p-1.5 border-x border-blue-900/60">
-                  <div className="text-[10px] uppercase text-blue-100 font-bold">Amount Paid</div>
-                  <div className="font-mono font-bold text-emerald-400 mt-1">
+                <div className="text-center p-1.5 border-x border-white/15">
+                  <div className="text-[10px] uppercase text-white/70 font-bold">Amount Paid</div>
+                  <div className="font-mono font-bold text-white mt-1">
                     UGX {selectedDebtForModal.paidAmountUgx.toLocaleString()}
                   </div>
                 </div>
 
                 <div className="text-center p-1.5">
-                  <div className="text-[10px] uppercase text-blue-100 font-bold">Balance Due</div>
-                  <div className="font-mono font-extrabold text-amber-400 mt-1">
+                  <div className="text-[10px] uppercase text-white/70 font-bold">Balance Due</div>
+                  <div className="font-mono font-extrabold text-white mt-1">
                     UGX {selectedDebtForModal.balanceAmountUgx.toLocaleString()}
                   </div>
                 </div>
               </div>
 
               {/* Authority & Timing */}
-              <div className="grid grid-cols-2 gap-3 bg-[#070E24]/60 p-3.5 rounded-xl border border-blue-900/60/80">
+              <div className="grid grid-cols-2 gap-3 bg-[#070E24]/60 p-3.5 rounded-xl border border-white/15/80">
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Recorded / Approved By:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Recorded / Approved By:</span>
                   <span className="font-bold text-white flex items-center gap-1 mt-0.5">
-                    <User className="w-3.5 h-3.5 text-amber-400" />
+                    <User className="w-3.5 h-3.5 text-white" />
                     <span>{selectedDebtForModal.approvedBy || 'Branch Manager'}</span>
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Status:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Status:</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wider w-fit inline-block mt-0.5 ${
                     selectedDebtForModal.status === 'CLEARED'
-                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                      : 'bg-amber-950 text-amber-400 border border-amber-800'
+                      ? 'bg-white/10 text-white border border-white/20'
+                      : 'bg-white/10 text-white border border-white/20'
                   }`}>
                     {selectedDebtForModal.status}
                   </span>
                 </div>
 
                 <div className="col-span-2">
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Time & Date Recorded:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Time & Date Recorded:</span>
                   <span className="text-white font-semibold mt-0.5 block">
                     {formatDateTime(selectedDebtForModal.createdAt, selectedDebtForModal.date).display}
                   </span>
@@ -2114,18 +2149,18 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
 
             {/* Modal Footer */}
-            <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-blue-900/60 flex items-center justify-between">
+            <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-white/15 flex items-center justify-between">
               <button
                 onClick={() => handleCopy(selectedDebtForModal.reason || '')}
                 className="px-3 py-1.5 bg-[#182855] hover:bg-slate-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedText ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedText ? 'Copied Reason' : 'Copy Reason'}</span>
               </button>
 
               <button
                 onClick={() => setSelectedDebtForModal(null)}
-                className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
+                className="px-4 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
               >
                 Close
               </button>
@@ -2138,26 +2173,26 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
       {/* POP-UP MODAL 3: SALE PRODUCTS & RECEIPT BREAKDOWN */}
       {selectedSaleForModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#0F1B3E] border border-cyan-500/50 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl shadow-cyan-950/40">
+          <div className="bg-[#0F1B3E] border border-white/20 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl shadow-cyan-950/40">
             
             {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-blue-900/60 flex items-center justify-between bg-[#070E24]/60">
+            <div className="px-5 py-4 border-b border-white/15 flex items-center justify-between bg-[#070E24]/60">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-cyan-950/80 text-cyan-400 rounded-xl border border-cyan-500/30">
+                <div className="p-2 bg-white/10 text-white rounded-xl border border-white/20">
                   <Receipt className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
                     Sale Receipt & Products Bought
                   </h3>
-                  <div className="text-xs font-mono text-cyan-400">
+                  <div className="text-xs font-mono text-white">
                     {selectedSaleForModal.receiptNumber} • {stores.find((st) => st.id === selectedSaleForModal.storeId)?.name || 'Store'}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedSaleForModal(null)}
-                className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-[#182855] transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-[#182855] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2167,26 +2202,26 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             <div className="p-5 space-y-4 text-xs">
               
               {/* Sale Timing & Customer Header */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-[#070E24] p-3.5 rounded-xl border border-blue-900/60">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-[#070E24] p-3.5 rounded-xl border border-white/15">
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Customer:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Customer:</span>
                   <span className="font-bold text-white block mt-0.5">
                     {selectedSaleForModal.customerName || 'Walk-in Customer'}
                   </span>
                   {selectedSaleForModal.customerPhone && (
-                    <span className="text-[10px] text-blue-100 block">{selectedSaleForModal.customerPhone}</span>
+                    <span className="text-[10px] text-white/70 block">{selectedSaleForModal.customerPhone}</span>
                   )}
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Exact Time & Date:</span>
-                  <span className="font-semibold text-cyan-300 block mt-0.5">
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Exact Time & Date:</span>
+                  <span className="font-semibold text-white/90 block mt-0.5">
                     {formatDateTime(selectedSaleForModal.createdAt, selectedSaleForModal.date).display}
                   </span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] text-blue-100 uppercase font-bold block">Payment Method:</span>
+                  <span className="text-[10px] text-white/70 uppercase font-bold block">Payment Method:</span>
                   <span className="font-bold text-white block mt-0.5">
                     {selectedSaleForModal.paymentMethod}
                   </span>
@@ -2195,12 +2230,12 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
 
               {/* Itemized Products Bought Table */}
               <div>
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-blue-100 block mb-1.5">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-white/70 block mb-1.5">
                   Products Bought ({selectedSaleForModal.items?.length || 0} item lines)
                 </label>
-                <div className="overflow-x-auto rounded-xl border border-blue-900/60">
+                <div className="overflow-x-auto rounded-xl border border-white/15">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#070E24] text-blue-100 font-bold uppercase border-b border-blue-900/60">
+                    <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
                       <tr>
                         <th className="p-2.5">Product Name</th>
                         <th className="p-2.5 text-center">Qty</th>
@@ -2213,8 +2248,8 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                         selectedSaleForModal.items.map((it, idx) => (
                           <tr key={idx} className="hover:bg-[#070E24]/40">
                             <td className="p-2.5 font-bold text-white">{it.name}</td>
-                            <td className="p-2.5 text-center font-mono font-extrabold text-cyan-400">{it.quantity}</td>
-                            <td className="p-2.5 text-right font-mono text-blue-100">UGX {it.unitPriceUgx.toLocaleString()}</td>
+                            <td className="p-2.5 text-center font-mono font-extrabold text-white">{it.quantity}</td>
+                            <td className="p-2.5 text-right font-mono text-white/70">UGX {it.unitPriceUgx.toLocaleString()}</td>
                             <td className="p-2.5 text-right font-mono font-bold text-white">
                               UGX {(it.quantity * it.unitPriceUgx).toLocaleString()}
                             </td>
@@ -2222,7 +2257,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={4} className="p-4 text-center text-blue-100/80 italic">
+                          <td colSpan={4} className="p-4 text-center text-white/60 italic">
                             Water Products Sale
                           </td>
                         </tr>
@@ -2233,18 +2268,18 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               </div>
 
               {/* Financial Totals */}
-              <div className="bg-[#070E24] p-3.5 rounded-xl border border-blue-900/60 space-y-1.5 text-xs">
-                <div className="flex justify-between text-blue-100">
+              <div className="bg-[#070E24] p-3.5 rounded-xl border border-white/15 space-y-1.5 text-xs">
+                <div className="flex justify-between text-white/70">
                   <span>Gross Subtotal:</span>
                   <span className="font-mono">UGX {selectedSaleForModal.subtotalUgx.toLocaleString()}</span>
                 </div>
                 {selectedSaleForModal.overallDiscountUgx > 0 && (
-                  <div className="flex justify-between text-rose-400">
+                  <div className="flex justify-between text-white">
                     <span>Discount Applied:</span>
                     <span className="font-mono">- UGX {selectedSaleForModal.overallDiscountUgx.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-base font-extrabold text-cyan-400 pt-1 border-t border-blue-900/60">
+                <div className="flex justify-between text-base font-extrabold text-white pt-1 border-t border-white/15">
                   <span>Total Amount Due:</span>
                   <span className="font-mono">UGX {selectedSaleForModal.totalAmountUgx.toLocaleString()}</span>
                 </div>
@@ -2253,10 +2288,10 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
 
             {/* Modal Footer */}
-            <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-blue-900/60 flex items-center justify-end">
+            <div className="px-5 py-3.5 bg-[#070E24]/60 border-t border-white/15 flex items-center justify-end">
               <button
                 onClick={() => setSelectedSaleForModal(null)}
-                className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
+                className="px-4 py-1.5 bg-white text-[#070E24] font-black hover:bg-white text-[#070E24] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-md"
               >
                 Close Receipt
               </button>

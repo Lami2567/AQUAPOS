@@ -86,9 +86,9 @@ export const LoginView: React.FC = () => {
     <div className="min-h-screen bg-[#070E24] text-white flex items-center justify-center p-3 sm:p-6 select-none relative overflow-hidden">
       {/* Ambient background dark-blue glows */}
       <div className="absolute top-1/4 left-1/4 w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] bg-cyan-600/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[320px] sm:w-[550px] h-[320px] sm:h-[550px] bg-white text-[#070E24] font-bold/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-md w-full bg-[#0F1B3E] border border-blue-800/60 rounded-3xl shadow-2xl p-6 sm:p-8 relative z-10 space-y-6 my-auto">
+      <div className="max-w-md w-full bg-[#0F1B3E] border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-8 relative z-10 space-y-6 my-auto">
         
         {/* Brand Header */}
         <div className="text-center space-y-3">
@@ -96,15 +96,15 @@ export const LoginView: React.FC = () => {
             <LogoIcon className="w-9 h-9 text-white animate-pulse" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center justify-center gap-1.5">
-            AQUA<span className="text-cyan-400">POS</span>
+            AQUA<span className="text-white">POS</span>
           </h1>
-          <p className="text-xs text-blue-100/90 font-medium">
+          <p className="text-xs text-white/90 font-medium">
             Water Business Management System • Secure Sign In
           </p>
         </div>
 
         {errorMsg && (
-          <div className="bg-rose-950/90 border border-rose-500/70 text-white p-3.5 rounded-2xl text-xs flex items-center gap-3 shadow-lg animate-fade-in">
+          <div className="bg-white/10 border border-white/20 text-white p-3.5 rounded-2xl text-xs flex items-center gap-3 shadow-lg animate-fade-in">
             <AlertCircle className="w-5 h-5 text-white flex-shrink-0" />
             <div className="leading-tight font-medium text-white">{errorMsg}</div>
           </div>
@@ -126,7 +126,7 @@ export const LoginView: React.FC = () => {
                   setUsername(e.target.value);
                   setErrorMsg(null);
                 }}
-                className="w-full bg-[#081028] border border-blue-800/70 rounded-xl pl-11 pr-3 py-3.5 text-white placeholder-blue-300/40 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                className="w-full bg-[#081028] border border-white/20 rounded-xl pl-11 pr-3 py-3.5 text-white placeholder-blue-300/40 text-sm focus:outline-none focus:border-white/25 focus:ring-1 focus:ring-white/40 transition-colors"
               />
             </div>
           </div>
@@ -144,7 +144,7 @@ export const LoginView: React.FC = () => {
                   setPassword(e.target.value);
                   setErrorMsg(null);
                 }}
-                className="w-full bg-[#081028] border border-blue-800/70 rounded-xl pl-11 pr-3 py-3.5 text-white placeholder-blue-300/40 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                className="w-full bg-[#081028] border border-white/20 rounded-xl pl-11 pr-3 py-3.5 text-white placeholder-blue-300/40 text-sm focus:outline-none focus:border-white/25 focus:ring-1 focus:ring-white/40 transition-colors"
               />
             </div>
           </div>
@@ -152,7 +152,7 @@ export const LoginView: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2.5 bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-xl shadow-cyan-950/60 text-sm tracking-wide cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2.5 bg-white text-[#070E24] font-bold hover:bg-white text-[#070E24] active:bg-white/90 text-[#070E24] text-white font-bold py-3.5 rounded-xl transition-all shadow-xl shadow-cyan-950/60 text-sm tracking-wide cursor-pointer disabled:opacity-50"
           >
             {isLoading ? (
               <span className="text-white">Authenticating Credentials...</span>
@@ -166,7 +166,7 @@ export const LoginView: React.FC = () => {
         </form>
 
         {/* Security Footer */}
-        <div className="pt-3 border-t border-blue-900/50 text-center text-xs text-blue-100/70 flex items-center justify-center gap-2">
+        <div className="pt-3 border-t border-white/15 text-center text-xs text-white/60 flex items-center justify-center gap-2">
           <ShieldCheck className="w-4 h-4 text-white" />
           <span className="text-white font-medium">Enterprise Security • 1-Hour Active Session Token</span>
         </div>

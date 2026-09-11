@@ -92,7 +92,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B132B] text-white flex flex-col antialiased selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[#070E24] text-white flex flex-col antialiased selection:bg-white/20 selection:text-white">
       <Navbar currentNav={currentNav} onSelectNav={setCurrentNav} />
       
       <main className="flex-1">
