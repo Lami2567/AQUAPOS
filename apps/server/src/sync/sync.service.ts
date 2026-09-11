@@ -222,23 +222,53 @@ export class SyncService {
       ...s,
       items: itemsBySaleId.get(s.id) || [],
     }));
-    const expenses = await this.dbService.query<any>('SELECT * FROM expenses ORDER BY created_at DESC LIMIT 200');
-    const debts = await this.dbService.query<any>('SELECT * FROM debts ORDER BY created_at DESC LIMIT 200');
+
+    let expenses: any[] = [];
+    try {
+      expenses = await this.dbService.query<any>('SELECT * FROM expenses ORDER BY created_at DESC LIMIT 200');
+    } catch (e: any) {
+      this.logger.warn('Failed to query expenses in pullCentralData: ' + e.message);
+      expenses = [];
+    }
+
+    let debts: any[] = [];
+    try {
+      debts = await this.dbService.query<any>('SELECT * FROM debts ORDER BY created_at DESC LIMIT 200');
+    } catch (e: any) {
+      this.logger.warn('Failed to query debts in pullCentralData: ' + e.message);
+      debts = [];
+    }
+
     let salaryPayments: any[] = [];
     try {
       salaryPayments = await this.dbService.query<any>('SELECT * FROM salaries ORDER BY paid_at DESC LIMIT 200');
     } catch (e) {
       salaryPayments = [];
     }
-    const rawSessions = await this.dbService.query<any>(`
-      SELECT 
-        fs.*,
-        COALESCE(NULLIF(fs.approved_expenses_ugx, 0), fr.approved_expenses_ugx, 0) as approved_expenses_ugx,
-        COALESCE(NULLIF(fs.expense_description, ''), NULLIF(fr.expense_description, ''), NULLIF(fr.notes, ''), '') as expense_description
-      FROM field_sessions fs
-      LEFT JOIN field_reconciliations fr ON fr.field_session_id = fs.id
-      ORDER BY fs.created_at DESC LIMIT 100
-    `);
+
+    let rawSessions: any[] = [];
+    try {
+      rawSessions = await this.dbService.query<any>('SELECT * FROM field_sessions ORDER BY created_at DESC LIMIT 100');
+    } catch (e: any) {
+      this.logger.warn('Failed to query field_sessions in pullCentralData: ' + e.message);
+      rawSessions = [];
+    }
+
+    let rawReconciliations: any[] = [];
+    try {
+      rawReconciliations = await this.dbService.query<any>('SELECT * FROM field_reconciliations ORDER BY created_at DESC LIMIT 100');
+    } catch (e) {
+      rawReconciliations = [];
+    }
+
+    const reconByFsId = new Map<string, any>();
+    for (const r of rawReconciliations) {
+      const fsKey = String(r.field_session_id || '');
+      if (fsKey && !reconByFsId.has(fsKey)) {
+        reconByFsId.set(fsKey, r);
+      }
+    }
+
     const sessionIds = rawSessions.map((s) => s.id).filter(Boolean);
     let allSessionItems: any[] = [];
     if (sessionIds.length > 0) {
@@ -253,10 +283,11 @@ export class SyncService {
     }
     const itemsBySessionId = new Map<string, any[]>();
     for (const item of allSessionItems) {
-      if (!itemsBySessionId.has(item.field_session_id)) {
-        itemsBySessionId.set(item.field_session_id, []);
+      const fsKey = String(item.field_session_id || '');
+      if (!itemsBySessionId.has(fsKey)) {
+        itemsBySessionId.set(fsKey, []);
       }
-      itemsBySessionId.get(item.field_session_id)!.push({
+      itemsBySessionId.get(fsKey)!.push({
         id: item.id,
         productId: item.product_id,
         name: item.product_name,
@@ -272,9 +303,9 @@ export class SyncService {
     // Secondary fallback from expenses table if needed
     const expByFsId = new Map<string, { amount: number; description: string }>();
     for (const exp of expenses) {
-      const fsId = exp.field_session_id || (exp.id && exp.id.startsWith('exp-fs-') ? exp.id.replace('exp-fs-', '') : null);
-      if (fsId && !expByFsId.has(fsId)) {
-        expByFsId.set(fsId, {
+      const fsId = exp.field_session_id || (exp.id && String(exp.id).startsWith('exp-fs-') ? String(exp.id).replace('exp-fs-', '') : null);
+      if (fsId && !expByFsId.has(String(fsId))) {
+        expByFsId.set(String(fsId), {
           amount: Number(exp.amount_ugx || 0),
           description: exp.description || '',
         });
@@ -282,14 +313,25 @@ export class SyncService {
     }
 
     const fieldSessions = rawSessions.map((fs) => {
-      const fallbackExp = expByFsId.get(fs.id);
-      const approvedExpensesUgx = Number(fs.approved_expenses_ugx || fs.approvedExpensesUgx || fallbackExp?.amount || 0);
-      const expenseDescription = fs.expense_description || fs.expenseDescription || fallbackExp?.description || '';
+      const fsKey = String(fs.id);
+      const fallbackExp = expByFsId.get(fsKey);
+      const recon = reconByFsId.get(fsKey);
+      const approvedExpensesUgx = Number(
+        fs.approved_expenses_ugx !== undefined && fs.approved_expenses_ugx !== null && Number(fs.approved_expenses_ugx) > 0
+          ? fs.approved_expenses_ugx
+          : (recon?.approved_expenses_ugx || fallbackExp?.amount || 0)
+      );
+      const expenseDescription =
+        (fs.expense_description && String(fs.expense_description).trim()) ||
+        (recon?.expense_description && String(recon.expense_description).trim()) ||
+        (recon?.notes && String(recon.notes).trim()) ||
+        fallbackExp?.description ||
+        '';
       return {
         id: fs.id,
         sessionNumber: fs.session_number,
         storeId: fs.store_id,
-        returnStoreId: fs.return_store_id || fs.store_id,
+        returnStoreId: fs.return_store_id || recon?.return_store_id || fs.store_id,
         vehicleId: fs.vehicle_id,
         workerId: fs.worker_id,
         status: fs.status,
@@ -299,7 +341,7 @@ export class SyncService {
         expenseDescription,
         createdBy: fs.created_by,
         createdAt: fs.created_at,
-        items: itemsBySessionId.get(fs.id) || [],
+        items: itemsBySessionId.get(fsKey) || [],
       };
     });
 

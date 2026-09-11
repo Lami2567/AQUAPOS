@@ -78,13 +78,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
   // Interactive Store Switcher (All Stores or specific store)
   const [selectedStoreId, setSelectedStoreId] = useState<string>('ALL');
 
-  // Search & Filter states
+  // Search & Filter states - default to ALL and empty start date so all historical data is immediately visible
   const [searchQuery, setSearchQuery] = useState('');
-  const [startDate, setStartDate] = useState(
-    new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0]
-  );
-  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedBranch, setSelectedBranch] = useState(currentBranchId || 'ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedReportType, setSelectedReportType] = useState('PROFITABILITY');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('ALL');
   const [stockCategoryFilter, setStockCategoryFilter] = useState<string>('ALL');
@@ -123,7 +121,10 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
   // Branch- & Store-filtered datasets
   const filteredSales = useMemo(() => {
     return salesHistory.filter((s) => {
-      const matchStore = activeStoreIdSet.size === 0 || activeStoreIdSet.has(s.storeId);
+      const matchStore =
+        selectedStoreId === 'ALL'
+          ? (!activeBranchFilter || (stores.find((st) => st.id === s.storeId)?.branchId === activeBranchFilter) || !s.storeId)
+          : s.storeId === selectedStoreId;
       const matchPayment = paymentMethodFilter === 'ALL' || s.paymentMethod === paymentMethodFilter;
       const matchDate = (!startDate || s.date >= startDate) && (!endDate || s.date <= endDate);
       const matchSearch =
@@ -134,11 +135,11 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
         s.items.some((it) => it.name.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchStore && matchPayment && matchDate && matchSearch;
     });
-  }, [salesHistory, activeStoreIdSet, paymentMethodFilter, startDate, endDate, searchQuery]);
+  }, [salesHistory, selectedStoreId, activeBranchFilter, stores, paymentMethodFilter, startDate, endDate, searchQuery]);
 
   const filteredExpenses = useMemo(() => {
     return expensesList.filter((e) => {
-      const matchBranch = !activeBranchFilter || e.branchId === activeBranchFilter;
+      const matchBranch = !activeBranchFilter || !e.branchId || e.branchId === activeBranchFilter;
       const matchStore = selectedStoreId === 'ALL' || !e.storeId || e.storeId === selectedStoreId;
       const matchDate = (!startDate || e.date >= startDate) && (!endDate || e.date <= endDate);
       const matchSearch =

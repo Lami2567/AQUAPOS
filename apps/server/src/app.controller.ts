@@ -241,7 +241,15 @@ export class AppController {
   @Public()
   @Get('sync/pull')
   async pullSync(@Query('branchId') branchId?: string, @Query('since') since?: string) {
-    return this.syncService.pullCentralData(branchId, since);
+    try {
+      return await this.syncService.pullCentralData(branchId, since);
+    } catch (err: any) {
+      return {
+        success: false,
+        message: 'Sync pull error: ' + err.message,
+        data: null,
+      };
+    }
   }
 
   @Public()
