@@ -95,7 +95,7 @@ export const App: React.FC = () => {
     <div className="min-h-screen bg-[#070E24] text-white flex flex-col antialiased selection:bg-white/20 selection:text-white">
       <Navbar currentNav={currentNav} onSelectNav={setCurrentNav} />
       
-      <main className="flex-1">
+      <main className="flex-1 pb-16 md:pb-0">
         <ErrorBoundary>
           {currentNav.domain === 'dashboard' && (
             <DashboardReportsView currentNav={currentNav} onSelectNav={setCurrentNav} />
@@ -131,8 +131,8 @@ export const App: React.FC = () => {
         </ErrorBoundary>
       </main>
 
-      <footer className="border-t border-blue-900/40 bg-[#070D1F] py-3 text-center text-xs text-blue-200/80 font-medium">
-        AquaPOS Water Business Management System v1.0.0 — Production-grade Offline-First Engine
+      <footer className="border-t border-white/10 bg-[#0A122E] py-3 text-center text-xs text-white/60 font-medium mb-14 md:mb-0">
+        AquaPOS Water Business Management System • All rights reserved
       </footer>
     </div>
   );

@@ -123,7 +123,7 @@ export const LoginView: React.FC = () => {
                 type="text"
                 required
                 autoFocus
-                placeholder="Enter username (e.g. admin or ismael)"
+                placeholder="Enter username"
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);
