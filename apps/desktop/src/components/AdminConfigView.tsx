@@ -28,6 +28,8 @@ import {
   KeyRound,
   Trash2,
   AlertTriangle,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -108,6 +110,8 @@ export const AdminConfigView: React.FC = () => {
   const [adminUsernameInput, setAdminUsernameInput] = useState(() => user?.username || 'ismael');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [adminConfirmPasswordInput, setAdminConfirmPasswordInput] = useState('');
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [showUserModalPassword, setShowUserModalPassword] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -1168,31 +1172,59 @@ export const AdminConfigView: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-white/80 mb-1">New Password</label>
-                      <input
-                        type="password"
-                        placeholder="Enter new password"
-                        value={adminPasswordInput}
-                        onChange={(e) => setAdminPasswordInput(e.target.value)}
-                        required
-                        className="w-full bg-[#0F1B3E] border border-white/15 rounded-xl px-3 py-2 text-white font-mono"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showAdminPassword ? 'text' : 'password'}
+                          placeholder="Enter new password"
+                          value={adminPasswordInput}
+                          onChange={(e) => setAdminPasswordInput(e.target.value)}
+                          required
+                          className="w-full bg-[#0F1B3E] border border-white/15 rounded-xl pl-3 pr-10 py-2 text-white font-mono"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowAdminPassword(!showAdminPassword)}
+                          className="absolute right-3 top-2.5 text-white/60 hover:text-white transition-colors cursor-pointer p-0.5 focus:outline-none"
+                          title={showAdminPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showAdminPassword ? (
+                            <EyeOff className="w-4 h-4 text-white" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-white" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label className="block text-white/80 mb-1">Confirm New Password</label>
-                      <input
-                        type="password"
-                        placeholder="Re-enter new password"
-                        value={adminConfirmPasswordInput}
-                        onChange={(e) => setAdminConfirmPasswordInput(e.target.value)}
-                        required
-                        className="w-full bg-[#0F1B3E] border border-white/15 rounded-xl px-3 py-2 text-white font-mono"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showAdminPassword ? 'text' : 'password'}
+                          placeholder="Re-enter new password"
+                          value={adminConfirmPasswordInput}
+                          onChange={(e) => setAdminConfirmPasswordInput(e.target.value)}
+                          required
+                          className="w-full bg-[#0F1B3E] border border-white/15 rounded-xl pl-3 pr-10 py-2 text-white font-mono"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowAdminPassword(!showAdminPassword)}
+                          className="absolute right-3 top-2.5 text-white/60 hover:text-white transition-colors cursor-pointer p-0.5 focus:outline-none"
+                          title={showAdminPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showAdminPassword ? (
+                            <EyeOff className="w-4 h-4 text-white" />
+                          ) : (
+                            <Eye className="w-4 h-4 text-white" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                     <div className="flex items-end">
                       <button
                         type="submit"
                         disabled={isUpdatingPassword}
-                        className="w-full flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold hover:bg-white/25 text-white disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-xl transition-all shadow-md shadow-cyan-900/40 cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 bg-white/20 hover:bg-white/30 text-white border border-white/40 font-bold py-2 px-4 rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50"
                       >
                         <Save className="w-4 h-4" />
                         <span>{isUpdatingPassword ? 'Saving...' : 'Update Password'}</span>
@@ -1485,13 +1517,27 @@ export const AdminConfigView: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-white/80 mb-1">Set Password</label>
-                    <input
-                      type="password"
-                      placeholder="Leave blank to keep existing password"
-                      value={editingItem.password || ''}
-                      onChange={(e) => setEditingItem({ ...editingItem, password: e.target.value })}
-                      className="w-full bg-[#070E24] border border-white/15 rounded-xl px-3 py-2 text-white font-mono"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showUserModalPassword ? 'text' : 'password'}
+                        placeholder="Leave blank to keep existing password"
+                        value={editingItem.password || ''}
+                        onChange={(e) => setEditingItem({ ...editingItem, password: e.target.value })}
+                        className="w-full bg-[#070E24] border border-white/15 rounded-xl pl-3 pr-10 py-2 text-white font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowUserModalPassword(!showUserModalPassword)}
+                        className="absolute right-3 top-2.5 text-white/60 hover:text-white transition-colors cursor-pointer p-0.5 focus:outline-none"
+                        title={showUserModalPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showUserModalPassword ? (
+                          <EyeOff className="w-4 h-4 text-white" />
+                        ) : (
+                          <Eye className="w-4 h-4 text-white" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

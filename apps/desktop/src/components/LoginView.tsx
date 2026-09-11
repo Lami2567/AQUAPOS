@@ -11,12 +11,15 @@ import {
   ArrowRight,
   AlertCircle,
   Info,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export const LoginView: React.FC = () => {
   const { setUser, usersList } = useStore();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -136,7 +139,7 @@ export const LoginView: React.FC = () => {
             <div className="relative">
               <Lock className="w-5 h-5 absolute left-3.5 top-3.5 text-white" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 placeholder="••••••••••••"
                 value={password}
@@ -144,8 +147,21 @@ export const LoginView: React.FC = () => {
                   setPassword(e.target.value);
                   setErrorMsg(null);
                 }}
-                className="w-full bg-[#081028] border border-white/20 rounded-xl pl-11 pr-3 py-3.5 text-white placeholder-blue-300/40 text-sm focus:outline-none focus:border-white/25 focus:ring-1 focus:ring-white/40 transition-colors"
+                className="w-full bg-[#081028] border border-white/20 rounded-xl pl-11 pr-11 py-3.5 text-white placeholder-blue-300/40 text-sm focus:outline-none focus:border-white/25 focus:ring-1 focus:ring-white/40 transition-colors"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3.5 text-white/60 hover:text-white transition-colors cursor-pointer p-0.5 focus:outline-none"
+                title={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5 text-white" />
+                ) : (
+                  <Eye className="w-5 h-5 text-white" />
+                )}
+              </button>
             </div>
           </div>
 
