@@ -430,7 +430,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             }`}
           >
             <Package className="w-3.5 h-3.5 text-white" />
-            <span>Stock Grid</span>
+            <span>Current Stock</span>
           </button>
 
           <button
@@ -650,7 +650,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             <div
               onClick={() => setActiveTab('stock_grid')}
               className="rounded-3xl p-6 border border-white/15 bg-[#0F1B3E] hover:border-white/40 hover:shadow-2xl hover:-translate-y-1 transition-all cursor-pointer group active:scale-[0.99] flex flex-col justify-between min-h-[160px]"
-              title="Click to view Current Stock in Grid View"
+              title="Click to view Current Stock Levels"
             >
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs font-bold text-white/80 tracking-wide">
@@ -671,7 +671,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
               <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
                 <span>{lowStockCount > 0 ? `${lowStockCount} Low Stock Alert(s)` : 'Healthy Inventory ✓'}</span>
                 <span className="font-bold text-white group-hover:underline flex items-center gap-1">
-                  <span>Stock Grid</span>
+                  <span>View Stock</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -781,7 +781,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                     </div>
                     <div className="text-right">
                       <div className="font-extrabold text-white text-sm font-mono">{branchStock.toLocaleString()} Units</div>
-                      <div className="text-white text-[10px] font-semibold">Click for Stock Grid →</div>
+                      <div className="text-white text-[10px] font-semibold">View Current Stock →</div>
                     </div>
                   </div>
                 );
@@ -1347,7 +1347,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
         </div>
       )}
 
-      {/* TAB 5: CURRENT STOCK LEVELS (GRID VIEW: ROWS & COLUMNS) */}
+      {/* TAB 5: CURRENT STOCK LEVELS */}
       {activeTab === 'stock_grid' && (
         <div className="glass-panel rounded-2xl p-4 sm:p-6 border border-white/15 space-y-4">
           
@@ -1363,7 +1363,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
                 </button>
                 <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                   <Package className="w-5 h-5 text-white" />
-                  <span>Current Stock Levels (Grid View: Rows & Columns)</span>
+                  <span>Current Stock Levels</span>
                 </h2>
               </div>
               <p className="text-xs text-white/70 mt-1">
@@ -1440,7 +1440,7 @@ export const DashboardReportsView: React.FC<DashboardReportsViewProps> = ({ curr
             </div>
           </div>
 
-          {/* Grid View Table: Rows and Columns */}
+          {/* Current Stock Matrix Table */}
           <div className="overflow-x-auto rounded-xl border border-white/15 shadow-xl">
             <table className="w-full text-left text-xs text-white">
               <thead className="bg-[#070E24] text-white/70 font-bold uppercase border-b border-white/15">
