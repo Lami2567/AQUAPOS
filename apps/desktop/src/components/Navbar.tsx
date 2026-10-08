@@ -21,6 +21,8 @@ import {
   FileSpreadsheet,
   Wifi,
   ChevronRight,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 export type NavDomain =
@@ -52,6 +54,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
     currentStoreId,
     setStore,
     setUser,
+    theme,
+    toggleTheme,
   } = useStore();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -255,6 +259,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
                 <span className="text-white/90 font-medium">Cloud Online</span>
               </div>
 
+              {/* Theme Toggle Button (Light/Dark Mode) */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-sm cursor-pointer"
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="w-4 h-4 text-amber-300" />
+                    <span className="hidden md:inline font-bold">Light</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-4 h-4 text-indigo-300" />
+                    <span className="hidden md:inline font-bold">Dark</span>
+                  </>
+                )}
+              </button>
+
               {/* User Profile Badge (Desktop & Tablet) */}
               <div className="hidden sm:flex items-center gap-2 text-xs bg-white/10 border border-white/20 rounded-xl px-3 py-1.5 shadow-sm">
                 <UserCheck className="w-4 h-4 text-white shrink-0" />
@@ -443,6 +468,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentNav, onSelectNav }) => {
               >
                 <LogOut className="w-4 h-4 text-white" />
                 <span>Exit</span>
+              </button>
+            </div>
+
+            {/* Mobile Theme Toggle Card */}
+            <div className="bg-[#0F1B3E] border border-white/15 rounded-2xl p-3 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-2.5">
+                {theme === 'dark' ? (
+                  <Moon className="w-4 h-4 text-indigo-300" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-300" />
+                )}
+                <span className="text-xs font-bold text-white">
+                  Appearance: {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-bold text-white transition-all cursor-pointer shadow-sm"
+              >
+                Switch to {theme === 'dark' ? 'Light' : 'Dark'}
               </button>
             </div>
 

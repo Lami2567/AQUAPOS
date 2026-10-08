@@ -278,6 +278,11 @@ export interface AppState {
   setOverallDiscount: (discountUgx: number) => void;
   setPaymentMethod: (method: PaymentMethod) => void;
   clearCart: () => void;
+
+  // Theme settings
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
+  setTheme: (theme: 'dark' | 'light') => void;
 }
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -327,13 +332,52 @@ function loadPersistedSession(): {
   };
 }
 
+const loadInitialTheme = (): 'dark' | 'light' => {
+  try {
+    const saved = localStorage.getItem('aquapos_theme');
+    if (saved === 'light' || saved === 'dark') {
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.toggle('light', saved === 'light');
+      }
+      return saved;
+    }
+  } catch (_) {}
+  if (typeof document !== 'undefined') {
+    document.documentElement.classList.remove('light');
+  }
+  return 'dark';
+};
+
 const initialSession = loadPersistedSession();
+const initialTheme = loadInitialTheme();
 
 export const useStore = create<AppState>((set) => ({
       user: initialSession.user,
       token: initialSession.token,
       currentBranchId: initialSession.currentBranchId,
       currentStoreId: initialSession.currentStoreId,
+      theme: initialTheme,
+      toggleTheme: () =>
+        set((state) => {
+          const next = state.theme === 'dark' ? 'light' : 'dark';
+          try {
+            localStorage.setItem('aquapos_theme', next);
+          } catch (_) {}
+          if (typeof document !== 'undefined') {
+            document.documentElement.classList.toggle('light', next === 'light');
+          }
+          return { theme: next };
+        }),
+      setTheme: (theme) =>
+        set(() => {
+          try {
+            localStorage.setItem('aquapos_theme', theme);
+          } catch (_) {}
+          if (typeof document !== 'undefined') {
+            document.documentElement.classList.toggle('light', theme === 'light');
+          }
+          return { theme };
+        }),
       isOnline: true,
       syncStatus: 'SYNCED',
       pendingSyncCount: 0,
