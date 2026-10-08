@@ -265,6 +265,13 @@ export class AppController {
     return this.syncService.resetProductionData(body?.clearDemoMaster || false);
   }
 
+  @Public()
+  @Roles(UserRole.SUPER_ADMIN)
+  @Post('admin/reset-money')
+  async resetMoney(@Body() body: { userId?: string }) {
+    return this.syncService.resetMoneyOnly(body?.userId || 'u-admin');
+  }
+
   // Backups & Auditing
   @Roles(UserRole.SUPER_ADMIN, UserRole.BRANCH_MANAGER)
   @Post('backup/create')

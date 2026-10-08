@@ -14,9 +14,14 @@ import {
   Wallet,
   XCircle,
   ArrowDownCircle,
+  Coins,
+  AlertTriangle,
 } from 'lucide-react';
 import { calculateNetSalary } from '@water-business/calculations';
+import { UserRole } from '@water-business/shared-types';
 import { useStore, ExpenseRecord, DebtRecord, SalaryPaymentRecord } from '../store/useStore';
+import { apiClient } from '../utils/api';
+import { syncManager } from '../services/syncService';
 import { v4 as uuidv4 } from 'uuid';
 
 export const FinanceView: React.FC = () => {
@@ -36,10 +41,14 @@ export const FinanceView: React.FC = () => {
     addDebt,
     settleDebt,
     recordSalaryPayment,
+    resetMoneyOnly,
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'expenses' | 'salaries' | 'debts'>('expenses');
   const [notification, setNotification] = useState<string | null>(null);
+  const [isMoneyResetModalOpen, setIsMoneyResetModalOpen] = useState(false);
+  const [moneyResetConfirmPhrase, setMoneyResetConfirmPhrase] = useState('');
+  const [isResettingMoney, setIsResettingMoney] = useState(false);
 
   const branchStores = stores.filter((s) => !currentBranchId || s.branchId === currentBranchId);
   const branchWorkers = workers.filter((w) => !currentBranchId || w.branchId === currentBranchId);
@@ -178,6 +187,19 @@ export const FinanceView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          {(user?.role === UserRole.SUPER_ADMIN || (user?.role as string) === 'SUPER_ADMIN') && (
+            <button
+              onClick={() => {
+                setMoneyResetConfirmPhrase('');
+                setIsMoneyResetModalOpen(true);
+              }}
+              className="btn-touch bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-950 cursor-pointer"
+              title="Reset all financial figures (profits, sales revenues, expenses, debts) back to UGX 0 without touching stock or workers"
+            >
+              <Coins className="w-4 h-4 text-emerald-300" /> Reset Money
+            </button>
+          )}
+
           {activeTab === 'expenses' && (
             <button
               onClick={() => setIsExpenseModalOpen(true)}
@@ -799,6 +821,109 @@ export const FinanceView: React.FC = () => {
                 className="bg-[#182855] hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition-colors"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Money Confirmation Modal */}
+      {isMoneyResetModalOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-[#0F1B3E] border border-emerald-500/40 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-white">
+            <div className="flex items-center gap-3 border-b border-white/15 pb-3">
+              <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-2xl border border-emerald-500/30">
+                <Coins className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-base text-white">Confirm Money-Only Reset</h3>
+                <p className="text-xs text-white/70">Wipes financial figures back to UGX 0.00 without touching stock or workers.</p>
+              </div>
+            </div>
+
+            <div className="bg-[#070E24] p-4 rounded-2xl border border-white/15 text-xs space-y-3 text-white">
+              <div className="space-y-1.5">
+                <div className="font-bold text-amber-400 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>What will be reset to UGX 0 (Money only):</span>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-white/80 pl-1 text-[11px]">
+                  <li>Total Gross Sales & Net Sales Revenue (store & field routes)</li>
+                  <li>Net Realized Profit and Profit Margin calculations (reset to 0.0%)</li>
+                  <li>All operational expense vouchers and route fuel/maintenance records</li>
+                  <li>All worker shortage debts, customer debts, and debt recovery history</li>
+                  <li>All monthly salary payment vouchers and worker wage payout history</li>
+                  <li>All route financial reconciliation equations (cash collected, variance, remaining)</li>
+                  <li>Pending financial sync queue items (prevents old money replay)</li>
+                </ul>
+              </div>
+
+              <div className="pt-2 border-t border-white/15 space-y-1.5">
+                <div className="font-bold text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>What will be PRESERVED safely (100% Intact):</span>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-white/80 pl-1 text-[11px]">
+                  <li>All warehouse and store stock inventory quantities (unaltered)</li>
+                  <li>Immutable stock ledger history and intake/transfer movement records</li>
+                  <li>All registered employees, workers, departments, and user logins</li>
+                  <li>All product catalog definitions, SKUs, and retail/cost selling prices</li>
+                  <li>All branches, stores, vehicles, devices, and system settings</li>
+                </ul>
+              </div>
+
+              <div className="pt-2 border-t border-white/15 space-y-2">
+                <label className="block text-[11px] font-bold text-white/90">
+                  Type <span className="text-emerald-400 font-mono tracking-wider">RESET MONEY</span> below to authorize:
+                </label>
+                <input
+                  type="text"
+                  value={moneyResetConfirmPhrase}
+                  onChange={(e) => setMoneyResetConfirmPhrase(e.target.value)}
+                  placeholder="RESET MONEY"
+                  className="w-full bg-[#0F1B3E] border border-white/20 rounded-xl px-3 py-2 text-xs font-mono text-emerald-300 placeholder:text-white/30 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 border-t border-white/15 pt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMoneyResetModalOpen(false);
+                  setMoneyResetConfirmPhrase('');
+                }}
+                disabled={isResettingMoney}
+                className="px-4 py-2.5 bg-[#182855] hover:bg-slate-700 text-white font-bold rounded-xl text-xs cursor-pointer transition-all"
+              >
+                Cancel / Keep Data
+              </button>
+              <button
+                type="button"
+                disabled={moneyResetConfirmPhrase.trim() !== 'RESET MONEY' || isResettingMoney}
+                onClick={async () => {
+                  setIsResettingMoney(true);
+                  try {
+                    await apiClient.post('/api/v1/admin/reset-money', { userId: user?.id || 'u-admin' });
+                    resetMoneyOnly();
+                    await syncManager.triggerSync();
+                    setIsMoneyResetModalOpen(false);
+                    setMoneyResetConfirmPhrase('');
+                    notify('All system monetary values successfully reset to UGX 0! Stocks, employees, and catalog data remain 100% intact.');
+                  } catch (err: any) {
+                    notify('Failed to reset money values: ' + (err?.response?.data?.message || err?.message || 'Server error'));
+                  } finally {
+                    setIsResettingMoney(false);
+                  }
+                }}
+                className={`flex-1 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all ${
+                  moneyResetConfirmPhrase.trim() === 'RESET MONEY' && !isResettingMoney
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950 cursor-pointer'
+                    : 'bg-white/10 text-white/40 cursor-not-allowed border border-white/10'
+                }`}
+              >
+                <Coins className="w-4 h-4" />
+                <span>{isResettingMoney ? 'Resetting Money Values...' : 'Authorize Money Reset'}</span>
               </button>
             </div>
           </div>

@@ -428,6 +428,9 @@ export class SyncService {
         debtTypes,
         salarySettings,
         systemSettings,
+        lastMoneyResetAt: systemSettings.find(
+          (s: any) => (s.settingKey || s.setting_key) === 'LAST_MONEY_RESET_AT'
+        )?.settingValue || null,
         inventoryStock,
         sales,
         expenses,
@@ -1233,6 +1236,114 @@ export class SyncService {
         message: clearDemoMaster
           ? 'System reset completed. Master data and transactions cleared. Ready for fresh customer setup.'
           : 'Transactions, sales, and ledger entries reset cleanly. Master catalog preserved.',
+      };
+    });
+  }
+
+  /**
+   * Reset ONLY the monetary records in the system (profits, sales revenues, expenses,
+   * debts, payroll disbursements, and field money equations).
+   * Physical stocks, inventory ledger, workers/employees, products, and catalog pricing remain 100% UNTOUCHED.
+   */
+  public async resetMoneyOnly(userId = 'u-admin') {
+    return await this.dbService.transaction(async () => {
+      // 1. Purge sales and sale items
+      try { await this.dbService.execute('DELETE FROM sale_items'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM sales'); } catch (e) {}
+
+      // 2. Purge operational expenses
+      try { await this.dbService.execute('DELETE FROM expenses'); } catch (e) {}
+
+      // 3. Purge debts and debt payments
+      try { await this.dbService.execute('DELETE FROM debt_payments'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM debts'); } catch (e) {}
+
+      // 4. Purge salary/payroll payouts
+      try { await this.dbService.execute('DELETE FROM salary_payments'); } catch (e) {}
+      try { await this.dbService.execute('DELETE FROM salaries'); } catch (e) {}
+
+      // 5. Neutralize route expenses on field delivery sessions (stock issued/returned items stay 100% intact)
+      try {
+        await this.dbService.execute(
+          'UPDATE field_sessions SET approved_expenses_ugx = 0, expense_description = NULL'
+        );
+      } catch (e) {}
+
+      // 6. Neutralize monetary reconciliation columns on field reconciliations
+      // (physical units: total_issued_units, total_sold_units, total_returned_units, etc. stay 100% intact)
+      try {
+        await this.dbService.execute(`
+          UPDATE field_reconciliations 
+          SET expected_sales_ugx = 0,
+              cash_collected_ugx = 0,
+              mobile_money_ugx = 0,
+              bank_deposit_ugx = 0,
+              approved_expenses_ugx = 0,
+              cash_remaining_ugx = 0,
+              total_accounted_money_ugx = 0,
+              money_variance_ugx = 0,
+              status = 'BALANCED',
+              expense_description = NULL,
+              is_money_equation_valid = 1
+        `);
+      } catch (e) {}
+
+      // 7. Purge financial transactions from sync queues to prevent stale replay
+      try {
+        await this.dbService.execute(
+          "DELETE FROM sync_outbox WHERE transaction_type IN ('SALE', 'CREATE_SALE', 'EXPENSE', 'DEBT', 'SETTLE_DEBT', 'SALARY', 'PAY_SALARY')"
+        );
+      } catch (e) {}
+      try {
+        await this.dbService.execute(
+          "DELETE FROM sync_inbox WHERE transaction_type IN ('SALE', 'CREATE_SALE', 'EXPENSE', 'DEBT', 'SETTLE_DEBT', 'SALARY', 'PAY_SALARY')"
+        );
+      } catch (e) {}
+
+      // 8. Record reset timestamp in system_settings
+      const resetIso = new Date().toISOString();
+      try {
+        const existingSetting = await this.dbService.queryOne<any>(
+          "SELECT id FROM system_settings WHERE setting_key = 'LAST_MONEY_RESET_AT'"
+        );
+        if (existingSetting) {
+          await this.dbService.execute(
+            "UPDATE system_settings SET setting_value = ?, updated_at = CURRENT_TIMESTAMP WHERE setting_key = 'LAST_MONEY_RESET_AT'",
+            [resetIso]
+          );
+        } else {
+          await this.dbService.execute(
+            "INSERT INTO system_settings (id, setting_key, setting_value, category, description) VALUES (?, 'LAST_MONEY_RESET_AT', ?, 'FINANCE', 'Timestamp of last money reset action')",
+            [uuidv4(), resetIso]
+          );
+        }
+      } catch (e) {}
+
+      // 9. Write audit log entry
+      try {
+        await this.dbService.execute(
+          `INSERT INTO audit_logs (id, user_id, user_name, branch_id, device_id, action, entity_name, entity_id, new_values, reason)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            uuidv4(),
+            userId,
+            'System Super Administrator',
+            'GLOBAL',
+            'SERVER-01',
+            'RESET_MONEY_ONLY',
+            'FINANCE',
+            'ALL',
+            JSON.stringify({ resetAt: resetIso }),
+            'Reset all financial metrics, profits, revenues, expenses, debts, and payroll. Physical stock and master data intact.',
+          ]
+        );
+      } catch (e) {}
+
+      this.logger.log(`Financial money reset completed at ${resetIso} by user ${userId}. Stocks and master data preserved.`);
+      return {
+        success: true,
+        resetAt: resetIso,
+        message: 'All system monetary values and financial records reset cleanly to UGX 0. Stocks, workers, and catalog data preserved.',
       };
     });
   }

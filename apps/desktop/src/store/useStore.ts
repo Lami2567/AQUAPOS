@@ -268,6 +268,7 @@ export interface AppState {
   createStockTransfer: (transfer: StockTransferRecord) => void;
   advanceTransferStatus: (transferId: string, nextStatus: StockTransferRecord['status']) => void;
   resetProductionData: (clearDemoMaster?: boolean) => void;
+  resetMoneyOnly: () => void;
 
   // Cart actions
   addToCart: (product: { id: string; sku: string; name: string; sellingPriceUgx: number }) => void;
@@ -614,8 +615,46 @@ export const useStore = create<AppState>((set) => ({
             updatedAt: sys.updatedAt || sys.updated_at || new Date().toISOString(),
           }));
 
-          const mergedSales = upsertEntities(state.salesHistory, centralData.sales, (s: any) => {
-            const local = state.salesHistory.find((l) => l.id === s.id);
+          // Anti-Ghosting Safeguard: Extract global money reset timestamp if set
+          const lastMoneyResetAt = centralData.lastMoneyResetAt ||
+            mergedSystemSettings.find((s) => s.settingKey === 'LAST_MONEY_RESET_AT')?.settingValue || '';
+          const resetCutoffDate = lastMoneyResetAt ? lastMoneyResetAt.split('T')[0] : '';
+
+          const isPriorToReset = (itemDate?: string, itemCreatedAt?: string): boolean => {
+            if (!lastMoneyResetAt) return false;
+            if (itemCreatedAt && itemCreatedAt < lastMoneyResetAt) return true;
+            if (itemDate && resetCutoffDate && itemDate < resetCutoffDate) return true;
+            return false;
+          };
+
+          const validLocalSales = lastMoneyResetAt
+            ? state.salesHistory.filter((s) => !isPriorToReset(s.date, s.createdAt))
+            : state.salesHistory;
+          const validLocalExpenses = lastMoneyResetAt
+            ? state.expensesList.filter((e) => !isPriorToReset(e.date, e.createdAt))
+            : state.expensesList;
+          const validLocalDebts = lastMoneyResetAt
+            ? state.debtsList.filter((d) => !isPriorToReset(d.date, d.createdAt))
+            : state.debtsList;
+          const validLocalSalaries = lastMoneyResetAt
+            ? state.salaryPaymentsList.filter((sp) => !isPriorToReset(sp.paymentDate, sp.paymentDate))
+            : state.salaryPaymentsList;
+
+          const rawCentralSales = Array.isArray(centralData.sales)
+            ? (lastMoneyResetAt ? centralData.sales.filter((s: any) => !isPriorToReset(s.date || (s.created_at ? s.created_at.split('T')[0] : ''), s.createdAt || s.created_at)) : centralData.sales)
+            : [];
+          const rawCentralExpenses = Array.isArray(centralData.expenses)
+            ? (lastMoneyResetAt ? centralData.expenses.filter((e: any) => !isPriorToReset(e.date || (e.created_at ? e.created_at.split('T')[0] : ''), e.createdAt || e.created_at)) : centralData.expenses)
+            : [];
+          const rawCentralDebts = Array.isArray(centralData.debts)
+            ? (lastMoneyResetAt ? centralData.debts.filter((d: any) => !isPriorToReset(d.date || (d.created_at ? d.created_at.split('T')[0] : ''), d.createdAt || d.created_at)) : centralData.debts)
+            : [];
+          const rawCentralSalaries = Array.isArray(centralData.salaryPayments)
+            ? (lastMoneyResetAt ? centralData.salaryPayments.filter((sp: any) => !isPriorToReset(sp.paymentDate || sp.paid_at, sp.paymentDate || sp.paid_at)) : centralData.salaryPayments)
+            : [];
+
+          const mergedSales = upsertEntities(validLocalSales, rawCentralSales, (s: any) => {
+            const local = validLocalSales.find((l) => l.id === s.id);
             const remoteItems = Array.isArray(s.items) && s.items.length > 0 ? s.items : (typeof s.items === 'string' ? (() => { try { return JSON.parse(s.items); } catch(e) { return []; } })() : []);
             const items = remoteItems.length > 0 ? remoteItems : (local?.items || []);
             return {
@@ -638,8 +677,8 @@ export const useStore = create<AppState>((set) => ({
             };
           });
 
-          const mergedExpenses = upsertEntities(state.expensesList, centralData.expenses, (e: any) => {
-            const local = state.expensesList.find((l) => l.id === e.id);
+          const mergedExpenses = upsertEntities(validLocalExpenses, rawCentralExpenses, (e: any) => {
+            const local = validLocalExpenses.find((l) => l.id === e.id);
             return {
               id: e.id,
               voucherNumber: e.voucherNumber || e.voucher_number || `EXP-${e.id}`,
@@ -655,8 +694,8 @@ export const useStore = create<AppState>((set) => ({
             };
           });
 
-          const mergedDebts = upsertEntities(state.debtsList, centralData.debts, (d: any) => {
-            const local = state.debtsList.find((l) => l.id === d.id);
+          const mergedDebts = upsertEntities(validLocalDebts, rawCentralDebts, (d: any) => {
+            const local = validLocalDebts.find((l) => l.id === d.id);
             return {
               id: d.id,
               debtorName: d.debtorName || d.debtor_customer_name || 'Customer',
@@ -672,7 +711,7 @@ export const useStore = create<AppState>((set) => ({
             };
           });
 
-          const mergedSalaries = upsertEntities(state.salaryPaymentsList, centralData.salaryPayments, (sp: any) => ({
+          const mergedSalaries = upsertEntities(validLocalSalaries, rawCentralSalaries, (sp: any) => ({
             id: sp.id,
             workerId: sp.workerId || sp.worker_id || '',
             workerName: sp.workerName || sp.worker_name || 'Worker',
@@ -823,8 +862,18 @@ export const useStore = create<AppState>((set) => ({
             (sys: any) => !isDeletedRemotely('system_settings', sys.id)
           );
 
-          // Mark any PENDING outbox items that reference a deleted entity as CONFLICT
-          const updatedOutbox = state.outboxQueue.map((item) => {
+          // Discard pre-reset financial outbox items and mark any PENDING outbox items that reference a deleted entity as CONFLICT
+          const filteredOutbox = state.outboxQueue.filter((item) => {
+            if (
+              lastMoneyResetAt &&
+              ['SALE', 'CREATE_SALE', 'EXPENSE', 'DEBT', 'SETTLE_DEBT', 'SALARY', 'PAY_SALARY'].includes(item.type) &&
+              item.createdAt < lastMoneyResetAt
+            ) {
+              return false;
+            }
+            return true;
+          });
+          const updatedOutbox = filteredOutbox.map((item) => {
             if (item.status !== 'PENDING') return item;
             const entityId = item.payload?.id || item.payload?.entityId;
             if (!entityId) return item;
@@ -2006,6 +2055,43 @@ export const useStore = create<AppState>((set) => ({
             products: clearDemoMaster ? [] : state.products,
             branchPrices: clearDemoMaster ? [] : state.branchPrices,
             usersList: clearDemoMaster ? [defaultAdminUser] : state.usersList,
+          };
+        }),
+
+      resetMoneyOnly: () =>
+        set((state) => {
+          // 1. Purge financial items from outbox queue
+          const nonFinancialOutbox = state.outboxQueue.filter(
+            (o) => !['SALE', 'CREATE_SALE', 'EXPENSE', 'DEBT', 'SETTLE_DEBT', 'SALARY', 'PAY_SALARY'].includes(o.type)
+          );
+
+          // 2. Clear financial fields on field delivery sessions (preserve items & physical stock counts)
+          const cleanedFieldSessions = state.fieldSessionsList.map((fs) => ({
+            ...fs,
+            approvedExpensesUgx: 0,
+            expenseDescription: '',
+          }));
+
+          const resetAuditLog: AuditRecord = {
+            id: `audit-${Date.now()}`,
+            user: state.user?.fullName || 'System Super Administrator',
+            action: 'FINANCIAL_MONEY_RESET',
+            entity: 'Finance',
+            details: 'All financial money values, sales revenues, expenses, debts, and payroll payments reset cleanly to UGX 0. Physical stocks, workers, and product catalog preserved.',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+
+          return {
+            salesHistory: [],
+            expensesList: [],
+            debtsList: [],
+            salaryPaymentsList: [],
+            cart: [],
+            overallDiscountUgx: 0,
+            fieldSessionsList: cleanedFieldSessions,
+            outboxQueue: nonFinancialOutbox,
+            pendingSyncCount: nonFinancialOutbox.filter((o) => o.status === 'PENDING').length,
+            auditLogs: [resetAuditLog, ...state.auditLogs],
           };
         }),
 
